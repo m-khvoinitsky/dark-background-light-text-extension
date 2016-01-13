@@ -1,0 +1,60 @@
+html, body {
+  background-color: black;
+}
+
+* {
+  color: white;
+  /*background-color: black;*/
+}
+
+*:link, *:link * {
+    color: #7FD7FF !important;
+}
+
+*:visited, *:visited * {
+    color: #FFAFFF !important;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea,
+*[contenteditable="true"]
+{
+    background-color: #000000!important;
+    opacity: 1 !important;
+    box-shadow: 0px 0px 1pt 1pt white !important;
+    border-radius: 1pt !important;
+    color: #FFFFFF !important;
+}
+
+input,
+textarea
+{
+    background-image: none!important;
+}
+
+*::-moz-selection {
+    color: white !important;
+    background: #8080FF !important;
+    text-shadow: #000 0pt 0pt 1pt,
+    #000 0pt 0pt 2pt,
+    #000 0pt 0pt 3pt,
+    #000 0pt 0pt 4pt,
+    #000 0pt 0pt 5pt,
+    #000 0pt 0pt 5pt,
+    #000 0pt 0pt 5pt !important;
+}
+
+/*Google Hangouts fixes*/
+@-moz-document url-prefix("https://talkgadget.google.com/")
+{
+    div.PD.IF, img.Yf {
+        border: 1pt solid white !important;
+    }
+
+    div.ci {
+        visibility: hidden !important;
+    }
+}

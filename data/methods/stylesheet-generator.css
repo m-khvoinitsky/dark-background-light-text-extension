@@ -1,0 +1,48 @@
+html, page {
+    background-color: black !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+*:link, *:link * {
+    color: #7FD7FF !important;
+}
+
+*:visited, *:visited * {
+    color: #FFAFFF !important;
+}
+                                                                                                    /*                  last.fm                           */
+[style*='background']:not(.newtab-thumbnail):not(.colorpicker-button-colorbox):not(.colorpickertile):not(.cover-image):not(.sidekick-image):not(.hero-image):not(.embed2yt-thumbnail),
+[bgcolor] {
+    background-color: #000000 !important;
+    background-image: none !important;
+}
+
+[style*='color'], [color]:not(colorpicker) {
+    color: #FFFFFF !important;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea,
+[contenteditable="true"]
+{
+    background-color: #000000;
+    opacity: 1;
+    box-shadow: 0px 0px 1pt 1pt white;
+    border-radius: 1pt;
+    color: #FFFFFF;
+}
+
+/*Bittorrent sync webui fix*/
+.qrCode > canvas {
+    border: 10px white solid;
+}
+/*@-moz-document url-prefix("http://music.yandex.ru")
+{
+    svg {
+        filter: invert(100%) hue-rotate(180deg) !important;
+    }
+}*/

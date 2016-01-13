@@ -1,0 +1,11 @@
+html,
+img:not(.mwe-math-fallback-image-inline),
+embed[type="application/x-shockwave-flash"],
+object[type="application/x-shockwave-flash"],
+video
+{
+    filter: invert(100%) hue-rotate(180deg) !important;
+}
+html {
+    background-color: #000000 !important;
+}

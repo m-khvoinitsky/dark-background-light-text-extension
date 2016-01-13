@@ -1,0 +1,49 @@
+{
+  "preferences": [
+    {
+      "title": "Default method of changing page colours",
+      "value": 1,
+      "type": "menulist",
+      "options": [
+        {
+          "value": "0",
+          "label": "Disabled"
+        },
+        {
+          "value": "1",
+          "label": "Simple CSS"
+        },
+        {
+          "value": "2",
+          "label": "JS mutation observer"
+        },
+        {
+          "value": "3",
+          "label": "Invert"
+        },
+        {
+          "value": "4",
+          "label": "Stylesheet generator"
+        }
+      ],
+      "name": "default-blackout-method"
+    }
+  ],
+  "license": "MIT",
+  "description": "Makes black background and white text on every page",
+  "engines": {
+    "firefox": ">=24.0",
+    "fennec": ">=24.0"
+  },
+  "author": "Mikhail Khvoinitsky <black-bg-white-text-mozilla@khvoinitsky.org>",
+  "title": "Black background and white text",
+  "version": "0.3.7",
+  "permissions": {
+    "private-browsing": true
+  },
+  "main": "lib/index.js",
+  "id": "jid1-QoFqdK4qzUfGWQ@jetpack",
+  "name": "dark-background-light-text",
+  "icon": "icon.png",
+  "icon64": "icon64.png"
+}
