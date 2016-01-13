@@ -1,15 +1,12 @@
 * {
-    color: white !important;
-    background-color: black !important;
-    /*text-shadow:
-        #000 0pt 0pt 1pt,
-        #000 0pt 0pt 2pt,
-        #000 0pt 0pt 3pt,
-        #000 0pt 0pt 4pt,
-        #000 0pt 0pt 5pt !important;*/
+    color: {default_foreground_color} !important;
 }
 
-a *
+*:not(.colorpickertile):not(.colorpicker-button-colorbox) {
+    background-color: {default_background_color} !important;
+}
+
+a *,
 button *,
 input *,
 optgroup *,
@@ -17,13 +14,13 @@ select *,
 textarea *
 {
     background-color: transparent !important;
-    text-shadow: #000 0pt 0pt 1pt,
-    #000 0pt 0pt 2pt,
-    #000 0pt 0pt 3pt,
-    #000 0pt 0pt 4pt,
-    #000 0pt 0pt 5pt,
-    #000 0pt 0pt 5pt,
-    #000 0pt 0pt 5pt !important;
+    text-shadow: {default_background_color} 0pt 0pt 1pt,
+    {default_background_color} 0pt 0pt 2pt,
+    {default_background_color} 0pt 0pt 3pt,
+    {default_background_color} 0pt 0pt 4pt,
+    {default_background_color} 0pt 0pt 5pt,
+    {default_background_color} 0pt 0pt 5pt,
+    {default_background_color} 0pt 0pt 5pt !important;
 }
 a,
 button,
@@ -32,11 +29,11 @@ optgroup,
 select,
 textarea
 {
-    text-shadow: #000 0pt 0pt 1pt,
-    #000 0pt 0pt 2pt,
-    #000 0pt 0pt 3pt,
-    #000 0pt 0pt 4pt,
-    #000 0pt 0pt 5pt,
-    #000 0pt 0pt 5pt,
-    #000 0pt 0pt 5pt !important;
+    text-shadow: {default_background_color} 0pt 0pt 1pt,
+    {default_background_color} 0pt 0pt 2pt,
+    {default_background_color} 0pt 0pt 3pt,
+    {default_background_color} 0pt 0pt 4pt,
+    {default_background_color} 0pt 0pt 5pt,
+    {default_background_color} 0pt 0pt 5pt,
+    {default_background_color} 0pt 0pt 5pt !important;
 }

@@ -33,7 +33,7 @@ self.port.on('init', function(data){
     body.appendChild(select);
     if (isPrivate){
         var private_note = document.createElement('div');
-        private_note.textContent = 'Note: this settings will not be saved for private tabs.'
+        private_note.textContent = 'Note: this settings will not be saved for private tabs.';
         body.appendChild(private_note);
     }
     var form_methods = document.createElement('form');
@@ -57,25 +57,34 @@ self.port.on('init', function(data){
     };
 
     for (var method in methods){
-        var li = document.createElement('li');
-        var input = document.createElement('input');
-        var label = document.createElement('label');
-        var label_click = document.createElement('label');
-        input.type = 'radio';
-        input.name = 'method';
-        input.value = methods[method]['number'];
-        input.id = "method_" + methods[method]['number'];
-        input.className = "methods";
-        label.textContent = methods[method]['label'];
-        label.setAttribute("for", input.id);
-        label_click.setAttribute("for", input.id);
-        label_click.setAttribute('class', 'label_click_workaround');
-        li.appendChild(label_click);
-        li.appendChild(input);
-        li.appendChild(label);
-        input.onchange = handle_method_change;
-        ul_methods.appendChild(li);
+        if (parseInt(method) > -5) {  // TODO: document it somehow? (or remove?)
+            var li = document.createElement('li');
+            var input = document.createElement('input');
+            var label = document.createElement('label');
+            var label_click = document.createElement('label');
+            input.type = 'radio';
+            input.name = 'method';
+            input.value = methods[method]['number'];
+            input.id = "method_" + methods[method]['number'];
+            input.className = "methods";
+            label.textContent = methods[method]['label'];
+            label.setAttribute("for", input.id);
+            label_click.setAttribute("for", input.id);
+            label_click.setAttribute('class', 'label_click_workaround');
+            li.appendChild(label_click);
+            li.appendChild(input);
+            li.appendChild(label);
+            input.onchange = handle_method_change;
+            ul_methods.appendChild(li);
+        }
     }
     body.appendChild(form_methods);
     handle_choose_url();
+    var preferences = document.createElement('div');
+    var preferences_a = document.createElement('a');
+    preferences_a.setAttribute('href', '#');
+    preferences_a.onclick = function() {self.port.emit('open-preferences')};
+    preferences_a.textContent = 'Global Preferences';
+    preferences.appendChild(preferences_a);
+    body.appendChild(preferences);
 });

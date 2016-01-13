@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>canvas</title>
+    <meta content="">
+    <script src="../../../lib/get_acceptable_range.js"></script>
+    <style>
+        html, body, canvas {
+            background-color: #000000;
+            color: #FFFFFF;
+            width: 98%;
+            height: 98%;
+            margin: 0px;
+        }
+        canvas {
+            image-rendering: -moz-crisp-edges;
+            height: 80%;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <span id="debug_label">debug_label</span><br>
+    <span id="color_itself">color_itself</span><br>
+    just regular text lalala just regular text lalala
+    <span id="bg_example">Background example</span>
+    just regular text lalala just regular text lalala
+    <span id="fg_example">Foreground example</span>
+    just regular text lalala just regular text lalala
+</div>
+<canvas id="canvas" width="360" height="101"></canvas>
+
+<script type="text/javascript">
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    ctx.createImageData(360, 101);
+    for (var h = 0; h < 360; h++) {
+        var a_r = get_acceptable_range(h);
+        for (var l = 0; l <= 100; l++) {
+            if (l == a_r[0])
+                ctx.fillStyle = 'hsl(0, 100%, 100%)';
+            else if (l == a_r[1])
+                ctx.fillStyle = 'hsl(0, 100%, 0%)';
+            else
+                ctx.fillStyle = 'hsl('+h+', 100%, '+l+'%)';
+            ctx.fillRect(h, l, 1, 1);
+        }
+    }
+    var rm_px = function(l){return l.replace('px', '')};
+    canvas.addEventListener('mousemove', function(event){
+        var style = window.getComputedStyle(this);
+        var x = Math.floor( (event.layerX - this.offsetLeft) * (360/rm_px(style.width)) );
+        var y = Math.floor( (event.layerY - this.offsetTop) *  (101/rm_px(style.height)) );
+        get_acceptable_range(x);
+        var new_color = 'hsl(_H_, 100%, _L_)'
+                .replace('_H_', ''+x)
+                .replace('_L_', ''+y+'%');
+        window.document.querySelector('#bg_example').style.backgroundColor = new_color;
+        window.document.querySelector('#fg_example').style.color = new_color;
+        window.document.querySelector('#color_itself').innerHTML = new_color;
+    });
+</script>
+</body>
+</html>

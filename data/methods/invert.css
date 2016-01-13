@@ -1,5 +1,7 @@
+window,
+page,
 html,
-img:not(.mwe-math-fallback-image-inline),
+img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),    /* TODO: "black on transparent" mark */
 embed[type="application/x-shockwave-flash"],
 object[type="application/x-shockwave-flash"],
 video
@@ -7,5 +9,17 @@ video
     filter: invert(100%) hue-rotate(180deg) !important;
 }
 html {
-    background-color: #000000 !important;
+    background-color: black !important;
+}
+button,
+input,
+optgroup,
+select,
+textarea {
+    background-color: white;
+    color: black;
+}
+
+@-moz-document domain(facebook.com) {
+
 }

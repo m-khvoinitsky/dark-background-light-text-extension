@@ -1,0 +1,27 @@
+@-moz-document url(chrome://browser/content/browser.xul) { /*Firefox top-level window*/
+    .tabbrowser-tabbox > tabpanels > notificationbox {
+        background-color: {default_background_color} !important;
+    }
+
+    #customization-container,
+    #customization-footer,
+    #customization-header,
+    .customizationmode-button
+    {
+        color: {default_foreground_color} !important;
+        background-color: {default_background_color} !important;
+    }
+
+    .statuspanel-label {
+        color: {default_foreground_color} !important;
+        background-color: {default_background_color} !important;
+        border-color: {default_foreground_color} !important;
+        background-image: none !important;
+    }
+}
+
+@-moz-document url(about:blank) {
+    * {
+        background-color: {default_background_color} !important;
+    }
+}

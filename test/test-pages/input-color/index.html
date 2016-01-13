@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>color input</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="">
+    <style type="text/css">
+        .color_chooser_svg_marker {
+            overflow: visible;
+            pointer-events: none;
+            transition: width 2s, height 2s;
+            position: absolute;
+            z-index: 9999;
+            height: 5%;
+            min-height: 1.5rem;
+        }
+        #color_chooser_container {
+            position: absolute;
+            width: 800px; /* 100px;*/
+            height: 600px; /*70px;*/
+            box-shadow: grey;
+        }
+        .canvas_hsl {
+            touch-action: none;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            border: 2rem solid grey;
+            top: 0;
+            height: 100%;
+            position: absolute;
+        }
+        #canvas_hl {
+            left: 0;
+            width: 85%;
+        }
+        #canvas_s {
+            right: 0;
+            width: 15%;
+            border-left-width: 0;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td>ololo1</td>
+        <td><input type="color" class="color-chooser"></td>
+    </tr>
+    <tr>
+        <td>ololo2</td>
+        <td><input type="color" class="color-chooser"></td>
+    </tr>
+    <tr>
+        <td>ololo3</td>
+        <td><input type="color" class="color-chooser"></td>
+    </tr>
+    <tr>
+        <td>ololo4</td>
+        <td><input type="color" class="color-chooser"></td>
+    </tr>
+    <tr>
+        <td>ololo5</td>
+        <td><input type="color" class="color-chooser"></td>
+    </tr>
+</table>
+<script src="../../../data/color_chooser.js" type="text/javascript"></script>
+</body>
+</html>
