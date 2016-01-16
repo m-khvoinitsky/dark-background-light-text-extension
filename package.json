@@ -9,7 +9,8 @@
   "title": "Black background and white text",
   "version": "0.4.6b1",
   "permissions": {
-    "private-browsing": true
+    "private-browsing": true,
+    "multiprocess": true
   },
   "preferences": [
     {
