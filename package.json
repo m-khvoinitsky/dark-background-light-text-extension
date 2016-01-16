@@ -2,8 +2,8 @@
   "license": "MIT",
   "description": "Makes black background and white text on every page",
   "engines": {
-    "firefox": ">=50.0",
-    "fennec": ">=50.0"
+    "firefox": ">=38.0",
+    "fennec": ">=38.0"
   },
   "author": "Mikhail Khvoinitsky <black-bg-white-text-mozilla@khvoinitsky.org>",
   "title": "Black background and white text",
