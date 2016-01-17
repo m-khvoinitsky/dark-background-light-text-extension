@@ -1,0 +1,3 @@
+[submodule "lib/css-color-parser"]
+	path = lib/css-color-parser
+	url = https://github.com/deanm/css-color-parser-js.git

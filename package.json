@@ -7,7 +7,7 @@
   },
   "author": "Mikhail Khvoinitsky <black-bg-white-text-mozilla@khvoinitsky.org>",
   "title": "Black background and white text",
-  "version": "0.4.6b1",
+  "version": "0.4.9b1",
   "permissions": {
     "private-browsing": true,
     "multiprocess": true
@@ -15,7 +15,7 @@
   "preferences": [
     {
       "type": "control",
-      "label": "Open Global Preferences",
+      "label": "Open Add-on Preferences",
       "name": "open_addon_prefs",
       "title": "Click here to open preferences"
     }

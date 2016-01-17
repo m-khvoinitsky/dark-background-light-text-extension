@@ -25,3 +25,37 @@
         background-color: {default_background_color} !important;
     }
 }
+
+*:root {
+    --in-content-page-color: {default_background_color} !important;
+    --in-content-page-background: {default_background_color} !important;
+    --in-content-text-color: {default_foreground_color} !important;
+    --in-content-selected-text: {default_foreground_color} !important;
+    /*--in-content-header-border-color: #c8c8c8;*/
+    --in-content-box-background: {default_background_color} !important;
+    --in-content-box-background-odd: {default_background_color} !important;
+    --in-content-box-background-hover: {default_background_color} !important;
+    --in-content-box-background-active: {default_background_color} !important;
+    /*--in-content-box-border-color: #c1c1c1;
+    --in-content-item-hover: rgba(0,149,221,0.25);
+    --in-content-item-selected: #0095dd;
+    --in-content-border-highlight: #ff9500;
+    --in-content-border-focus: #0095dd;
+    --in-content-border-color: #c1c1c1;*/
+    --in-content-category-text: {default_foreground_color} !important;
+    /*--in-content-category-border-focus: 1px dotted #fff;*/
+    --in-content-category-text-selected: {default_foreground_color} !important;
+    --in-content-category-background: {default_background_color} !important;
+    --in-content-category-background-hover: {default_background_color} !important;
+    --in-content-category-background-active: {default_background_color} !important;
+    /*--in-content-tab-color: #424f5a;*/
+    --in-content-link-color: {default_link_color} !important;
+    --in-content-link-color-hover: {default_link_color} !important;
+    --in-content-link-color-active: {default_active_color} !important;
+    --in-content-link-color-visited: {default_visited_color} !important;
+    --in-content-primary-button-background: {default_background_color} !important;
+    --in-content-primary-button-background-hover: {default_background_color} !important;
+    --in-content-primary-button-background-active: {default_background_color} !important;
+    /*--in-content-table-border-dark-color: #d1d1d1;*/
+    --in-content-table-header-background: {default_background_color} !important;
+}

@@ -1,4 +1,4 @@
-var utils = require('./utils.js');
+/*var utils = require('./utils.js');
 
 exports['test count_char_in_string'] = function(assert) {
     return assert.ok(
@@ -39,7 +39,7 @@ exports['test count_char_in_string speed'] = function(assert) {
     let time = end - start;
     console.log('Execution time: ' + time);
     return assert.ok(true, 'just speed')
-};*/
+};
 exports['test split_background_image speed'] = function(assert) {
     let start = (new Date()).getTime();
     for (let i = 0; i < 1000000; i++) {
@@ -54,3 +54,4 @@ exports['test split_background_image speed'] = function(assert) {
 };
 
 require("sdk/test").run(exports);
+    */
