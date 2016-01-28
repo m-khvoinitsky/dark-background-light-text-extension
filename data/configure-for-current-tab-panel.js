@@ -1,7 +1,8 @@
 self.port.on('init', function(data){
     var methods = data["methods"];
     var configured = data["configured"];
-    var urls = data["urls"];
+    var urls = data["urls"]["list"];
+    var preselect = data["urls"]["preselect"];
     var isPrivate = data["isPrivate"];
     var isTouchscreen = data['isTouchscreen'];
     var body = document.querySelector('body');
@@ -28,6 +29,8 @@ self.port.on('init', function(data){
     for (var url in urls){
         var option = document.createElement('option');
         option.textContent = urls[url];
+        if (urls[url] === preselect)
+            option.setAttribute('selected', 'true');
         select.appendChild(option);
     }
     body.appendChild(select);
