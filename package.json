@@ -1,12 +1,12 @@
 {
   "license": "MIT",
-  "description": "Makes black background and white text on every page",
+  "description": "Makes dark background and light text on every page",
   "engines": {
     "firefox": ">=38.0",
     "fennec": ">=38.0"
   },
-  "author": "Mikhail Khvoinitsky <black-bg-white-text-mozilla@khvoinitsky.org>",
-  "title": "Black background and white text",
+  "author": "Mikhail Khvoinitsky <dark-bg-light-text-mozilla@khvoinitsky.org>",
+  "title": "Dark background and light text",
   "version": "0.4.9b1",
   "permissions": {
     "private-browsing": true,

@@ -21,7 +21,7 @@ self.port.on('init', function(data){
             document.querySelector("#method_-1").checked = true;
     };
 
-    title.textContent = 'Black background and white text options for:';
+    title.textContent = 'Dark background and light text options for:';
     body.appendChild(title);
     var select = document.createElement('select');
     select.id = 'url_select';
