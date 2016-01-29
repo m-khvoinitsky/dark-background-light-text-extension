@@ -6,12 +6,12 @@
     #customization-container,
     #customization-footer,
     #customization-header,
-    .customizationmode-button
+    .customizationmode-button,
+    /* #customization-tipPanel * */
     {
         color: {default_foreground_color} !important;
         background-color: {default_background_color} !important;
     }
-
     .statuspanel-label {
         color: {default_foreground_color} !important;
         background-color: {default_background_color} !important;

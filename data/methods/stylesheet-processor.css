@@ -58,6 +58,16 @@ textarea,
     }
 }
 
+@-moz-document domain(wsj.com) {
+    /* wsj sets html's background-color to transparent
+       with strange rule 'background: 0 0'
+       //TODO: commonize it somehow?
+    */
+    html {
+        background-color: {default_background_color} !important;
+    }
+}
+
 /*@-moz-document url-prefix("http://music.yandex.ru")
 {
     svg {
