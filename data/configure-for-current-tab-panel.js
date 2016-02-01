@@ -63,19 +63,25 @@ self.port.on('init', function(data){
         if (parseInt(method) > -5) {  // TODO: document it somehow? (or remove?)
             var li = document.createElement('li');
             var input = document.createElement('input');
-            var label = document.createElement('label');
+            var label = document.createElement('span');
             var label_click = document.createElement('label');
+            var spacer1 = document.createElement('span');
+            var spacer2 = document.createElement('span');
+            spacer1.setAttribute('class', 'spacer');
+            spacer2.setAttribute('class', 'spacer');
             input.type = 'radio';
             input.name = 'method';
             input.value = methods[method]['number'];
             input.id = "method_" + methods[method]['number'];
             input.className = "methods";
             label.textContent = methods[method]['label'];
-            label.setAttribute("for", input.id);
+            label.setAttribute('class', 'label_no_click');
             label_click.setAttribute("for", input.id);
             label_click.setAttribute('class', 'label_click_workaround');
             li.appendChild(label_click);
+            li.appendChild(spacer1);
             li.appendChild(input);
+            li.appendChild(spacer2);
             li.appendChild(label);
             input.onchange = handle_method_change;
             ul_methods.appendChild(li);
@@ -83,11 +89,16 @@ self.port.on('init', function(data){
     }
     body.appendChild(form_methods);
     handle_choose_url();
+
     var preferences = document.createElement('div');
-    var preferences_a = document.createElement('a');
-    preferences_a.setAttribute('href', '#');
-    preferences_a.onclick = function() {self.port.emit('open-preferences')};
-    preferences_a.textContent = 'Global Preferences';
-    preferences.appendChild(preferences_a);
+    var preferences_note = document.createTextNode('Configure colors, "Default" behaviour and more here: ');
+    preferences.appendChild(preferences_note);
+
+    var prefs_button = document.createElement('button');
+    prefs_button.setAttribute('icon', 'properties');
+    prefs_button.textContent = 'Global Preferences';
+    prefs_button.onclick = function() {self.port.emit('open-preferences')};
+    preferences.appendChild(prefs_button);
+
     body.appendChild(preferences);
 });
