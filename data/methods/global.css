@@ -6,8 +6,8 @@
     #customization-container,
     #customization-footer,
     #customization-header,
-    .customizationmode-button,
-    /* #customization-tipPanel * */
+    .customizationmode-button /*,
+    #customization-tipPanel * */
     {
         color: {default_foreground_color} !important;
         background-color: {default_background_color} !important;
