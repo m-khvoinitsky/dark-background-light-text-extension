@@ -1,3 +1,8 @@
+/*TODO: some webpages set html's bgcolor to transparent which is becomes white */
+html {
+    background-color: {default_background_color} !important;
+}
+
 *:link, *:link * {
     color: {default_link_color} !important;
 }
@@ -55,16 +60,6 @@ textarea,
     /* fix for huge white peace due to "border-left: 68px solid #EDEDED;" */
     article {
         border-left-color: #000000 !important;
-    }
-}
-
-@-moz-document domain(wsj.com) {
-    /* wsj sets html's background-color to transparent
-       with strange rule 'background: 0 0'
-       //TODO: commonize it somehow?
-    */
-    html {
-        background-color: {default_background_color} !important;
     }
 }
 
