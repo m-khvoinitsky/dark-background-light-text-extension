@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+    <Description about="urn:mozilla:install-manifest">
+          <em:id>jid1-QoFqdK4qzUfGWQ@jetpack</em:id>
+          <em:type>2</em:type>
+          <em:bootstrap>true</em:bootstrap>
+          <em:unpack>false</em:unpack>
+          <em:version>0.4.9b1</em:version>
+          <em:name>Dark background and light text</em:name>
+          <em:description>Makes every page to have light text on dark background (exact colors are customizable)</em:description>
+          <em:creator>Mikhail Khvoinitsky &lt;dark-bg-light-text-mozilla@khvoinitsky.org&gt;</em:creator>
+          <em:optionsURL>resource://jid1-qofqdk4qzufgwq-at-jetpack/data/preferences.html</em:optionsURL>
+          <em:optionsType>3</em:optionsType>
+          <em:multiprocessCompatible>true</em:multiprocessCompatible>
+
+          <em:targetApplication>
+            <Description>
+              <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+              <em:minVersion>38.0</em:minVersion>
+              <em:maxVersion>50.0</em:maxVersion>
+            </Description>
+          </em:targetApplication>
+
+          <em:targetApplication>
+            <Description>
+              <em:id>{aa3c5121-dab2-40e2-81ca-7ea25febc110}</em:id>
+              <em:minVersion>38.0</em:minVersion>
+              <em:maxVersion>50.0</em:maxVersion>
+            </Description>
+          </em:targetApplication>
+
+    </Description>
+
+</RDF>
