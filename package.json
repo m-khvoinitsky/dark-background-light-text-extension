@@ -23,6 +23,5 @@
   "main": "lib/index.js",
   "id": "jid1-QoFqdK4qzUfGWQ@jetpack",
   "name": "dark-background-light-text",
-  "icon": "icon.png",
-  "icon64": "icon64.png"
+  "icon": "icon.png"
 }
