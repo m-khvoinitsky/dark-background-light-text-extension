@@ -36,12 +36,26 @@ self.port.on('init', function(data){
                 break;
             case 'color':
                 var input = document.createElement('input');
-                input.value = pref.value;
                 input.setAttribute('type', 'color');
+                input.value = pref.value;
                 input.onchange = function(){
                     self.port.emit('settings-changed', {
                         name: pref.name,
                         value: input.value
+                    })
+                };
+                input.setAttribute('id', 'pref_'+pref.name);
+                input.setAttribute('data-pref-type', pref.type);
+                td.appendChild(input);
+                break;
+            case 'bool':
+                input = document.createElement('input');
+                input.setAttribute('type', 'checkbox');
+                input.checked = pref.value;
+                input.onchange = function(){
+                    self.port.emit('settings-changed', {
+                        name: pref.name,
+                        value: input.checked
                     })
                 };
                 input.setAttribute('id', 'pref_'+pref.name);
@@ -71,6 +85,9 @@ self.port.on('refresh', function(data){
             break;
         case 'color':
             node.value = data.value;
+            break;
+        case 'bool':
+            node.checked = data.value;
             break;
     }
 });

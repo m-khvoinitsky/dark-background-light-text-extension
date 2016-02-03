@@ -5,10 +5,11 @@ self.port.on('init', function(data){
     var preselect = data["urls"]["preselect"];
     var isPrivate = data["isPrivate"];
     var isTouchscreen = data['isTouchscreen'];
+    var enabled = data['enabled'];
     var body = document.querySelector('body');
     if (isTouchscreen)
         body.setAttribute('class', 'touchscreen');
-    var title = document.createElement('div');
+
     while (body.firstChild) {
         body.removeChild(body.firstChild);
     }
@@ -21,8 +22,34 @@ self.port.on('init', function(data){
             document.querySelector("#method_-1").checked = true;
     };
 
+    var checkbox_label = document.createElement('label');
+    checkbox_label.setAttribute('class', 'enabled_label');
+    checkbox_label.textContent = 'Enabled';
+    var checkbox = document.createElement('input');
+    checkbox.setAttribute('type', 'checkbox');
+    checkbox.checked = enabled;
+    checkbox.onchange = function(){
+        self.port.emit('enabled-change', checkbox.checked);
+    };
+    checkbox_label.appendChild(checkbox);
+    body.appendChild(checkbox_label);
+
+    body.appendChild(document.createElement('hr'));
+
+    var container = document.createElement('div');
+    container.setAttribute('class', 'page_settings_container');
+    container.style.position = 'relative';
+
+    if (!enabled) {
+        var overlay = document.createElement('div');
+        overlay.setAttribute('class', 'disabled_overlay');
+        container.appendChild(overlay);
+    }
+
+    var title = document.createElement('div');
     title.textContent = 'Dark background and light text options for:';
-    body.appendChild(title);
+    title.setAttribute('class', 'options_for');
+    container.appendChild(title);
     var select = document.createElement('select');
     select.id = 'url_select';
     select.onchange = handle_choose_url;
@@ -33,11 +60,11 @@ self.port.on('init', function(data){
             option.setAttribute('selected', 'true');
         select.appendChild(option);
     }
-    body.appendChild(select);
+    container.appendChild(select);
     if (isPrivate){
         var private_note = document.createElement('div');
         private_note.textContent = 'Note: this settings will not be saved for private tabs.';
-        body.appendChild(private_note);
+        container.appendChild(private_note);
     }
     var form_methods = document.createElement('form');
     var ul_methods = document.createElement('ul');
@@ -65,10 +92,6 @@ self.port.on('init', function(data){
             var input = document.createElement('input');
             var label = document.createElement('span');
             var label_click = document.createElement('label');
-            var spacer1 = document.createElement('span');
-            var spacer2 = document.createElement('span');
-            spacer1.setAttribute('class', 'spacer');
-            spacer2.setAttribute('class', 'spacer');
             input.type = 'radio';
             input.name = 'method';
             input.value = methods[method]['number'];
@@ -79,15 +102,14 @@ self.port.on('init', function(data){
             label_click.setAttribute("for", input.id);
             label_click.setAttribute('class', 'label_click_workaround');
             li.appendChild(label_click);
-            li.appendChild(spacer1);
             li.appendChild(input);
-            li.appendChild(spacer2);
             li.appendChild(label);
             input.onchange = handle_method_change;
             ul_methods.appendChild(li);
         }
     }
-    body.appendChild(form_methods);
+    container.appendChild(form_methods);
+    body.appendChild(container);
     handle_choose_url();
 
     var preferences = document.createElement('div');

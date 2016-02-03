@@ -7,63 +7,103 @@
     <meta content="">
     <link rel="icon" type="image/png" href="icon64.png" />
     <style>
-        html, body {
+        html, body
+        {
             width: 100%;
             overflow-x: hidden;
             color: white;
             background-color: #000000;
         }
 
-        body > * {
+        body > *
+        {
             width: 95%;
             font-family: sans;
         }
 
-        .spacer {
-            width: 0;
-        }
-
-        .touchscreen .spacer {
-            width: 0.3ch
+        hr
+        {
+            margin: 0;
         }
 
         select,
         button,
-        body > div
+        .options_for,
+        .enabled_label
         {
-            font-size: 1.6rem;
+            font-size: 1.2em;
         }
 
-        li * {
+        .enabled_label
+        {
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .touchscreen .enabled_label
+        {
+            padding-left: 0.75em;
+            padding-right: 0.75em;
+        }
+
+        .page_settings_container
+        {
+            position: relative;
+        }
+
+        .disabled_overlay
+        {
+            background-color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+        }
+
+        li *
+        {
             display: inline-block;
             position: relative;
         }
 
-        li {
+        li
+        {
             position: relative;
         }
 
-        li .label_click_workaround {
+        li .label_click_workaround
+        {
             position: absolute;
             width: 100%;
             height: 100%;
         }
 
-        li .label_no_click {
+        li .label_no_click
+        {
             pointer-events: none;
         }
 
-        ul {
+        ul
+        {
             padding: 0;
             list-style-type: none;
         }
 
-        .touchscreen li {
+        .touchscreen li > input,
+        .touchscreen li > span
+        {
+            margin-left: 0.5em;
+        }
+
+        .touchscreen li,
+        .touchscreen .enabled_label
+        {
             line-height: 250%;
             border-style: solid;
             border-width: 1px;
             border-color: white;
-            border-radius: 5pt;
+            border-radius: 0.6em;
             margin-bottom: 3pt;
         }
     </style>
