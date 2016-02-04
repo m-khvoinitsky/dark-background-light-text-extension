@@ -7,3 +7,4 @@ lib/css-color-parser/README
 lib/css-color-parser/package.json
 data/color_chooser.js
 lib/ui/xul-toolbarbutton-with-panel.js
+lib/sqlite.js
