@@ -1,6 +1,6 @@
 {
   "license": "MIT",
-  "description": "Makes dark background and light text on every page",
+  "description": "Makes every page (or only pages that you want) to have light text on dark background. Exact colors are customizable.",
   "engines": {
     "firefox": ">=38.0",
     "fennec": ">=38.0"
