@@ -20,6 +20,21 @@
     }
 }
 
+@-moz-document url(chrome://browser/content/preferences/colors.xul) {
+    label[control="useDocumentColors"]:after,
+    #browserUseSystemColors .checkbox-label-box > label.checkbox-label:after
+    {
+        color: red !important;
+        content: "*"
+    }
+
+    #ColorsDialogPane:after {
+        display: block;
+        color: red;
+        content: '* This options was set by "Dark background and light text" add-on. Changing them may lead to add-on misbehavior.'
+    }
+}
+
 @-moz-document url(about:blank) {
     * {
         background-color: {default_background_color} !important;
