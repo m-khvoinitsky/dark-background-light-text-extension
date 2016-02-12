@@ -21,14 +21,20 @@ button,
 input,
 optgroup,
 select,
-textarea,
-/* *[contenteditable="true"] */
+textarea
 {
     background-color: {default_background_color} !important;
     opacity: 1 !important;
     box-shadow: 0px 0px 1pt 1pt {default_foreground_color};
     border-radius: 1pt;
     color: {default_foreground_color} !important;
+    text-shadow: {default_background_color} 0pt 0pt 1pt,
+    {default_background_color} 0pt 0pt 2pt,
+    {default_background_color} 0pt 0pt 3pt,
+    {default_background_color} 0pt 0pt 4pt,
+    {default_background_color} 0pt 0pt 5pt,
+    {default_background_color} 0pt 0pt 5pt,
+    {default_background_color} 0pt 0pt 5pt !important;
 }
 
 input,
