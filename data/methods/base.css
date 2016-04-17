@@ -24,7 +24,7 @@ select,
 textarea
 {
     background-color: {default_background_color} !important;
-    opacity: 1 !important;
+    opacity: 1;
     box-shadow: 0px 0px 1pt 1pt {default_foreground_color};
     border-radius: 1pt;
     color: {default_foreground_color} !important;
