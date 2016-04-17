@@ -83,3 +83,10 @@ groupbox#dialogBox { /* about:preferences dialogs */
         filter: invert(100%);
     }
 }
+
+/* google scholar bars on right sidebar fix #8 */
+@-moz-document url-prefix("https://scholar.google.") {
+    #gsc_g_bars .gsc_g_a[style*="height"] {
+        background-color: rgb(119, 119, 119) !important;
+    }
+}
