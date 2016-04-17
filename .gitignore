@@ -1,3 +1,4 @@
 .directory
 .idea
 *.xpi
+.DS_Store
