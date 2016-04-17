@@ -6,7 +6,7 @@
     "fennec": ">=38.0"
   },
   "author": "Mikhail Khvoinitsky <dark-bg-light-text-mozilla@khvoinitsky.org>",
-  "title": "Dark background and light text",
+  "title": "Dark Background and Light Text",
   "version": "0.5.3",
   "permissions": {
     "private-browsing": true,

@@ -31,7 +31,7 @@
     #ColorsDialogPane:after {
         display: block;
         color: red;
-        content: '* This options was set by "Dark background and light text" add-on. Changing them may lead to add-on misbehavior.'
+        content: '* This options was set by "Dark Background and Light Text" add-on. Changing them may lead to add-on misbehavior.'
     }
 }
 

@@ -6,7 +6,7 @@
           <em:bootstrap>true</em:bootstrap>
           <em:unpack>false</em:unpack>
           <em:version>0.5.3</em:version>
-          <em:name>Dark background and light text</em:name>
+          <em:name>Dark Background and Light Text</em:name>
           <em:description>Makes every page to have light text on dark background (exact colors are customizable)</em:description>
           <em:creator>Mikhail Khvoinitsky &lt;dark-bg-light-text-mozilla@khvoinitsky.org&gt;</em:creator>
           <em:optionsURL>resource://jid1-qofqdk4qzufgwq-at-jetpack/data/preferences.html</em:optionsURL>

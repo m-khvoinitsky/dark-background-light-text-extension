@@ -1,3 +1,4 @@
+
 self.port.on('init', function(data){
     var methods = data["methods"];
     var configured = data["configured"];
@@ -47,7 +48,7 @@ self.port.on('init', function(data){
     }
 
     var title = document.createElement('div');
-    title.textContent = 'Dark background and light text options for:';
+    title.textContent = 'Dark Background and Light Text options for:';
     title.setAttribute('class', 'options_for');
     container.appendChild(title);
     var select = document.createElement('select');
