@@ -8,6 +8,12 @@ video
 {
     filter: invert(100%) hue-rotate(180deg) !important;
 }
+/* fix for #28 */
+:fullscreen video,
+video:fullscreen
+{
+    filter: none !important;
+}
 html {
     background-color: black !important;
 }
