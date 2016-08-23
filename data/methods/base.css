@@ -1,20 +1,20 @@
 html, page, window {
-  background-color: {default_background_color};
-  color: {default_foreground_color};
+  background-color: #{default_background_color};
+  color: #{default_foreground_color};
   /* background-image: none !important; */
 }
 
 * {
-  /* color: {default_foreground_color}; */
+  /* color: #{default_foreground_color}; */
   /*background-color: black; <- do not set it here*/
 }
 
 *:link, *:link * {
-    color: {default_link_color} !important;
+    color: #{default_link_color} !important;
 }
 
 *:visited, *:visited * {
-    color: {default_visited_color} !important;
+    color: #{default_visited_color} !important;
 }
 
 button,
@@ -23,18 +23,18 @@ optgroup,
 select,
 textarea
 {
-    background-color: {default_background_color} !important;
+    background-color: #{default_background_color} !important;
     opacity: 1;
-    box-shadow: 0px 0px 1pt 1pt {default_foreground_color};
+    box-shadow: 0px 0px 1pt 1pt #{default_foreground_color};
     border-radius: 1pt;
-    color: {default_foreground_color} !important;
-    text-shadow: {default_background_color} 0pt 0pt 1pt,
-    {default_background_color} 0pt 0pt 2pt,
-    {default_background_color} 0pt 0pt 3pt,
-    {default_background_color} 0pt 0pt 4pt,
-    {default_background_color} 0pt 0pt 5pt,
-    {default_background_color} 0pt 0pt 5pt,
-    {default_background_color} 0pt 0pt 5pt !important;
+    color: #{default_foreground_color} !important;
+    text-shadow: #{default_background_color} 0pt 0pt 1pt,
+    #{default_background_color} 0pt 0pt 2pt,
+    #{default_background_color} 0pt 0pt 3pt,
+    #{default_background_color} 0pt 0pt 4pt,
+    #{default_background_color} 0pt 0pt 5pt,
+    #{default_background_color} 0pt 0pt 5pt,
+    #{default_background_color} 0pt 0pt 5pt !important;
 }
 
 input,
@@ -44,21 +44,21 @@ textarea
 }
 
 *::-moz-selection {
-    color: {default_foreground_color} !important;
-    background: {default_selection_color} !important;
-    text-shadow: {default_background_color} 0pt 0pt 1pt,
-    {default_background_color} 0pt 0pt 2pt,
-    {default_background_color} 0pt 0pt 3pt,
-    {default_background_color} 0pt 0pt 4pt,
-    {default_background_color} 0pt 0pt 5pt,
-    {default_background_color} 0pt 0pt 5pt,
-    {default_background_color} 0pt 0pt 5pt !important;
+    color: #{default_foreground_color} !important;
+    background: #{default_selection_color} !important;
+    text-shadow: #{default_background_color} 0pt 0pt 1pt,
+    #{default_background_color} 0pt 0pt 2pt,
+    #{default_background_color} 0pt 0pt 3pt,
+    #{default_background_color} 0pt 0pt 4pt,
+    #{default_background_color} 0pt 0pt 5pt,
+    #{default_background_color} 0pt 0pt 5pt,
+    #{default_background_color} 0pt 0pt 5pt !important;
 }
 
 /* https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Styling_a_Tree */
 /* #27 */
 treechildren {
-    background-color: {default_background_color} !important;
+    background-color: #{default_background_color} !important;
 }
 treechildren::-moz-tree-cell,
 treechildren::-moz-tree-row,
@@ -67,13 +67,13 @@ treechildren::-moz-tree-row(odd)
     background-color: transparent !important;
 }
 treechildren::-moz-tree-cell-text {
-    color: {default_foreground_color} !important;
+    color: #{default_foreground_color} !important;
 }
 treechildren::-moz-tree-row(even) {
     background: rgba(127, 127, 127, 0.3) !important;
 }
 treechildren::-moz-tree-row(selected) {
-    background: {default_selection_color} !important;
+    background: #{default_selection_color} !important;
 }
 
 
@@ -86,14 +86,14 @@ img[alt="inline_formula"],
 }
 
 groupbox#dialogBox { /* about:preferences dialogs */
-    box-shadow: 0 0 4px 3px {default_foreground_color} !important;
+    box-shadow: 0 0 4px 3px #{default_foreground_color} !important;
 }
 
 /*Google Hangouts fixes*/
 @-moz-document url-prefix("https://talkgadget.google.com/")
 {
     div.PD.IF, img.Yf {
-        border: 1pt solid {default_foreground_color} !important;
+        border: 1pt solid #{default_foreground_color} !important;
     }
 
     div.ci {

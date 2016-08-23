@@ -1,14 +1,14 @@
 /*TODO: some webpages set html's bgcolor to transparent which is becomes white */
 html {
-    background-color: {default_background_color} !important;
+    background-color: #{default_background_color} !important;
 }
 
 *:link, *:link * {
-    color: {default_link_color} !important;
+    color: #{default_link_color} !important;
 }
 
 *:visited, *:visited * {
-    color: {default_visited_color} !important;
+    color: #{default_visited_color} !important;
 }
                                                                                                     /*                  last.fm                           */
 /*[style*='background']:not(.newtab-thumbnail):not(.colorpicker-button-colorbox):not(.colorpickertile):not(.cover-image):not(.sidekick-image):not(.hero-image):not(.embed2yt-thumbnail),
@@ -19,11 +19,11 @@ html {
 /*.colorpickertile, .colorpicker-button-colorbox*/
 /*Legacy Attributes*/
 [bgcolor] {
-    background-color: {default_background_color} !important;
+    background-color: #{default_background_color} !important;
 }
 [text], /* there is such attribute! */
 [color] {
-    color: {default_foreground_color} !important;
+    color: #{default_foreground_color} !important;
 }
 
 [alink]:link:active {

@@ -1,6 +1,6 @@
 @-moz-document url(chrome://browser/content/browser.xul) { /*Firefox top-level window*/
     .tabbrowser-tabbox > tabpanels > notificationbox {
-        background-color: {default_background_color} !important;
+        background-color: #{default_background_color} !important;
     }
 
     #customization-container,
@@ -9,13 +9,13 @@
     .customizationmode-button /*,
     #customization-tipPanel * */
     {
-        color: {default_foreground_color} !important;
-        background-color: {default_background_color} !important;
+        color: #{default_foreground_color} !important;
+        background-color: #{default_background_color} !important;
     }
     .statuspanel-label {
-        color: {default_foreground_color} !important;
-        background-color: {default_background_color} !important;
-        border-color: {default_foreground_color} !important;
+        color: #{default_foreground_color} !important;
+        background-color: #{default_background_color} !important;
+        border-color: #{default_foreground_color} !important;
         background-image: none !important;
     }
 }
@@ -37,6 +37,6 @@
 
 @-moz-document url(about:blank) {
     * {
-        background-color: {default_background_color};
+        background-color: #{default_background_color};
     }
 }
