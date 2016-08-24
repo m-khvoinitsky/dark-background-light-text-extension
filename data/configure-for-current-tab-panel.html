@@ -6,19 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta content="">
     <link rel="icon" type="image/png" href="icon64.png" />
+    <link rel="stylesheet" href="internal.css" />
     <style>
         html, body
         {
             width: 100%;
             overflow-x: hidden;
-            color: white;
-            background-color: #000000;
         }
 
         body > *
         {
             width: 95%;
-            font-family: sans;
         }
 
         hr
@@ -29,7 +27,20 @@
         select
         {
             max-width: 100%;
-            text-overflow: ellipsis;
+            padding: 0.1em 1em 0.1em 0.1em;
+            margin: 1px;
+        }
+        button
+        {
+            max-width: 100%
+            display: inline-block;
+            padding: 0.1em;
+            margin: 1px;
+        }
+        @media (max-width: 543px) {
+            button, select {
+                width: calc(100% - 2px);
+            }
         }
 
         select,
@@ -60,7 +71,7 @@
 
         .disabled_overlay
         {
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.5);
             position: absolute;
             width: 100%;
             height: 100%;

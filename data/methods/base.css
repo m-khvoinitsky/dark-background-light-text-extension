@@ -17,31 +17,74 @@ html, page, window {
     color: #{default_visited_color} !important;
 }
 
-button,
-input,
-optgroup,
-select,
-textarea
+input[type="range"]
 {
-    background-color: #{default_background_color} !important;
-    opacity: 1;
-    box-shadow: 0px 0px 1pt 1pt #{default_foreground_color};
-    border-radius: 1pt;
-    color: #{default_foreground_color} !important;
-    text-shadow: #{default_background_color} 0pt 0pt 1pt,
-    #{default_background_color} 0pt 0pt 2pt,
-    #{default_background_color} 0pt 0pt 3pt,
-    #{default_background_color} 0pt 0pt 4pt,
-    #{default_background_color} 0pt 0pt 5pt,
-    #{default_background_color} 0pt 0pt 5pt,
-    #{default_background_color} 0pt 0pt 5pt !important;
+    -moz-appearance: none;
 }
 
-input,
-textarea
+button,
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+textarea,
+select,
+[contenteditable="true"]
 {
-    background-image: none!important;
+    -moz-appearance: none !important;
+    color: #{default_foreground_color} !important;
+    background-color: #{default_background_color};
+    opacity: 1;
+    border-width: 0;
+    border-radius: calc(0.2em - 1px);
+    -moz-outline-radius: 0.2em;
+    outline-width: 1px;
+    outline-style: solid;
+    outline-color: #{default_foreground_color}A0 !important;
+    transition-duration: 0.3s !important;
+    transition-property: outline-color, box-shadow !important;
 }
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="color"]):not([type="image"]):not([type="reset"]):not([type="submit"]),
+textarea,
+[contenteditable="true"] {
+    background-image: none !important;
+
+}
+
+input:focus:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="color"]):not([type="image"]):not([type="reset"]):not([type="submit"]),
+textarea:focus,
+[contenteditable="true"]:focus {
+    box-shadow: inset 0 0 0.15em 0.15em #{default_selection_color} !important;
+    outline-color: #00000000 !important;
+}
+
+button,
+input[type="button"],
+input[type="color"],
+input[type="image"],
+input[type="reset"],
+input[type="submit"],
+select {
+    box-shadow: 0 0 0.15em 0.15em #00000000 !important;
+}
+
+button:focus,
+input[type="button"]:focus,
+input[type="color"]:focus,
+input[type="image"]:focus,
+input[type="reset"]:focus,
+input[type="submit"]:focus,
+select:focus {
+    box-shadow: 0 0 0.15em 0.15em #{default_selection_color} !important;
+    outline-color: #00000000 !important;
+}
+
+select {
+    background-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="500" height="500"><path stroke="%23{default_foreground_color}" fill="transparent" stroke-width="40" d="M 100 175 L 250 350 L 400 175"/></svg>') !important;
+    background-position: right center !important;
+    background-repeat: no-repeat !important;
+    padding-right: 1em !important;
+    background-size: 1em !important;
+}
+
 
 *::-moz-selection {
     color: #{default_foreground_color} !important;

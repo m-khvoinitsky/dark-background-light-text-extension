@@ -1,95 +1,199 @@
+"use strict";
+
+function createElement(tagName, classList, id, textContent, attrs, children, properties) {
+    var element = document.createElement(tagName);
+    if (classList)
+        classList.forEach(function(className){ element.classList.add(className) });
+    if (id)
+        element.setAttribute('id', id);
+    if (textContent)
+        element.textContent = textContent;
+    if (attrs)
+        Object.keys(attrs).forEach(function (attr) {
+            element.setAttribute(attr, attrs[attr]);
+        });
+    if (children)
+        children.forEach(function (child) {
+            element.appendChild(child);
+        });
+    if (properties)
+        Object.keys(properties).forEach(function (property) {
+            element[property] = properties[property];
+        });
+    return element;
+}
+
+var methods;
+self.port.on('style', function(css){
+    var container = document.head ? document.head : document.documentElement;
+    var style = createElement('style', null, null, css);
+    if (container.firstChild)
+        container.insertBefore(style, container.firstChild);
+    else
+        container.appendChild(style);
+});
+
 self.port.on('init', function(data){
+    methods = data['methods'];
     var isTouchscreen = data['isTouchscreen'];
-    var body = document.querySelector('body');
+    var container = document.querySelector('#main');
     if (isTouchscreen)
-        body.setAttribute('class', 'touchscreen');
-    while (body.firstChild) {
-        body.removeChild(body.firstChild);
+        container.classList.add('touchscreen');
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
     }
-    var container = document.createElement('div');
-    var table = document.createElement('table');
+    container.appendChild(
+        createElement('div', ['row'], null, null, null, [
+            createElement('div', ['col-xs-12'], null, null, null, [
+                createElement('h2', null, null, 'Options')
+            ])
+        ])
+    );
     data.preferences.forEach(function(pref){
-        var tr = document.createElement('tr');
-        var td = document.createElement('td');
-        td.textContent = pref.title;
-        tr.appendChild(td);
-        td = document.createElement('td');
+        var row = createElement('div', ['row'], null, null, null, [
+            // title label
+            createElement(
+                'div',
+                pref.type === 'bool' ?
+                    ['col-xs-10', 'col-sm-4', 'col-md-4'] :
+                    ['col-xs-12', 'col-sm-12', 'col-md-4'],
+                null, null, null, [
+                    createElement('label', ['full-width'], null, pref.title, {for: 'labeled_pref_'+pref.name})
+                ]
+            )
+        ]);
+
+        // control
+        var col;
+        var id = 'labeled_pref_'+pref.name;
         switch (pref.type) {
             case 'menulist':
-                var select = document.createElement('select');
-                select.classList.add('pref_'+pref.name);
-                pref.options.forEach(function(option){
-                    var option_t = document.createElement('option');
-                    option_t.textContent = option.label;
-                    if (pref.value === parseInt(option.value))
-                        option_t.setAttribute('selected', '');
-                    select.appendChild(option_t);
-                });
-                select.onchange = function() {
-                    self.port.emit('settings-changed', {
-                        name: pref.name,
-                        value: select.selectedIndex
-                    });
-                };
-                select.setAttribute('data-pref-type', pref.type);
-                td.appendChild(select);
+                row.appendChild(
+                    createElement('div', ['col-xs-12', 'col-sm-8', 'col-md-6'], null, null, null, [
+                        createElement(
+                            'select',
+                            ['pref_'+pref.name, 'full-width', 'form-control'],
+                            id, null,
+                            { 'data-pref-type': pref.type },
+                            // children
+                            pref.options.map(function (option) {
+                                return createElement(
+                                    'option', null, null,
+                                    option.label,
+                                    (pref.value === parseInt(option.value)) ? {selected: ''} : null
+                                )
+                            }),
+                            {onchange: function(event) {
+                                self.port.emit('settings-changed', {
+                                    name: pref.name,
+                                    value: event.target.selectedIndex
+                                });
+                            }}
+                        )
+                    ])
+                );
                 break;
             case 'color':
                 ['color', 'text'].forEach(function(input_type) {
-                    var input = document.createElement('input');
-                    input.classList.add(
-                        'input_color',
-                        'input_color_' + input_type,
-                        'pref_' + pref.name
-                    );
-                    input.setAttribute('data-pref-type', pref.type);
-                    input.setAttribute('type', input_type);
-                    if (input_type === 'text')
-                        input.setAttribute('size', 7);
-                    input.value = pref.value;
-                    input.onchange = function(){
-                        //TODO: support any CSS color format // RegExp('^#(?:[\\da-fA-F]{3}){1,2}$')
-                        if (input.value.search(new RegExp('^#[\\da-fA-F]{6}$')) === 0) {
-                            self.port.emit('settings-changed', {
-                                name: pref.name,
-                                value: input.value
-                            })
-                        } else {
-                            input.value = Array.prototype.find.call(document.getElementsByClassName('pref_' + pref.name), function(node) {return node !== input}).value;
-                        }
-                    };
-                    td.appendChild(input);
+                    row.appendChild(createElement('div', ['col-xs-6', 'col-sm-4', 'col-md-3'], null, null, null, [
+                        createElement(
+                            'input',
+                            ['input_color', 'input_color_' + input_type, 'pref_' + pref.name, 'full-width', 'form-control'],
+                            (input_type === 'color') ? id : null, null,
+                            {
+                                'data-pref-type': pref.type,
+                                type: input_type
+                            }, null,
+                            {
+                                onchange: function(event){
+                                    //TODO: support any CSS color format // RegExp('^#(?:[\\da-fA-F]{3}){1,2}$')
+                                    if (event.target.value.search(new RegExp('^#[\\da-fA-F]{6}$')) === 0) {
+                                        self.port.emit('settings-changed', {
+                                            name: pref.name,
+                                            value: event.target.value
+                                        })
+                                    } else {
+                                        event.target.value = Array.prototype.find.call(document.getElementsByClassName('pref_' + pref.name), function(node) {return node !== event.target}).value;
+                                    }
+                                },
+                                value: pref.value
+                            }
+                        )
+                    ]));
                 });
                 break;
             case 'bool':
-                var input = document.createElement('input');
-                input.classList.add('pref_'+pref.name);
-                input.setAttribute('type', 'checkbox');
-                input.checked = pref.value;
-                input.onchange = function(){
-                    self.port.emit('settings-changed', {
-                        name: pref.name,
-                        value: input.checked
-                    })
-                };
-                input.setAttribute('data-pref-type', pref.type);
-                td.appendChild(input);
+                row.appendChild(
+                    createElement('div', ['col-xs-2', 'col-sm-4', 'col-md-6'], null, null, null, [
+                        createElement('input', ['pref_'+pref.name, 'full-width', 'form-control'], id, null, {
+                            type: 'checkbox',
+                            'data-pref-type': pref.type
+                        }, null, {
+                            checked: pref.value,
+                            onchange: function(event){
+                                self.port.emit('settings-changed', {
+                                    name: pref.name,
+                                    value: event.target.checked
+                                })
+                            }
+                        })
+                    ])
+                );
                 break;
         }
-        tr.appendChild(td);
-        td = document.createElement('td');
-        var button = document.createElement('button');
-        button.textContent = 'Reset';
-        button.onclick = function(){
-            self.port.emit('settings-reset', pref.name)
-        };
-        td.appendChild(button);
-        tr.appendChild(td);
-        table.appendChild(tr);
+
+        row.appendChild(
+            createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2'], null, null, null, [
+                createElement('button', ['btn', 'btn-default', 'full-width'], null, 'Reset', null, null, {
+                    onclick: function(){ self.port.emit('settings-reset', pref.name) }
+                })
+            ])
+        );
+
+        container.appendChild(row);
     });
-    container.appendChild(table);
-    body.appendChild(container);
+    container.appendChild(
+        createElement('div', ['row'], null, null, null, [
+            createElement('div', ['col-xs-12'], null, null, null, [
+                createElement('h2', null, null, 'Configured pages')
+            ])
+        ])
+    );
+    update_configured(data['configured_pages']);
 });
+function update_configured(data) {
+    let container = document.querySelector('#main');
+
+    Array.prototype.forEach.call(container.querySelectorAll('.configured_page'), function(node) {
+        node.parentNode.removeChild(node);
+    });
+    if (Object.keys(data).length === 0) {
+        container.appendChild(
+            createElement('div', ['row', 'configured_page'], null, null, null, [
+                createElement('div', ['col-xs-12'], null, 'There is no single configured page')
+            ])
+        )
+    } else
+        Object.keys(data).forEach(function (url) {
+        let method = data[url];
+        container.appendChild(
+            createElement('div', ['row', 'configured_page'], null, null, null, [
+                createElement('div', ['col-xs-12', 'col-sm-12', 'col-md-5', 'col-lg-8', 'configured_page_url'], null, url),
+                createElement('div', ['col-xs-12', 'col-sm-8', 'col-md-5', 'col-lg-2'], null, methods[method].label),
+                createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2', 'col-lg-2'], null, null, null, [
+                    createElement('button', ['btn', 'btn-default', 'full-width'], null, 'Remove', {
+                        'data-url': url
+                    }, null, {
+                        onclick: function (event) {
+                            self.port.emit('remove-configured', event.target.getAttribute('data-url'));
+                        }
+                    })
+                ])
+            ])
+        );
+    })
+}
+self.port.on('refresh-configured', update_configured);
 self.port.on('refresh', function(data){
     Array.prototype.forEach.call(document.getElementsByClassName('pref_' + data.name), function(node) {
         switch (node.getAttribute('data-pref-type')) {
