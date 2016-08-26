@@ -40,10 +40,10 @@ exports['test count_char_in_string speed'] = function(assert) {
     console.log('Execution time: ' + time);
     return assert.ok(true, 'just speed')
 };
-exports['test split_background_image speed'] = function(assert) {
+exports['test brackets_aware_split speed'] = function(assert) {
     let start = (new Date()).getTime();
     for (let i = 0; i < 1000000; i++) {
-        utils.split_background_image(
+        utils.brackets_aware_split(
             'url("../../img/icons/go-arrow.png?ad8fa66"), linear-gradient(#84C63C, #489615)'
         )
     }
