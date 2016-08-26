@@ -36,7 +36,7 @@
 }
 
 @-moz-document url(about:blank) {
-    * {
+    html {
         background-color: #{default_background_color};
     }
 }

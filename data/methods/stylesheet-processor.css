@@ -1,6 +1,6 @@
 /*TODO: some webpages set html's bgcolor to transparent which is becomes white */
 html {
-    background-color: #{default_background_color} !important;
+    background-color: #{default_background_color} {important_for_toplevel};
 }
                                                                                                 /*                  last.fm                           */
 /*[style*='background']:not(.newtab-thumbnail):not(.colorpicker-button-colorbox):not(.colorpickertile):not(.cover-image):not(.sidekick-image):not(.hero-image):not(.embed2yt-thumbnail),
