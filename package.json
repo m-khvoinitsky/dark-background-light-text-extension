@@ -7,7 +7,7 @@
   },
   "author": "Mikhail Khvoinitsky <dark-bg-light-text-mozilla@khvoinitsky.org>",
   "title": "Dark Background and Light Text",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "permissions": {
     "private-browsing": true,
     "multiprocess": true
