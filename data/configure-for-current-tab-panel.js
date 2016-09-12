@@ -1,3 +1,17 @@
+self.port.on('style', function(css){
+    var sdk_style = document.getElementById('sdk-panel-style');
+    if (sdk_style)
+        sdk_style.parentNode.removeChild(sdk_style);
+    var container = document.head ? document.head : document.documentElement;
+    var style = document.getElementById('system-style');
+    if (!style) {
+        style = document.createElement('style');
+        style.setAttribute('id', 'system-style');
+    }
+    style.textContent = css;
+    if (style.parentNode !== container)
+        container.insertBefore(style, container.firstChild);
+});
 
 self.port.on('init', function(data){
     var methods = data["methods"];
