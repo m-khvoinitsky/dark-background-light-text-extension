@@ -37,7 +37,7 @@ select,
     -moz-outline-radius: 0.2em;
     outline-width: 1px;
     outline-style: solid;
-    outline-color: #{default_foreground_color}A0 !important;
+    outline-color: #{default_foreground_color} !important;
     transition-duration: 0.3s !important;
     transition-property: outline-color, box-shadow !important;
 }
@@ -53,7 +53,7 @@ input:focus:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([
 textarea:focus,
 [contenteditable="true"]:focus {
     box-shadow: inset 0 0 0.15em 0.15em #{default_selection_color} !important;
-    outline-color: #00000000 !important;
+    outline-color: transparent !important;
 }
 
 button,
@@ -63,7 +63,7 @@ input[type="image"],
 input[type="reset"],
 input[type="submit"],
 select {
-    box-shadow: 0 0 0.15em 0.15em #00000000 !important;
+    box-shadow: 0 0 0.15em 0.15em transparent !important;
 }
 
 button:focus,
@@ -74,7 +74,7 @@ input[type="reset"]:focus,
 input[type="submit"]:focus,
 select:focus {
     box-shadow: 0 0 0.15em 0.15em #{default_selection_color} !important;
-    outline-color: #00000000 !important;
+    outline-color: transparent !important;
 }
 
 select {

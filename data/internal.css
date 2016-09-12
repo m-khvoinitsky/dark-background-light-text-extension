@@ -41,32 +41,32 @@ button {
     -moz-outline-radius: 0.2em;
     outline-width: 1px;
     outline-style: solid;
-    outline-color: #000000A0;
+    outline-color: #000000;
     background-color: white;
     transition-duration: 0.3s;
     transition-property: outline-color, box-shadow;
 }
 
 input[type="text"] {
-    box-shadow: inset 0 0 0.15em 0.15em #00000000;
+    box-shadow: inset 0 0 0.15em 0.15em transparent;
 }
 
 input[type="text"]:focus {
     box-shadow: inset 0 0 0.15em 0.15em #00A0FF !important;
-    outline-color: #00000000 !important;
+    outline-color: transparent !important;
 }
 
 select,
 input[type="color"],
 button {
-    box-shadow: 0 0 0.15em 0.15em #00000000 !important;
+    box-shadow: 0 0 0.15em 0.15em transparent !important;
 }
 
 select:focus,
 input[type="color"]:focus,
 button:focus {
     box-shadow: 0 0 0.15em 0.15em #00A0FF !important;
-    outline-color: #00000000 !important;
+    outline-color: transparent !important;
 }
 
 select {
