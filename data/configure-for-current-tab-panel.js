@@ -1,4 +1,4 @@
-self.port.on('style', function(css){
+function style(css){
     var sdk_style = document.getElementById('sdk-panel-style');
     if (sdk_style)
         sdk_style.parentNode.removeChild(sdk_style);
@@ -11,9 +11,10 @@ self.port.on('style', function(css){
     style.textContent = css;
     if (style.parentNode !== container)
         container.insertBefore(style, container.firstChild);
-});
+}
 
 self.port.on('init', function(data){
+    style(data["style"]);
     var methods = data["methods"];
     var configured = data["configured"];
     var urls = data["urls"]["list"];
