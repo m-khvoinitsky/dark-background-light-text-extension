@@ -2,12 +2,12 @@
   "license": "MIT",
   "description": "Makes every page (or only pages that you want) to have light text on dark background. Exact colors are customizable.",
   "engines": {
-    "firefox": ">=38.0",
-    "fennec": ">=38.0"
+    "firefox": ">=45.0",
+    "fennec": ">=49.0"
   },
   "author": "Mikhail Khvoinitsky <dark-bg-light-text-mozilla@khvoinitsky.org>",
   "title": "Dark Background and Light Text",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "permissions": {
     "private-browsing": true,
     "multiprocess": true
