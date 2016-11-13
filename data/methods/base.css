@@ -200,3 +200,8 @@ groupbox#dialogBox { /* about:preferences dialogs */
         background-color: black !important;
     }
 }
+
+/* https://github.com/qooob/authentic-theme radio buttons. unfortunately, there is no public available demo */
+.awradio label::after {
+    background-color: #{default_foreground_color} !important;
+}
