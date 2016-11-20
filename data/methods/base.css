@@ -205,3 +205,11 @@ groupbox#dialogBox { /* about:preferences dialogs */
 .awradio label::after {
     background-color: #{default_foreground_color} !important;
 }
+
+/* #39 */
+@-moz-document domain('blog.torproject.org') {
+    div#header, div#container {
+        background-color: #{default_background_color} !important;
+        position: relative;
+    }
+}
