@@ -1,10 +1,11 @@
 window,
 page,
-html,
+html:not(.dark-background-light-text-is-pdf-viewer),
 img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),    /* TODO: "black on transparent" mark */
 embed[type="application/x-shockwave-flash"],
 object[type="application/x-shockwave-flash"],
-video
+video,
+div#viewer.pdfViewer div.page
 {
     filter: invert(100%) hue-rotate(180deg) !important;
 }
