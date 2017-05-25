@@ -126,7 +126,9 @@ img[alt="inline_formula"],
 .mwe-math-fallback-image-inline,
 .highcharts-container /* charts, for example on https://addons.mozilla.org/en-US/firefox/addon/black-background-white-text/statistics/ */
 {
+    {if_dark_background_start}
     filter: invert(100%) hue-rotate(180deg) !important;
+    {if_dark_background_end}
 }
 
 groupbox#dialogBox { /* about:preferences dialogs */
@@ -144,12 +146,13 @@ groupbox#dialogBox { /* about:preferences dialogs */
         visibility: hidden !important;
     }
 }
+{if_dark_background_start}
 @-moz-document url-prefix("http://catalog.onliner.by/") {
     .i-checkbox__faux::before {
         filter: invert(100%);
     }
 }
-
+{if_dark_background_end}
 /* google scholar bars on right sidebar fix #8 */
 @-moz-document url-prefix("https://scholar.google.") {
     #gsc_g_bars .gsc_g_a[style*="height"] {
@@ -162,6 +165,7 @@ groupbox#dialogBox { /* about:preferences dialogs */
     /* document.querySelectorAll('.annotation-shape svg path').forEach(node => { let color = node.getAttribute('fill'); console.log(`.video-annotations .annotation-shape svg path[fill="${color}"] { fill: ${color} !important; }`)}) */
     /* TODO: proportional color change */
     /* TODO: less hardcode */
+    {if_dark_background_start}
     .video-annotations .annotation-shape svg path[fill="#fdda36"] { fill: #664627 !important; }
     .video-annotations .annotation-shape svg path[fill="#fcc228"] { fill: #664b14 !important; }
     .video-annotations .annotation-shape svg path[fill="#ffe673"] { fill: #685b2e !important; }
@@ -199,6 +203,7 @@ groupbox#dialogBox { /* about:preferences dialogs */
     .captions-text span[style*="background: rgba(255, 255, 255, 0.75)"] {
         background-color: black !important;
     }
+    {if_dark_background_end}
 }
 
 /* https://github.com/qooob/authentic-theme radio buttons. unfortunately, there is no public available demo */
