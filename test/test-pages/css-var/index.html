@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS var()</title>
+    <style>
+        :root {
+            --bg-color: #00FF00;
+            --bg-color2: #FFFF00;
+            --complicated-background: url(https://addons.cdn.mozilla.net/static/img/icons/firefox.png) repeat-x, url(https://addons.cdn.mozilla.net/static/img/app-icons/med/seamonkey.png) repeat-y, url(https://addons.cdn.mozilla.net/static/img/app-icons/med/thunderbird.png) var(--bg-color, var(--bg-color2, #00FFFF));
+        }
+        .demo-block {
+            width: 400px;
+            height: 400px;
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+<div class="demo-block" style="background: var(--complicated-background);"></div>
+</body>
+</html>
