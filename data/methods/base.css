@@ -214,10 +214,6 @@ groupbox#dialogBox { /* about:preferences dialogs */
     .video-annotations .annotation-shape svg path[fill="#7c54ae"] { fill: #7c54ae !important; }
     .video-annotations .annotation-shape svg path[fill="#afecd1"] { fill: #4d6758 !important; }
     .video-annotations .annotation-shape svg path[fill="#403e9a"] { fill: #403e9a !important; }
-
-    .captions-text span[style*="background: rgba(255, 255, 255, 0.75)"] {
-        background-color: black !important;
-    }
     {if_dark_background_end}
 }
 
