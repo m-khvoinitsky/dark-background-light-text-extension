@@ -1,3 +1,5 @@
+@namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+
 :root {
     --dark-background-light-text-add-on-foreground-color: #{default_foreground_color} !important;
 }
@@ -97,6 +99,19 @@ select {
     #{default_background_color} 0pt 0pt 5pt,
     #{default_background_color} 0pt 0pt 5pt,
     #{default_background_color} 0pt 0pt 5pt !important;
+}
+
+xul|*.checkbox-check[checked] {
+    /* modified version of chrome://global/skin/in-content/check.svg */
+    list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"><path fill="%23{default_foreground_color}" d="M 9.39,16.5 16.28,6 14.77,4.5 9.37,12.7 6.28,9.2 4.7,10.7 z"/></svg>') !important;
+}
+xul|*.radio-check[selected] {
+    /* chrome://global/skin/in-content/radio.svg */
+    list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"><circle xmlns="http://www.w3.org/2000/svg" fill="%23{default_foreground_color}" cx="10.5" cy="10.5" r="6"/></svg>') !important;
+}
+xul|menulist:not([editable="true"]) > xul|*.menulist-dropmarker {
+    /* chrome://global/skin/in-content/dropdown.svg */
+    list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path xmlns="http://www.w3.org/2000/svg" fill="%23{default_foreground_color}" d="M12,6l-4.016,4L4,6H12z"/></svg>') !important;
 }
 
 /* https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Styling_a_Tree */
