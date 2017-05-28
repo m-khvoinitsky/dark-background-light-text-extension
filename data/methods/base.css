@@ -233,3 +233,12 @@ groupbox#dialogBox { /* about:preferences dialogs */
         position: relative;
     }
 }
+
+@-moz-document domain('addons.mozilla.org') {
+    {if_dark_background_start}
+    .stars label[data-stars] {
+        background-repeat: no-repeat;
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmElEQVQY03XQXWoCQRAE4M8fNO+CQfzBI+QKPoQcWXKLBLyBiIIXcBekfemFdRwLhqKL6pqZEhEqZ1fTh16xwkfyE2rmNSbJTxgnT3varMd9vRlExHchwgj3QmsGEQE/+aSJOm747czwhUWx0OKMf0T/g6c3qVdE2cYyU++Z2Oa8qVX3mYYL9nl9i3lZXbd4xCHnPzTYdoYHwrRCbdd8fYkAAAAASUVORK5CYII=') !important;
+    }
+    {if_dark_background_end}
+}
