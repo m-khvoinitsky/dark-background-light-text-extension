@@ -15,6 +15,9 @@ module.exports = {
         'indent': [
             'error',
             4,
+            {
+                SwitchCase: 1,
+            }
         ],
         'linebreak-style': [
             'error',
@@ -33,10 +36,16 @@ module.exports = {
         ],
         'comma-dangle': [
             'error',
-            'always',
+            'always-multiline',
         ],
         'prefer-template': [
             'error',
+        ],
+        'no-unused-vars': [
+            'warn',
+        ],
+        'no-var': [
+            'warn',
         ]
     },
 };
