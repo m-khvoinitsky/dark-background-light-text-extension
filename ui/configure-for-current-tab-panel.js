@@ -1,9 +1,23 @@
 (async function() {
     query_style().catch(rej => console.exception(rej));
     let current_tab = (await browser.tabs.query({currentWindow: true, active: true}))[0];
+    let url = current_tab.url;
+
+    let message = false;
+    try {
+        await browser.tabs.executeScript(current_tab.id, {
+            code: '{}',
+        });
+    } catch (e) {
+        message = `Modification of this page is not available due to ${(await browser.runtime.getBrowserInfo()).name} restrictions`;
+    }
+    if (!message) {
+        if (url.indexOf(browser.runtime.getURL('/')) === 0)
+            message = 'Extension\'s own internal pages are already well configured';
+    }
 
     let configured = await get_merged_configured();
-    let { preselect, list:urls } = await generate_urls(current_tab.url);
+    let { preselect, list:urls } = await generate_urls(url);
     let isPrivate = current_tab.incognito;
     let enabled = (await browser.storage.local.get(prefs_keys_with_defaults)).enabled;
     let body = document.querySelector('body');
@@ -45,86 +59,93 @@
         overlay.setAttribute('class', 'disabled_overlay');
         container.appendChild(overlay);
     }
+    if (message) {
+        let msg = document.createElement('div');
+        msg.textContent = message;
+        msg.setAttribute('class', 'error_msg');
+        container.appendChild(msg);
+    } else {
+        var title = document.createElement('div');
+        title.textContent = 'Dark Background and Light Text options for:';
+        title.setAttribute('class', 'options_for');
+        container.appendChild(title);
+        var select = document.createElement('select');
+        select.id = 'url_select';
+        select.onchange = handle_choose_url;
+        for (let url in urls) {
+            var option = document.createElement('option');
+            option.textContent = urls[url];
+            if (urls[url] === preselect)
+                option.setAttribute('selected', 'true');
+            select.appendChild(option);
+        }
+        container.appendChild(select);
+        if (isPrivate) {
+            var private_note = document.createElement('div');
+            private_note.textContent = 'Note: this settings will not be saved for private tabs.';
+            container.appendChild(private_note);
+        }
+        var form_methods = document.createElement('form');
+        var ul_methods = document.createElement('ul');
+        form_methods.appendChild(ul_methods);
 
-    var title = document.createElement('div');
-    title.textContent = 'Dark Background and Light Text options for:';
-    title.setAttribute('class', 'options_for');
-    container.appendChild(title);
-    var select = document.createElement('select');
-    select.id = 'url_select';
-    select.onchange = handle_choose_url;
-    for (var url in urls){
-        var option = document.createElement('option');
-        option.textContent = urls[url];
-        if (urls[url] === preselect)
-            option.setAttribute('selected', 'true');
-        select.appendChild(option);
-    }
-    container.appendChild(select);
-    if (isPrivate){
-        var private_note = document.createElement('div');
-        private_note.textContent = 'Note: this settings will not be saved for private tabs.';
-        container.appendChild(private_note);
-    }
-    var form_methods = document.createElement('form');
-    var ul_methods = document.createElement('ul');
-    form_methods.appendChild(ul_methods);
+        var handle_method_change = function () {
+            let methods = document.querySelectorAll("input.methods");
+            let checked_method;
+            for (let i = 0; i < methods.length; ++i) {
+                if (methods[i].checked) {
+                    checked_method = methods[i];
+                    break
+                }
+            }
+            let method_n = checked_method.value;
+            let url = document.querySelector('#url_select').value;
 
-    var handle_method_change = function () {
-        let methods = document.querySelectorAll("input.methods");
-        let checked_method;
-        for (let i = 0; i < methods.length; ++i) {
-            if (methods[i].checked) {
-                checked_method = methods[i];
-                break
+            if (!isPrivate) {
+                browser.storage.local.get({configured_pages: {}}).then(data => {
+                    let {configured_pages} = data;
+                    if (method_n < 0)
+                        delete configured_pages[url];
+                    else
+                        configured_pages[url] = method_n;
+                    browser.storage.local.set({configured_pages: configured_pages});
+                }).catch(rej => console.error(rej));
+            } else {
+                browser.runtime.sendMessage({
+                    action: 'set_configured_private',
+                    key: url,
+                    value: method_n >= 0 ? method_n : null,
+                });
+            }
+        };
+
+        for (var method in methods) {
+            if (parseInt(method) > -5) {  // TODO: document it somehow? (or remove?)
+                var li = document.createElement('li');
+                var input = document.createElement('input');
+                var label = document.createElement('span');
+                var label_click = document.createElement('label');
+                input.type = 'radio';
+                input.name = 'method';
+                input.value = methods[method]['number'];
+                input.id = "method_" + methods[method]['number'];
+                input.className = "methods";
+                label.textContent = methods[method]['label'];
+                label.setAttribute('class', 'label_no_click');
+                label_click.setAttribute("for", input.id);
+                label_click.setAttribute('class', 'label_click_workaround');
+                li.appendChild(label_click);
+                li.appendChild(input);
+                li.appendChild(label);
+                input.onchange = handle_method_change;
+                ul_methods.appendChild(li);
             }
         }
-        let method_n = checked_method.value;
-        let url = document.querySelector('#url_select').value;
-
-        if (!isPrivate) {
-            browser.storage.local.get({configured_pages: {}}).then(data => {
-                let { configured_pages } = data;
-                if (method_n < 0)
-                    delete configured_pages[url];
-                else
-                    configured_pages[url] = method_n;
-                browser.storage.local.set({configured_pages: configured_pages});
-            }).catch(rej = console.error(rej));
-        } else {
-            browser.runtime.sendMessage({
-                action: 'set_configured_private',
-                key: url,
-                value: method_n >= 0 ? method_n : null,
-            });
-        }
-    };
-
-    for (var method in methods){
-        if (parseInt(method) > -5) {  // TODO: document it somehow? (or remove?)
-            var li = document.createElement('li');
-            var input = document.createElement('input');
-            var label = document.createElement('span');
-            var label_click = document.createElement('label');
-            input.type = 'radio';
-            input.name = 'method';
-            input.value = methods[method]['number'];
-            input.id = "method_" + methods[method]['number'];
-            input.className = "methods";
-            label.textContent = methods[method]['label'];
-            label.setAttribute('class', 'label_no_click');
-            label_click.setAttribute("for", input.id);
-            label_click.setAttribute('class', 'label_click_workaround');
-            li.appendChild(label_click);
-            li.appendChild(input);
-            li.appendChild(label);
-            input.onchange = handle_method_change;
-            ul_methods.appendChild(li);
-        }
+        container.appendChild(form_methods);
     }
-    container.appendChild(form_methods);
     body.appendChild(container);
-    handle_choose_url();
+    if (!message)
+        handle_choose_url();
 
     var preferences = document.createElement('div');
     var preferences_note = document.createTextNode('Configure colors, "Default" behaviour and more here: ');
