@@ -2,10 +2,15 @@
 - [ ] Internal pages still styled with add-on colors even if add-on is disabled (via internal "enable" option)
 - [ ] Instant options update
 - [ ] proper generate_urls
+  - [ ] recognize TLDs
 - [ ] clear configured_private on last private tab close
+  - [x] implementation
+  - [ ] test it
+  - [ ] browser.runtime.sendMessage seems doesn't work from browserAction popup
 - [ ] bug 1393022 workaround
   - [x] base workaround
   - [ ] resolve relative urls for CSS properties other than background(-image) (cursor, @font-face, list-style etc.)
   - [ ] proper @import parsing
     - [ ] including media
   - [ ] CSP (no inline scripts)?
+- [ ] pdf.js issues (example: https://pdfs.semanticscholar.org/48fc/8f1aa0b6d1e4266b8017820ff8770fb67b6f.pdf)
