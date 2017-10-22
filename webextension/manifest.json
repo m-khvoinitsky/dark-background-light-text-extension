@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Dark Background and Light Text",
+  "version": "0.5.14",
+  "description": "Makes every page to have light text on dark background (exact colors are customizable)",
+  "applications": {
+    "gecko": {
+      "id": "jid1-QoFqdK4qzUfGWQ@jetpack"
+    }
+  },
+  "background": {
+    "scripts": [
+      "background-script.js"
+    ]
+  },
+  "permissions": [
+    "storage"
+  ]
+}
