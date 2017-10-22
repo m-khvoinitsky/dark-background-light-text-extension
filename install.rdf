@@ -5,7 +5,7 @@
           <em:type>2</em:type>
           <em:bootstrap>true</em:bootstrap>
           <em:unpack>false</em:unpack>
-          <em:version>0.5.12</em:version>
+          <em:version>0.5.13</em:version>
           <em:name>Dark Background and Light Text</em:name>
           <em:description>Makes every page to have light text on dark background (exact colors are customizable)</em:description>
           <em:creator>Mikhail Khvoinitsky &lt;dark-bg-light-text-mozilla@khvoinitsky.org&gt;</em:creator>
@@ -34,7 +34,7 @@
             <Description>
               <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
               <em:minVersion>2.46</em:minVersion>
-              <em:maxVersion>2.*</em:maxVersion>
+              <em:maxVersion>2.55</em:maxVersion>
             </Description>
           </em:targetApplication>
 
