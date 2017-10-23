@@ -3,7 +3,6 @@
   "description": "Makes every page (or only pages that you want) to have light text on dark background. Exact colors are customizable.",
   "engines": {
     "firefox": ">=52.0",
-    "seamonkey": ">=2.49",
     "fennec": ">=55.0"
   },
   "author": "Mikhail Khvoinitsky <dark-bg-light-text-mozilla@khvoinitsky.org>",
