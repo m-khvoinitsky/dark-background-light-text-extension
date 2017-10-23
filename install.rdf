@@ -8,7 +8,7 @@
           <em:version>0.5.15</em:version>
           <em:name>Dark Background and Light Text</em:name>
           <em:description>Makes every page to have light text on dark background (exact colors are customizable)</em:description>
-          <em:creator>Mikhail Khvoinitsky &lt;dark-bg-light-text-mozilla@khvoinitsky.org&gt;</em:creator>
+          <em:creator>Mikhail Khvoinitsky &lt;dark-bg-light-text-seamonkey@khvoinitsky.org&gt;</em:creator>
           <em:optionsURL>resource://ktborporoqokbkzzjjqwqtncooifjm-at-jetpack/data/preferences.html</em:optionsURL>
           <em:optionsType>3</em:optionsType>
           <em:multiprocessCompatible>true</em:multiprocessCompatible>
