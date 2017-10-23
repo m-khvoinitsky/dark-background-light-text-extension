@@ -1,5 +1,5 @@
 {
-  "license": "MIT",
+  "license": "MPL-2.0",
   "description": "Makes every page (or only pages that you want) to have light text on dark background. Exact colors are customizable.",
   "engines": {
     "seamonkey": ">=2.46"
