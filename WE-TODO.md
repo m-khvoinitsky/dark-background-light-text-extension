@@ -1,6 +1,6 @@
 - [x] No custom css loaded in browserAction popup → popup buttons & select is styled wrong. Fixed by relying on base.css variables
 - [ ] Internal pages still styled with add-on colors even if add-on is disabled (via internal "enable" option)
-- [ ] Instant options update
+- [x] Instant options update
 - [ ] proper generate_urls
   - [ ] recognize TLDs
 - [ ] clear configured_private on last private tab close
