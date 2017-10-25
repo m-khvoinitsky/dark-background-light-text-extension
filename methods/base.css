@@ -10,7 +10,9 @@
 }
 
 html, page, window {
+{if_toplevel_start}
   background-color: #{default_background_color};
+{if_toplevel_end}
   color: #{default_foreground_color};
   /* background-image: none !important; */
 }
