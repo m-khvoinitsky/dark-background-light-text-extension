@@ -12,5 +12,5 @@
   - [ ] resolve relative urls for CSS properties other than background(-image) (cursor, @font-face, list-style etc.)
   - [ ] proper @import parsing
     - [ ] including media
-  - [ ] CSP (no inline scripts)?
+  - [x] CSP (no inline stylesheets)
 - [ ] pdf.js issues (example: https://pdfs.semanticscholar.org/48fc/8f1aa0b6d1e4266b8017820ff8770fb67b6f.pdf)

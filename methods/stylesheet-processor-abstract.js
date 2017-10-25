@@ -100,7 +100,7 @@ const getPath = str => /(?:url\()(?:.*?)(?:\))|(["'])(?:[^"')]+)\1/ig.exec(str)[
 //     console.log(`url is: ${url}`);
 // }
 
-async function fetch_and_insert_stylesheet(url, rel_to, media) {
+async function fetch_and_insert_stylesheet(url, rel_to, target) {
     // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1393022
     // TODO: resolve relative urls for CSS properties other than background(-image) (cursor, @font-face, list-style etc.)
 
@@ -111,19 +111,29 @@ async function fetch_and_insert_stylesheet(url, rel_to, media) {
         for (let rule_str of import_rules) {
             //TODO: use correct media rules
             //parse_at_import_rule(rule_str);
+            let link = document.createElement('link');
+            link.setAttribute('data-is-imported', 'true');
+            link.setAttribute('rel', 'stylesheet');
+            link.href = 'data:text/css,';
+            // TODO: link.setAttribute('media')
+            target.parentNode.insertBefore(link, target);
             fetch_and_insert_stylesheet(
                 getPath(rule_str),
-                url_obj
+                url_obj,
+                link,
             ).catch(error => console.error(error));
         }
         css = css.replace(import_rule_re, '');
     }
+    // reusing original node to
+    // 1. preserve order of stylesheet
+    //    (it matters because cascading depends on it and some websites break if it doesn't honored)
+    // 2. use data:url instead of inline <style> allows to avoid CSP issues if inline scripts are forbidden
+    // TODO: remove 'integrity' attribute, verify it first?
+    target.setAttribute('data-original-href', url);
+    target.href = `data:text/css,${encodeURIComponent(css)}`;
 
-    let style = document.createElement('style');
-    style.innerText = css;
-    style.setAttribute('data-original-href', url_obj.href);
-    document.head.appendChild(style);
-    console.log('Worked around');
+    console.log('Worked around', target);
 }
 
 class StylesheetProcessorAbstract {
@@ -180,23 +190,20 @@ class StylesheetProcessorAbstract {
         if (!light) { // "light unloading" (used in case when document is about to be destroyed)
             let inline_override_stylesheet = this.window.document.getElementById(inline_override_stylesheet_id);
             inline_override_stylesheet && inline_override_stylesheet.parentNode.removeChild(inline_override_stylesheet);
-            Array.prototype.forEach.call(this.window.document.styleSheets, sheet => {
-                let { ownerNode } = sheet;
-                if (ownerNode.href) {
-                    let orighref = ownerNode.href;
-                    ownerNode.href = 'about:blank';
-                    ownerNode.href = orighref;
-                } else if (ownerNode.textContent) {
-                    let css = ownerNode.textContent;
-                    ownerNode.textContent = '';
-                    ownerNode.textContent = css;
+            let ownerNodes = Array.prototype.map.call(this.window.document.styleSheets, sheet => sheet.ownerNode);
+            ownerNodes.forEach(ownerNode => {
+                if (ownerNode.hasAttribute('data-is-imported')) {
+                    ownerNode.parentNode.removeChild(ownerNode);
                 } else {
-                    console.log('unhandled stylesheet reload');
-                    console.log(ownerNode, ownerNode.tagName);
+                    let parentNode = ownerNode.parentNode;
+                    let insertBefore = ownerNode.nextSibling;
+                    parentNode.removeChild(ownerNode);
+                    if (ownerNode.hasAttribute('data-original-href')) {
+                        ownerNode.setAttribute('href', ownerNode.getAttribute('data-original-href'));
+                        ownerNode.removeAttribute('data-original-href');
+                    }
+                    parentNode.insertBefore(ownerNode, insertBefore);
                 }
-                // next way works faster, but some race condition exists. TODO: investigate it
-                /*parentNode.removeChild(ownerNode);
-                 parentNode.appendChild(ownerNode);*/
             });
             Array.prototype.forEach.call(
                 this.window.document.querySelectorAll(this.style_selector),
@@ -270,12 +277,12 @@ class StylesheetProcessorAbstract {
             console.error(e);
             console.log(CSSStyleSheet_v);
             if (e.name === 'SecurityError') {
-                // TODO: !!!!!!! do something about
-                CSSStyleSheet_v.ownerNode.parentNode.removeChild(CSSStyleSheet_v.ownerNode);
                 fetch_and_insert_stylesheet(
                     CSSStyleSheet_v.href,
-                    document.documentURI
-                ).catch(error => console.error(error));
+                    document.documentURI,
+                    CSSStyleSheet_v.ownerNode,
+                ).catch(rejection => console.error(rejection));
+                CSSStyleSheet_v.ownerNode.setAttribute('href', 'data:text/css,');
             }
             return false;
         }
