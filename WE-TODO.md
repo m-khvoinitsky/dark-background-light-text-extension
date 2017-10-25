@@ -3,10 +3,10 @@
 - [x] Instant options update
 - [ ] proper generate_urls
   - [ ] recognize TLDs
-- [ ] clear configured_private on last private tab close
+- [x] clear configured_private on last private tab close
   - [x] implementation
-  - [ ] test it
-  - [ ] browser.runtime.sendMessage seems doesn't work from browserAction popup
+  - [x] test it
+  - [x] ~~browser.runtime.sendMessage seems doesn't work from browserAction popup~~ it works, also, use tabs.sendMessage to send something _to content scripts_
 - [ ] bug 1393022 workaround
   - [x] base workaround
   - [ ] resolve relative urls for CSS properties other than background(-image) (cursor, @font-face, list-style etc.)
