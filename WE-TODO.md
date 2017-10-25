@@ -13,7 +13,7 @@
   - [ ] proper @import parsing
     - [ ] including media
   - [x] CSP (no inline stylesheets)
-- [ ] pdf.js issues (example: https://pdfs.semanticscholar.org/48fc/8f1aa0b6d1e4266b8017820ff8770fb67b6f.pdf)
+- [x] pdf.js issues (example: https://pdfs.semanticscholar.org/48fc/8f1aa0b6d1e4266b8017820ff8770fb67b6f.pdf)
 - [ ] clean up on unload (currently impossible: `runtime.onSuspend` is not implemented in Firefox)
 - [ ] load into all tabs on load
 - [ ] detect bad settings and ask user to fix
