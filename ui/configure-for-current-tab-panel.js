@@ -19,7 +19,7 @@
     let configured = await get_merged_configured();
     let { preselect, list:urls } = await generate_urls(url);
     let isPrivate = current_tab.incognito;
-    let enabled = (await browser.storage.local.get(prefs_keys_with_defaults)).enabled;
+    let enabled = await get_prefs('enabled');
     let body = document.querySelector('body');
     if ((await browser.runtime.getPlatformInfo()).os === 'android')
         body.setAttribute('class', 'touchscreen');
@@ -42,9 +42,7 @@
     let checkbox = document.createElement('input');
     checkbox.setAttribute('type', 'checkbox');
     checkbox.checked = enabled;
-    checkbox.onchange = function(){
-        browser.storage.local.set({enabled: checkbox.checked});
-    };
+    checkbox.onchange = () => { set_pref('enabled', checkbox.checked); window.close(); };
     checkbox_label.appendChild(checkbox);
     body.appendChild(checkbox_label);
 
@@ -89,7 +87,7 @@
         var ul_methods = document.createElement('ul');
         form_methods.appendChild(ul_methods);
 
-        var handle_method_change = function () {
+        var handle_method_change = async function () {
             let methods = document.querySelectorAll("input.methods");
             let checked_method;
             for (let i = 0; i < methods.length; ++i) {
@@ -102,14 +100,12 @@
             let url = document.querySelector('#url_select').value;
 
             if (!isPrivate) {
-                browser.storage.local.get({configured_pages: {}}).then(data => {
-                    let {configured_pages} = data;
-                    if (method_n < 0)
-                        delete configured_pages[url];
-                    else
-                        configured_pages[url] = method_n;
-                    browser.storage.local.set({configured_pages: configured_pages});
-                }).catch(rej => console.error(rej));
+                let configured_pages = await get_prefs('configured_pages');
+                if (method_n < 0)
+                    delete configured_pages[url];
+                else
+                    configured_pages[url] = method_n;
+                await set_pref('configured_pages', configured_pages);
             } else {
                 browser.runtime.sendMessage({
                     action: 'set_configured_private',
@@ -117,6 +113,7 @@
                     value: method_n >= 0 ? method_n : null,
                 });
             }
+            window.close();
         };
 
         for (var method in methods) {
@@ -154,7 +151,7 @@
     var prefs_button = document.createElement('button');
     prefs_button.setAttribute('icon', 'properties');
     prefs_button.textContent = 'Global Preferences';
-    prefs_button.onclick = () => browser.runtime.openOptionsPage();
+    prefs_button.onclick = () => { browser.runtime.openOptionsPage(); window.close(); };
     preferences.appendChild(prefs_button);
 
     body.appendChild(preferences);

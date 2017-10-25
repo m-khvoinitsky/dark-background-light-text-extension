@@ -26,11 +26,11 @@ function createElement(tagName, classList, id, textContent, attrs, children, pro
 async function update_all() {
     query_style().catch(rej => console.exception(rej));
     //TODO: separate configured pages refresh (see commented code below)
-    let saved_prefs = await browser.storage.local.get(prefs_keys_with_defaults);
+    let saved_prefs = await get_prefs();
     let isTouchscreen = (await browser.runtime.getPlatformInfo()).os === 'android';
     let container = document.querySelector('#main');
     let current_preferences = preferences.map(pref => Object.assign({}, pref, {
-        value: saved_prefs[pref.name]
+        value: saved_prefs[pref.name],
     }));
     if (isTouchscreen)
         container.classList.add('touchscreen');
@@ -81,7 +81,7 @@ async function update_all() {
                                 )
                             }),
                             {onchange: function(event) {
-                                browser.storage.local.set({[pref.name]: event.target.selectedIndex});
+                                set_pref(pref.name, event.target.selectedIndex);
                             }}
                         )
                     ])
@@ -102,7 +102,7 @@ async function update_all() {
                                 onchange: function(event){
                                     //TODO: support any CSS color format // RegExp('^#(?:[\\da-fA-F]{3}){1,2}$')
                                     if (event.target.value.search(new RegExp('^#[\\da-fA-F]{6}$')) === 0) {
-                                        browser.storage.local.set({[pref.name]: event.target.value});
+                                        set_pref(pref.name, event.target.value);
                                     } else {
                                         event.target.value = Array.prototype.find.call(document.getElementsByClassName('pref_' + pref.name), function(node) {return node !== event.target}).value;
                                     }
@@ -122,7 +122,7 @@ async function update_all() {
                         }, null, {
                             checked: pref.value,
                             onchange: function(event){
-                                browser.storage.local.set({[pref.name]: event.target.checked});
+                                set_pref(pref.name, event.target.checked);
                             }
                         })
                     ])
@@ -133,7 +133,7 @@ async function update_all() {
         row.appendChild(
             createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2'], null, null, null, [
                 createElement('button', ['btn', 'btn-default', 'full-width'], null, 'Reset', null, null, {
-                    onclick: function(){ browser.storage.local.remove(pref.name) }
+                    onclick: () => set_pref(pref.name, prefs_keys_with_defaults[pref.name]),
                 })
             ])
         );
@@ -160,28 +160,28 @@ function update_configured(data) {
             createElement('div', ['row', 'configured_page'], null, null, null, [
                 createElement('div', ['col-xs-12'], null, 'There is no single configured page')
             ])
-        )
+        );
     } else
         Object.keys(data).forEach(function (url) {
-        let method = data[url];
-        container.appendChild(
-            createElement('div', ['row', 'configured_page'], null, null, null, [
-                createElement('div', ['col-xs-12', 'col-sm-12', 'col-md-5', 'col-lg-8', 'configured_page_url'], null, url),
-                createElement('div', ['col-xs-12', 'col-sm-8', 'col-md-5', 'col-lg-2'], null, methods[method].label),
-                createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2', 'col-lg-2'], null, null, null, [
-                    createElement('button', ['btn', 'btn-default', 'full-width'], null, 'Remove', {
-                        'data-url': url
-                    }, null, {
-                        onclick: async function (event) {
-                            let configured = (await browser.storage.local.get({configured_pages: {}})).configured_pages;
-                            delete configured[event.target.getAttribute('data-url')];
-                            browser.storage.local.set({configured_pages: configured});
-                        }
-                    })
+            let method = data[url];
+            container.appendChild(
+                createElement('div', ['row', 'configured_page'], null, null, null, [
+                    createElement('div', ['col-xs-12', 'col-sm-12', 'col-md-5', 'col-lg-8', 'configured_page_url'], null, url),
+                    createElement('div', ['col-xs-12', 'col-sm-8', 'col-md-5', 'col-lg-2'], null, methods[method].label),
+                    createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2', 'col-lg-2'], null, null, null, [
+                        createElement('button', ['btn', 'btn-default', 'full-width'], null, 'Remove', {
+                            'data-url': url,
+                        }, null, {
+                            onclick: async function (event) {
+                                let configured = await get_prefs('configured_pages');
+                                delete configured[event.target.getAttribute('data-url')];
+                                set_pref('configured_pages', configured);
+                            },
+                        }),
+                    ]),
                 ])
-            ])
-        );
-    })
+            );
+        });
 }
 // self.port.on('refresh-configured', update_configured);
 
