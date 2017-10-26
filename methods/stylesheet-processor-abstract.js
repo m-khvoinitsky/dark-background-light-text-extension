@@ -33,72 +33,72 @@ const import_rule_re = new RegExp('@import.*;', 'g');
 
 //TODO: rewrite it!!!!!
 const getPath = str => /(?:url\()(?:.*?)(?:\))|(["'])(?:[^"')]+)\1/ig.exec(str)[0]
-	.replace(/(?:url\()/ig, '')
-	.replace(/(?:\))/g, '')
-	.replace(/(?:["'])/g, '')
+    .replace(/(?:url\()/ig, '')
+    .replace(/(?:\))/g, '')
+    .replace(/(?:["'])/g, '')
     .trim();
-
-const at_import = '@import';
-function parse_quotedstring(s) {
-
-}
-function parse_at_import_rule(at_import_rule) {
-    at_import_rule = at_import_rule.trim();
-    // remove leading '@import' and trailing ';'
-    at_import_rule = at_import_rule.substring(
-        at_import_rule.indexOf(at_import) === 0 ? at_import.length : 0,
-        at_import_rule.indexOf(';') + 1 === at_import_rule.length ? at_import_rule.length - 1 : at_import_rule.length
-    ).trim();
-
-    let url;
-    let media_queries_str;
-
-    if (at_import_rule.indexOf('url(') === 0) {
-        let splitted = brackets_aware_split(at_import_rule, ' ');
-        url = splitted.shift();
-        url = url.substring(4, url.length - 1);
-        media_queries_str = splitted.join(' ');
-    }
-
-    if (at_import_rule[0] === '"' || at_import_rule[0] === "'") {
-        let splitted = brackets_aware_split(at_import_rule, ' ');
-        url = splitted.shift();
-        media_queries_str = splitted.join(' ');
-    } else if (at_import_rule[0] === '"' || at_import_rule[0] === "'") {
-
-    } else {
-        let splitted = at_import_rule.split(' ');
-        url = splitted.shift();
-        media_queries_str = splitted.join(' ');
-    }
-
-    let in_brackets = false;
-    let in_singlequotes = false;
-    let in_doublequotes = false;
-    let escape_char = false;
-    let url = '';
-    for (let c of at_import_rule) {
-        if (in_singlequotes || in_doublequotes) {
-            if (escape_char) {
-                url += c;
-                escape_char = false;
-            } else if (c === '\\')
-                escape_char = true;
-            else if (in_singlequotes && c === "'")
-                in_singlequotes = false;
-            else if (in_doublequotes && c === '"')
-                in_doublequotes = false;
-            else
-                url += c;
-        } else if (c === '"')
-            in_doublequotes = true;
-        else if (c === "'")
-            in_singlequotes = true;
-        else
-            url += c;
-    }
-    console.log(`url is: ${url}`);
-}
+//
+// const at_import = '@import';
+// function parse_quotedstring(s) {
+//
+// }
+// function parse_at_import_rule(at_import_rule) {
+//     at_import_rule = at_import_rule.trim();
+//     // remove leading '@import' and trailing ';'
+//     at_import_rule = at_import_rule.substring(
+//         at_import_rule.indexOf(at_import) === 0 ? at_import.length : 0,
+//         at_import_rule.indexOf(';') + 1 === at_import_rule.length ? at_import_rule.length - 1 : at_import_rule.length
+//     ).trim();
+//
+//     let url;
+//     let media_queries_str;
+//
+//     if (at_import_rule.indexOf('url(') === 0) {
+//         let splitted = brackets_aware_split(at_import_rule, ' ');
+//         url = splitted.shift();
+//         url = url.substring(4, url.length - 1);
+//         media_queries_str = splitted.join(' ');
+//     }
+//
+//     if (at_import_rule[0] === '"' || at_import_rule[0] === "'") {
+//         let splitted = brackets_aware_split(at_import_rule, ' ');
+//         url = splitted.shift();
+//         media_queries_str = splitted.join(' ');
+//     } else if (at_import_rule[0] === '"' || at_import_rule[0] === "'") {
+//
+//     } else {
+//         let splitted = at_import_rule.split(' ');
+//         url = splitted.shift();
+//         media_queries_str = splitted.join(' ');
+//     }
+//
+//     let in_brackets = false;
+//     let in_singlequotes = false;
+//     let in_doublequotes = false;
+//     let escape_char = false;
+//     url = '';
+//     for (let c of at_import_rule) {
+//         if (in_singlequotes || in_doublequotes) {
+//             if (escape_char) {
+//                 url += c;
+//                 escape_char = false;
+//             } else if (c === '\\')
+//                 escape_char = true;
+//             else if (in_singlequotes && c === "'")
+//                 in_singlequotes = false;
+//             else if (in_doublequotes && c === '"')
+//                 in_doublequotes = false;
+//             else
+//                 url += c;
+//         } else if (c === '"')
+//             in_doublequotes = true;
+//         else if (c === "'")
+//             in_singlequotes = true;
+//         else
+//             url += c;
+//     }
+//     console.log(`url is: ${url}`);
+// }
 
 async function fetch_and_insert_stylesheet(url, rel_to, media) {
     // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1393022
@@ -110,7 +110,7 @@ async function fetch_and_insert_stylesheet(url, rel_to, media) {
     if (import_rules) {
         for (let rule_str of import_rules) {
             //TODO: use correct media rules
-            parse_at_import_rule(rule_str);
+            //parse_at_import_rule(rule_str);
             fetch_and_insert_stylesheet(
                 getPath(rule_str),
                 url_obj
