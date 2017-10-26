@@ -1,31 +1,30 @@
-browser.runtime.sendMessage({'action': 'init browserAction'}).then(data => {
-    var methods = data["methods"];
-    var configured = data["configured"];
-    var urls = data["urls"]["list"];
-    var preselect = data["urls"]["preselect"];
-    var isPrivate = data["isPrivate"];
-    var isTouchscreen = data['isTouchscreen'];
-    var enabled = data['enabled'];
-    var body = document.querySelector('body');
-    if (isTouchscreen)
+(async function() {
+    let current_tab = (await browser.tabs.query({currentWindow: true, active: true}))[0];
+
+    let configured = await get_merged_configured();
+    let { preselect, list:urls } = await generate_urls(current_tab.url);
+    let isPrivate = current_tab.incognito;
+    let enabled = (await browser.storage.local.get(prefs_keys_with_defaults)).enabled;
+    let body = document.querySelector('body');
+    if ((await browser.runtime.getPlatformInfo()).os === 'android')
         body.setAttribute('class', 'touchscreen');
 
     while (body.firstChild) {
         body.removeChild(body.firstChild);
     }
 
-    var handle_choose_url = function(){
-        var current_url_method = configured[document.querySelector('#url_select').value];
+    function handle_choose_url(){
+        let current_url_method = configured[document.querySelector('#url_select').value];
         if (current_url_method)
-            document.querySelector("#method_"+current_url_method).checked = true;
+            document.querySelector(`#method_${current_url_method}`).checked = true;
         else
-            document.querySelector("#method_-1").checked = true;
-    };
+            document.querySelector('#method_-1').checked = true;
+    }
 
-    var checkbox_label = document.createElement('label');
+    let checkbox_label = document.createElement('label');
     checkbox_label.setAttribute('class', 'enabled_label');
     checkbox_label.textContent = 'Enabled';
-    var checkbox = document.createElement('input');
+    let checkbox = document.createElement('input');
     checkbox.setAttribute('type', 'checkbox');
     checkbox.checked = enabled;
     checkbox.onchange = function(){
@@ -71,20 +70,33 @@ browser.runtime.sendMessage({'action': 'init browserAction'}).then(data => {
     form_methods.appendChild(ul_methods);
 
     var handle_method_change = function () {
-        var methods = document.querySelectorAll("input.methods");
-        var checked_method;
-        for (var i = 0; i < methods.length; ++i)
-            if (methods[i].checked)
-            {
+        let methods = document.querySelectorAll("input.methods");
+        let checked_method;
+        for (let i = 0; i < methods.length; ++i) {
+            if (methods[i].checked) {
                 checked_method = methods[i];
                 break
             }
-        browser.runtime.sendMessage({
-            'action': 'settings-changed',
-            "url": document.querySelector('#url_select').value,
-            "method": checked_method.value,
-            "isPrivate": isPrivate
-        });
+        }
+        let method_n = checked_method.value;
+        let url = document.querySelector('#url_select').value;
+
+        if (!isPrivate) {
+            browser.storage.local.get({configured_pages: {}}).then(data => {
+                let { configured_pages } = data;
+                if (method_n < 0)
+                    delete configured_pages[url];
+                else
+                    configured_pages[url] = method_n;
+                browser.storage.local.set({configured_pages: configured_pages});
+            }).catch(rej = console.error(rej));
+        } else {
+            browser.runtime.sendMessage({
+                action: 'set_configured_private',
+                key: url,
+                value: method_n >= 0 ? method_n : null,
+            });
+        }
     };
 
     for (var method in methods){
@@ -124,4 +136,4 @@ browser.runtime.sendMessage({'action': 'init browserAction'}).then(data => {
     preferences.appendChild(prefs_button);
 
     body.appendChild(preferences);
-});
+})().catch(rejection => console.error(rejection));

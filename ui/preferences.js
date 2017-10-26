@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 function createElement(tagName, classList, id, textContent, attrs, children, properties) {
-    var element = document.createElement(tagName);
+    let element = document.createElement(tagName);
     if (classList)
         classList.forEach(function(className){ element.classList.add(className) });
     if (id)
@@ -23,21 +23,14 @@ function createElement(tagName, classList, id, textContent, attrs, children, pro
     return element;
 }
 
-var methods;
 async function update_all() {
     //TODO: separate configured pages refresh (see commented code below)
-    //TODO: make it better
-    methods = await browser.runtime.sendMessage({action: 'get_methods'});
-    let saved_prefs = await browser.storage.local.get(
-        await browser.runtime.sendMessage({action: 'get_prefs_keys_with_defaults'})
-    );
-    let default_prefs = await browser.runtime.sendMessage({action: 'get_prefs'});
-    let preferences = default_prefs.map(pref => {
-        pref['value'] = saved_prefs[pref.name];
-        return pref;
-    });
-    let isTouchscreen = (await browser.runtime.getPlatformInfo()).os === "android";
+    let saved_prefs = await browser.storage.local.get(prefs_keys_with_defaults);
+    let isTouchscreen = (await browser.runtime.getPlatformInfo()).os === 'android';
     let container = document.querySelector('#main');
+    let current_preferences = preferences.map(pref => Object.assign({}, pref, {
+        value: saved_prefs[pref.name]
+    }));
     if (isTouchscreen)
         container.classList.add('touchscreen');
     while (container.firstChild) {
@@ -50,10 +43,10 @@ async function update_all() {
             ])
         ])
     );
-    preferences.forEach(function(pref){
+    current_preferences.forEach(function(pref){
         if (pref.name === 'configured_pages')
             return;
-        var row = createElement('div', ['row'], null, null, null, [
+        let row = createElement('div', ['row'], null, null, null, [
             // title label
             createElement(
                 'div',
@@ -61,14 +54,14 @@ async function update_all() {
                     ['col-xs-10', 'col-sm-4', 'col-md-4'] :
                     ['col-xs-12', 'col-sm-12', 'col-md-4'],
                 null, null, null, [
-                    createElement('label', ['full-width'], null, pref.title, {for: 'labeled_pref_'+pref.name})
+                    createElement('label', ['full-width'], null, pref.title, {for: `labeled_pref_${pref.name}`})
                 ]
             )
         ]);
 
         // control
         var col;
-        var id = 'labeled_pref_'+pref.name;
+        var id = `labeled_pref_${pref.name}`;
         switch (pref.type) {
             case 'menulist':
                 row.appendChild(
