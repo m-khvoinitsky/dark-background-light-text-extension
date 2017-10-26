@@ -16,7 +16,7 @@
       "matches": ["<all_urls>"],
       "js": [
         "webextension-polyfill/dist/browser-polyfill.min.js",
-        "css-color-parser-js/csscolorparser.js",
+        "css-color-parser/csscolorparser.js",
         "get_acceptable_range.js",
         "color_utils.js",
         "methods/stylesheet-processor-abstract.js",
@@ -31,7 +31,7 @@
   "background": {
     "scripts": [
       "webextension-polyfill/dist/browser-polyfill.min.js",
-      "css-color-parser-js/csscolorparser.js",
+      "css-color-parser/csscolorparser.js",
       "color_utils.js",
       "background-script.js"
     ]
