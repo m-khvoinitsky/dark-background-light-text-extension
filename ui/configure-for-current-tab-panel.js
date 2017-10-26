@@ -1,4 +1,5 @@
 (async function() {
+    query_style().catch(rej => console.exception(rej));
     let current_tab = (await browser.tabs.query({currentWindow: true, active: true}))[0];
 
     let configured = await get_merged_configured();

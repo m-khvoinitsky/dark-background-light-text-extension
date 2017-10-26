@@ -2,6 +2,11 @@
 
 :root {
     --dark-background-light-text-add-on-foreground-color: #{default_foreground_color} !important;
+    --dark-background-light-text-add-on-background-color: #{default_background_color} !important;
+    --dark-background-light-text-add-on-link-color: #{default_link_color} !important;
+    --dark-background-light-text-add-on-visited-color: #{default_visited_color} !important;
+    --dark-background-light-text-add-on-active-color: #{default_active_color} !important;
+    --dark-background-light-text-add-on-selection-color: #{default_selection_color} !important;
 }
 
 html, page, window {

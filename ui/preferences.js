@@ -24,6 +24,7 @@ function createElement(tagName, classList, id, textContent, attrs, children, pro
 }
 
 async function update_all() {
+    query_style().catch(rej => console.exception(rej));
     //TODO: separate configured pages refresh (see commented code below)
     let saved_prefs = await browser.storage.local.get(prefs_keys_with_defaults);
     let isTouchscreen = (await browser.runtime.getPlatformInfo()).os === 'android';

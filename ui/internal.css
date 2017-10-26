@@ -1,10 +1,16 @@
 :root {
     --dark-background-light-text-add-on-foreground-color: black;
+    --dark-background-light-text-add-on-background-color: white;
+    --dark-background-light-text-add-on-link-color: #0000FF; /*TODO: better default colors */
+    --dark-background-light-text-add-on-visited-color: #A000A0;
+    --dark-background-light-text-add-on-active-color: #FF0000;
+    --dark-background-light-text-add-on-selection-color: #8080FF;
 }
 
 html, body {
-    color: #000000;
-    background-color: #FFFFFF;
+    font: caption;
+    color: var(--dark-background-light-text-add-on-foreground-color);
+    background-color: var(--dark-background-light-text-add-on-background-color);
 }
 
 input,
@@ -35,7 +41,7 @@ input[type="color"],
 input[type="text"],
 button {
     -moz-appearance: none;
-    color: black;
+    color: var(--dark-background-light-text-add-on-foreground-color);
     font-size: 1em;
     line-height: 1.2em;
     padding: 0.5em 0.5em;
@@ -44,7 +50,7 @@ button {
     /* similar selector from base.css has higher specificity and should overwrite color below but it doesn't (bug?) */
     border-color: var(--dark-background-light-text-add-on-foreground-color);
     border-style: solid;
-    background-color: white;
+    background-color: var(--dark-background-light-text-add-on-background-color);
     transition-duration: 0.3s;
     transition-property: border-color, box-shadow;
 }
@@ -54,8 +60,8 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-    box-shadow: inset 0 0 0.15em 0.15em #00A0FF !important;
-    border-color: #00A0FF !important;
+    box-shadow: inset 0 0 0.15em 0.15em var(--dark-background-light-text-add-on-selection-color) !important;
+    border-color: var(--dark-background-light-text-add-on-selection-color) !important;
 }
 
 select,
@@ -67,8 +73,8 @@ button {
 select:focus,
 input[type="color"]:focus,
 button:focus {
-    box-shadow: 0 0 0.15em 0.15em #00A0FF !important;
-    border-color: #00A0FF !important;
+    box-shadow: 0 0 0.15em 0.15em var(--dark-background-light-text-add-on-selection-color) !important;
+    border-color: var(--dark-background-light-text-add-on-selection-color) !important;
 }
 
 select {
