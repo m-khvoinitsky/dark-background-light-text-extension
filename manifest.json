@@ -1,0 +1,61 @@
+{
+  "manifest_version": 2,
+  "name": "Dark Background and Light Text",
+  "version": "0.6.0",
+  "description": "Makes every page to have light text on dark background (exact colors are customizable)",
+  "icons": {
+    "48": "icons/icon48.png"
+  },
+  "applications": {
+    "gecko": {
+      "id": "jid1-QoFqdK4qzUfGWQ@jetpack"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "webextension-polyfill/dist/browser-polyfill.min.js",
+        "css-color-parser-js/csscolorparser.js",
+        "get_acceptable_range.js",
+        "color_utils.js",
+        "methods/stylesheet-processor-abstract.js",
+        "methods/stylesheet-color-processor.js",
+        "content-script.js"
+      ],
+      "run_at": "document_start",
+      "match_about_blank": false,
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "scripts": [
+      "webextension-polyfill/dist/browser-polyfill.min.js",
+      "css-color-parser-js/csscolorparser.js",
+      "color_utils.js",
+      "background-script.js"
+    ]
+  },
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "24": "icons/icon24.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "64": "icons/icon64.png"
+    },
+    "default_title": "Dark Background and Light Text",
+    "default_popup": "ui/configure-for-current-tab-panel.html"
+  },
+  "options_ui": {
+    "page": "ui/preferences.html",
+    "browser_style": true,
+    "open_in_tab": true
+  },
+  "permissions": [
+    "<all_urls>",
+    "tabs",
+    "storage"
+  ]
+}

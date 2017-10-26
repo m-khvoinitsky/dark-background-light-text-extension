@@ -1,3 +1,6 @@
 [submodule "lib/css-color-parser"]
 	path = lib/css-color-parser
 	url = https://github.com/deanm/css-color-parser-js.git
+[submodule "lib/webextension-polyfill"]
+	path = lib/webextension-polyfill
+	url = https://github.com/mozilla/webextension-polyfill.git

@@ -1,10 +1,5 @@
 "use strict";
 
-var { setTimeout } = require("sdk/timers");
-// TODO: http://www.ecma-international.org/ecma-262/6.0/ — very slow
-// FIXED: http://www.wsj.com/articles/why-apple-should-kill-off-the-mac-1434321848 — bad colors
-// WORKS: http://www.opennet.ru/opennews/art.shtml?num=42453 — bad color, again
-
 const count_char_in_string = (char, str) => {
     let count = 0;
     for (let index = 0; index < str.length; index++)
@@ -30,7 +25,6 @@ const brackets_aware_split = (value, separator) => {
     }
     return result;
 };
-exports.brackets_aware_split = brackets_aware_split;
 
 const inline_override_stylesheet_id = 'dark-background-light-text-add-on-inline-style-override';
 const quote_re = new RegExp('"', 'g');
@@ -267,5 +261,3 @@ class StylesheetProcessorAbstract {
         throw new Error('unimplemented');
     }
 }
-
-exports.StylesheetProcessorAbstract = StylesheetProcessorAbstract;

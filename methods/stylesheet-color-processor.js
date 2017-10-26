@@ -1,20 +1,5 @@
 "use strict";
 
-/*
- * Problem sites
- * http://russian.joelonsoftware.com/Articles/BacktoBasics.html FIXED
- * http://www.opennet.ru/opennews/art.shtml?num=37736 FIXED
- * https://davdroid.bitfire.at/what-is-davdroid FIXED added site-special fix, remove bg-image if no-repeat too
- * http://www.dylanbeattie.net/docs/openssl_iis_ssl_howto.html FIXED
- * https://etherpad.mozilla.org/ammo-community-042815
- * http://joyreactor.cc/post/2116903 - hover comments
- * darkest text colors: #9DB8C7 (http://linz.by/)
- * */
-
-
-const { StylesheetProcessorAbstract, brackets_aware_split } = require('./stylesheet-processor-abstract');
-const { parseCSSColor } = require('../css-color-parser/csscolorparser');
-const color_utils = require('../color_utils');
 const parse_text_shadow = (value) => {
     let color_index;
     let splitted = brackets_aware_split(value, ' ');
@@ -107,12 +92,12 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         super(window, options, '[style*="color"], [style*="background"]');
         let default_foreground_color = parseCSSColor(this.options.default_foreground_color);
         let default_background_color = parseCSSColor(this.options.default_background_color);
-        let is_dark_background = color_utils.relative_luminance(default_background_color) < color_utils.relative_luminance(default_foreground_color);
+        let is_dark_background = relative_luminance(default_background_color) < relative_luminance(default_foreground_color);
         let default_colors = is_dark_background ?
             {default_light_color: default_foreground_color, default_dark_color: default_background_color} :
             {default_light_color: default_background_color, default_dark_color: default_foreground_color};
-        this.backgroundify_color = color_array => color_utils.lighten_or_darken_color(color_array, is_dark_background, default_colors);
-        this.foregroundify_color = color_array => color_utils.lighten_or_darken_color(color_array, !is_dark_background, default_colors);
+        this.backgroundify_color = color_array => lighten_or_darken_color(color_array, is_dark_background, default_colors);
+        this.foregroundify_color = color_array => lighten_or_darken_color(color_array, !is_dark_background, default_colors);
 
         this.var_name_postfix = '-dark-background-light-text-add-on-';
         this.rename_var_fg = var_name => `${var_name}${this.var_name_postfix}fg`;
@@ -357,5 +342,3 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         return [bg_image];
     }
 }
-
-exports.StylesheetColorProcessor = StylesheetColorProcessor;

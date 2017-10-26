@@ -24,19 +24,20 @@ function createElement(tagName, classList, id, textContent, attrs, children, pro
 }
 
 var methods;
-self.port.on('style', function(css){
-    var container = document.head ? document.head : document.documentElement;
-    var style = createElement('style', null, null, css);
-    if (container.firstChild)
-        container.insertBefore(style, container.firstChild);
-    else
-        container.appendChild(style);
-});
-
-self.port.on('init', function(data){
-    methods = data['methods'];
-    var isTouchscreen = data['isTouchscreen'];
-    var container = document.querySelector('#main');
+async function update_all() {
+    //TODO: separate configured pages refresh (see commented code below)
+    //TODO: make it better
+    methods = await browser.runtime.sendMessage({action: 'get_methods'});
+    let saved_prefs = await browser.storage.local.get(
+        await browser.runtime.sendMessage({action: 'get_prefs_keys_with_defaults'})
+    );
+    let default_prefs = await browser.runtime.sendMessage({action: 'get_prefs'});
+    let preferences = default_prefs.map(pref => {
+        pref['value'] = saved_prefs[pref.name];
+        return pref;
+    });
+    let isTouchscreen = (await browser.runtime.getPlatformInfo()).os === "android";
+    let container = document.querySelector('#main');
     if (isTouchscreen)
         container.classList.add('touchscreen');
     while (container.firstChild) {
@@ -49,7 +50,9 @@ self.port.on('init', function(data){
             ])
         ])
     );
-    data.preferences.forEach(function(pref){
+    preferences.forEach(function(pref){
+        if (pref.name === 'configured_pages')
+            return;
         var row = createElement('div', ['row'], null, null, null, [
             // title label
             createElement(
@@ -84,10 +87,7 @@ self.port.on('init', function(data){
                                 )
                             }),
                             {onchange: function(event) {
-                                self.port.emit('settings-changed', {
-                                    name: pref.name,
-                                    value: event.target.selectedIndex
-                                });
+                                browser.storage.local.set({[pref.name]: event.target.selectedIndex});
                             }}
                         )
                     ])
@@ -108,10 +108,7 @@ self.port.on('init', function(data){
                                 onchange: function(event){
                                     //TODO: support any CSS color format // RegExp('^#(?:[\\da-fA-F]{3}){1,2}$')
                                     if (event.target.value.search(new RegExp('^#[\\da-fA-F]{6}$')) === 0) {
-                                        self.port.emit('settings-changed', {
-                                            name: pref.name,
-                                            value: event.target.value
-                                        })
+                                        browser.storage.local.set({[pref.name]: event.target.value});
                                     } else {
                                         event.target.value = Array.prototype.find.call(document.getElementsByClassName('pref_' + pref.name), function(node) {return node !== event.target}).value;
                                     }
@@ -131,10 +128,7 @@ self.port.on('init', function(data){
                         }, null, {
                             checked: pref.value,
                             onchange: function(event){
-                                self.port.emit('settings-changed', {
-                                    name: pref.name,
-                                    value: event.target.checked
-                                })
+                                browser.storage.local.set({[pref.name]: event.target.checked});
                             }
                         })
                     ])
@@ -145,7 +139,7 @@ self.port.on('init', function(data){
         row.appendChild(
             createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2'], null, null, null, [
                 createElement('button', ['btn', 'btn-default', 'full-width'], null, 'Reset', null, null, {
-                    onclick: function(){ self.port.emit('settings-reset', pref.name) }
+                    onclick: function(){ browser.storage.local.remove(pref.name) }
                 })
             ])
         );
@@ -159,8 +153,8 @@ self.port.on('init', function(data){
             ])
         ])
     );
-    update_configured(data['configured_pages']);
-});
+    update_configured(saved_prefs['configured_pages']);
+}
 function update_configured(data) {
     let container = document.querySelector('#main');
 
@@ -184,8 +178,10 @@ function update_configured(data) {
                     createElement('button', ['btn', 'btn-default', 'full-width'], null, 'Remove', {
                         'data-url': url
                     }, null, {
-                        onclick: function (event) {
-                            self.port.emit('remove-configured', event.target.getAttribute('data-url'));
+                        onclick: async function (event) {
+                            let configured = (await browser.storage.local.get({configured_pages: {}})).configured_pages;
+                            delete configured[event.target.getAttribute('data-url')];
+                            browser.storage.local.set({configured_pages: configured});
                         }
                     })
                 ])
@@ -193,19 +189,22 @@ function update_configured(data) {
         );
     })
 }
-self.port.on('refresh-configured', update_configured);
-self.port.on('refresh', function(data){
-    Array.prototype.forEach.call(document.getElementsByClassName('pref_' + data.name), function(node) {
-        switch (node.getAttribute('data-pref-type')) {
-            case 'menulist':
-                node.selectedIndex = data.value;
-                break;
-            case 'color':
-                node.value = data.value;
-                break;
-            case 'bool':
-                node.checked = data.value;
-                break;
-        }
-    });
-});
+// self.port.on('refresh-configured', update_configured);
+
+// self.port.on('refresh', function(data){
+//     Array.prototype.forEach.call(document.getElementsByClassName('pref_' + data.name), function(node) {
+//         switch (node.getAttribute('data-pref-type')) {
+//             case 'menulist':
+//                 node.selectedIndex = data.value;
+//                 break;
+//             case 'color':
+//                 node.value = data.value;
+//                 break;
+//             case 'bool':
+//                 node.checked = data.value;
+//                 break;
+//         }
+//     });
+// });
+browser.storage.onChanged.addListener(update_all);
+update_all();

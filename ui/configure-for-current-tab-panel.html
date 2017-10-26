@@ -5,7 +5,7 @@
     <title>Dark bg & Light text settings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta content="">
-    <link rel="icon" type="image/png" href="icon64.png" />
+    <link rel="icon" type="image/png" href="../icons/icon64.png" />
     <link rel="stylesheet" href="internal.css" />
     <style>
         html, body
@@ -124,14 +124,17 @@
             margin-bottom: 3pt;
         }
     </style>
-    <script type="text/javascript">
-        window.setTimeout(function(){
-            var placeholder = document.getElementById('loading-or-error-placeholder');
-            if (placeholder) {
-                placeholder.textContent = 'Error. You should not see this';
-            }
-        }, 3000);
-    </script>
+    <!--<script type="text/javascript">-->
+        <!--//WETODO: fix this-->
+        <!--window.setTimeout(function(){-->
+            <!--var placeholder = document.getElementById('loading-or-error-placeholder');-->
+            <!--if (placeholder) {-->
+                <!--placeholder.textContent = 'Error. You should not see this';-->
+            <!--}-->
+        <!--}, 3000);-->
+    <!--</script>-->
+    <script src="../webextension-polyfill/dist/browser-polyfill.min.js"></script>
+    <script src="configure-for-current-tab-panel.js"></script>
 </head>
 <body>
 <h2 id="loading-or-error-placeholder">Loading...</h2>

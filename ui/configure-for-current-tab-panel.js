@@ -1,20 +1,4 @@
-function style(css){
-    var sdk_style = document.getElementById('sdk-panel-style');
-    if (sdk_style)
-        sdk_style.parentNode.removeChild(sdk_style);
-    var container = document.head ? document.head : document.documentElement;
-    var style = document.getElementById('system-style');
-    if (!style) {
-        style = document.createElement('style');
-        style.setAttribute('id', 'system-style');
-    }
-    style.textContent = css;
-    if (style.parentNode !== container)
-        container.insertBefore(style, container.firstChild);
-}
-
-self.port.on('init', function(data){
-    style(data["style"]);
+browser.runtime.sendMessage({'action': 'init browserAction'}).then(data => {
     var methods = data["methods"];
     var configured = data["configured"];
     var urls = data["urls"]["list"];
@@ -45,7 +29,7 @@ self.port.on('init', function(data){
     checkbox.setAttribute('type', 'checkbox');
     checkbox.checked = enabled;
     checkbox.onchange = function(){
-        self.port.emit('enabled-change', checkbox.checked);
+        browser.storage.local.set({enabled: checkbox.checked});
     };
     checkbox_label.appendChild(checkbox);
     body.appendChild(checkbox_label);
@@ -95,7 +79,8 @@ self.port.on('init', function(data){
                 checked_method = methods[i];
                 break
             }
-        self.port.emit('settings-changed', {
+        browser.runtime.sendMessage({
+            'action': 'settings-changed',
             "url": document.querySelector('#url_select').value,
             "method": checked_method.value,
             "isPrivate": isPrivate
@@ -135,7 +120,7 @@ self.port.on('init', function(data){
     var prefs_button = document.createElement('button');
     prefs_button.setAttribute('icon', 'properties');
     prefs_button.textContent = 'Global Preferences';
-    prefs_button.onclick = function() {self.port.emit('open-preferences')};
+    prefs_button.onclick = () => browser.runtime.openOptionsPage();
     preferences.appendChild(prefs_button);
 
     body.appendChild(preferences);
