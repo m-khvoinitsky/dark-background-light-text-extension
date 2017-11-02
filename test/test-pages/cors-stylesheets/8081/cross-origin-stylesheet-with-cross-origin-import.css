@@ -1,0 +1,7 @@
+@import "http://[::1]:8083/imported-from-cross-origin.css" (min-width: 600px);
+
+#cross-origin-stylesheet-with-cross-origin-import {
+    color: #007000;
+    background-color: #A0A0FF;
+    background-image: url("icon.svg");
+}

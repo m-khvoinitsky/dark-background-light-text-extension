@@ -1,0 +1,14 @@
+@font-face {
+  font-family: 'umgsfdxynf';
+  font-style: normal;
+  font-weight: 400;                              /* based on https://github.com/jonathantneal/system-font-css/blob/gh-pages/system-font.css */
+  src: url("IndieFlower.woff2") format('woff2'), local(".SFNSText-Regular"), local(".HelveticaNeueDeskInterface-Regular"), local(".LucidaGrandeUI"), local("Segoe UI"), local("Ubuntu"), local("Roboto-Regular"), local("DroidSans"), local("Tahoma");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+#imported-from-inline {
+    color: #007000;
+    background-color: #A0A0FF;
+    background-image: url("icon.svg");
+    font-family: 'umgsfdxynf', cursive;
+}

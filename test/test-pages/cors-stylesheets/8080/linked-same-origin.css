@@ -1,0 +1,7 @@
+@import "http://[::1]:8081/cross-origin-import-from-same-origin-linked.css";
+
+#linked-same-origin {
+    color: #007000;
+    background-color: #A0A0FF;
+    background-image: url("icon.svg");
+}
