@@ -1,6 +1,6 @@
 html {
+/* some webpages set html's bgcolor to transparent which is becomes white so it should be !important */
 {if_toplevel_start}
-    /* some webpages set html's bgcolor to transparent which is becomes white so it should be !important */
     background-color: #{default_background_color} !important;
 {if_toplevel_end}
     color: #{default_foreground_color} !important; /* #29 */
