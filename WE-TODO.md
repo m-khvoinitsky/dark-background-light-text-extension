@@ -9,10 +9,14 @@
   - [x] ~~browser.runtime.sendMessage seems doesn't work from browserAction popup~~ it works, also, use tabs.sendMessage to send something _to content scripts_
 - [ ] bug 1393022 workaround
   - [x] base workaround
-  - [ ] resolve relative urls for CSS properties other than background(-image) (cursor, @font-face, list-style etc.)
-  - [ ] proper @import parsing
-    - [ ] including media
-  - [x] CSP (no inline stylesheets)
+  - [ ] resolve relative urls for CSS properties
+    - [x] background(-image)
+    - [ ] @font-face
+    - [ ] list-style
+    - [ ] cursor
+    - [ ] anything else?
+  - [ ] CSP (use inline stylesheets when data: urls are forbidden and vice-versa)
+  - [x] foreign imports in inline stylesheet
 - [x] pdf.js issues (example: https://pdfs.semanticscholar.org/48fc/8f1aa0b6d1e4266b8017820ff8770fb67b6f.pdf)
 - [ ] clean up on unload (currently impossible: `runtime.onSuspend` is not implemented in Firefox)
 - [ ] load into all tabs on load

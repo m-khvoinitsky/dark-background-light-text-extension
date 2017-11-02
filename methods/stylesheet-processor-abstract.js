@@ -29,112 +29,6 @@ const brackets_aware_split = (value, separator) => {
 const inline_override_stylesheet_id = 'dark-background-light-text-add-on-inline-style-override';
 const quote_re = new RegExp('"', 'g');
 const important_re = new RegExp('!important;', 'g');
-const import_rule_re = new RegExp('@import.*;', 'g');
-
-//TODO: rewrite it!!!!!
-const getPath = str => /(?:url\()(?:.*?)(?:\))|(["'])(?:[^"')]+)\1/ig.exec(str)[0]
-    .replace(/(?:url\()/ig, '')
-    .replace(/(?:\))/g, '')
-    .replace(/(?:["'])/g, '')
-    .trim();
-//
-// const at_import = '@import';
-// function parse_quotedstring(s) {
-//
-// }
-// function parse_at_import_rule(at_import_rule) {
-//     at_import_rule = at_import_rule.trim();
-//     // remove leading '@import' and trailing ';'
-//     at_import_rule = at_import_rule.substring(
-//         at_import_rule.indexOf(at_import) === 0 ? at_import.length : 0,
-//         at_import_rule.indexOf(';') + 1 === at_import_rule.length ? at_import_rule.length - 1 : at_import_rule.length
-//     ).trim();
-//
-//     let url;
-//     let media_queries_str;
-//
-//     if (at_import_rule.indexOf('url(') === 0) {
-//         let splitted = brackets_aware_split(at_import_rule, ' ');
-//         url = splitted.shift();
-//         url = url.substring(4, url.length - 1);
-//         media_queries_str = splitted.join(' ');
-//     }
-//
-//     if (at_import_rule[0] === '"' || at_import_rule[0] === "'") {
-//         let splitted = brackets_aware_split(at_import_rule, ' ');
-//         url = splitted.shift();
-//         media_queries_str = splitted.join(' ');
-//     } else if (at_import_rule[0] === '"' || at_import_rule[0] === "'") {
-//
-//     } else {
-//         let splitted = at_import_rule.split(' ');
-//         url = splitted.shift();
-//         media_queries_str = splitted.join(' ');
-//     }
-//
-//     let in_brackets = false;
-//     let in_singlequotes = false;
-//     let in_doublequotes = false;
-//     let escape_char = false;
-//     url = '';
-//     for (let c of at_import_rule) {
-//         if (in_singlequotes || in_doublequotes) {
-//             if (escape_char) {
-//                 url += c;
-//                 escape_char = false;
-//             } else if (c === '\\')
-//                 escape_char = true;
-//             else if (in_singlequotes && c === "'")
-//                 in_singlequotes = false;
-//             else if (in_doublequotes && c === '"')
-//                 in_doublequotes = false;
-//             else
-//                 url += c;
-//         } else if (c === '"')
-//             in_doublequotes = true;
-//         else if (c === "'")
-//             in_singlequotes = true;
-//         else
-//             url += c;
-//     }
-//     console.log(`url is: ${url}`);
-// }
-
-async function fetch_and_insert_stylesheet(url, rel_to, target) {
-    // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1393022
-    // TODO: resolve relative urls for CSS properties other than background(-image) (cursor, @font-face, list-style etc.)
-
-    let url_obj = new URL(url, rel_to);
-    let css = await (await fetch(url_obj)).text();
-    let import_rules = css.match(import_rule_re);
-    if (import_rules) {
-        for (let rule_str of import_rules) {
-            //TODO: use correct media rules
-            //parse_at_import_rule(rule_str);
-            let link = document.createElement('link');
-            link.setAttribute('data-is-imported', 'true');
-            link.setAttribute('rel', 'stylesheet');
-            link.href = 'data:text/css,';
-            // TODO: link.setAttribute('media')
-            target.parentNode.insertBefore(link, target);
-            fetch_and_insert_stylesheet(
-                getPath(rule_str),
-                url_obj,
-                link,
-            ).catch(error => console.error(error));
-        }
-        css = css.replace(import_rule_re, '');
-    }
-    // reusing original node to
-    // 1. preserve order of stylesheet
-    //    (it matters because cascading depends on it and some websites break if it doesn't honored)
-    // 2. use data:url instead of inline <style> allows to avoid CSP issues if inline scripts are forbidden
-    // TODO: remove 'integrity' attribute, verify it first?
-    target.setAttribute('data-original-href', url);
-    target.href = `data:text/css,${encodeURIComponent(css)}`;
-
-    console.log('Worked around', target);
-}
 
 class StylesheetProcessorAbstract {
     constructor(window, options, style_selector) {
@@ -142,6 +36,7 @@ class StylesheetProcessorAbstract {
         this.url = window.document.documentURI;
         this.processed_stylesheets = new WeakMap();
         this.processed_htmlelements = new WeakMap();
+        this.workaround_requested = new WeakSet();
         this.style_selector = (!!style_selector) ? style_selector : '[style]';
         function process_MO_record(record) {
             if (
@@ -216,7 +111,7 @@ class StylesheetProcessorAbstract {
             )
         }
     }
-    process() {
+    process(no_schedule) {
         //TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=839103
         //
         if (this.stop)
@@ -242,10 +137,11 @@ class StylesheetProcessorAbstract {
 
         Array.prototype.forEach.call(this.window.document.styleSheets, sheet => {
             if (!this.processed_stylesheets.has(sheet) && sheet !== this.inline_override) {
-                if (this.process_CSSStyleSheet(sheet))
+                let process_result = this.process_CSSStyleSheet(sheet);
+                if (process_result === true)
                     this.processed_stylesheets.set(sheet, sheet.cssRules.length);
                 else
-                    console.log(["fail!!!!", sheet]);
+                    console.error('process_CSSStyleSheet error, reason:', process_result, sheet);
             }
         });
         Array.prototype.forEach.call(
@@ -260,39 +156,86 @@ class StylesheetProcessorAbstract {
                 }
             }
         );
+        if (no_schedule !== true)
+            if (!(this.window.document.hidden) || (this.window.document.readyState !== 'complete'))
+                setTimeout(() => this.process(), this.window.document.readyState !== 'complete' ? 100 : 1000);
+    }
+    static find_ancestor_ownerNode(stylesheet) {
+        let { ownerNode, ownerRule } = stylesheet;
+        if (ownerNode)
+            return ownerNode;
+        if (ownerRule)
+            return this.find_ancestor_ownerNode(ownerRule.parentStyleSheet);
+    }
+    async workaround_stylesheet(stylesheet, rel_to) {
+        // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1393022
+        // TODO: resolve relative urls for CSS properties other than background(-image) and @font-face (cursor, list-style etc.)
+        if (this.workaround_requested.has(stylesheet))
+            return;
+        this.workaround_requested.add(stylesheet);
+        let original_url = stylesheet.href;
+        let { ownerNode, ownerRule } = stylesheet;
 
-        if (!(this.window.document.hidden) || (this.window.document.readyState !== 'complete'))
-            setTimeout(() => this.process(), this.window.document.readyState !== 'complete' ? 100 : 1000);
+        let target_node;
+        if (ownerNode) {
+            target_node = ownerNode;
+            ownerNode.setAttribute('href', 'data:text/css,');
+        } else if (ownerRule) {
+            // if we make this in place, process_CSSRule iteration below will skip next rule
+            setTimeout(() => ownerRule.parentStyleSheet.deleteRule(ownerRule), 0);
+
+            // TODO: media!!!
+            let link = this.window.document.createElement('link');
+            link.setAttribute('rel', 'stylesheet');
+            link.setAttribute('data-is-imported', 'true');
+            link.setAttribute('media', ownerRule.media.mediaText);
+            target_node = link;
+            let real_owner_node = this.constructor.find_ancestor_ownerNode(stylesheet);
+            real_owner_node.parentNode.insertBefore(link, real_owner_node);
+        } else
+            console.error('something else?', stylesheet);
+
+        let url_obj = new URL(stylesheet.href, rel_to);
+        let css = await (await fetch(url_obj)).text();
+        // reusing original node to preserve order of stylesheet (it matters because cascading depends on it and some websites break if it doesn't honored)
+
+        let new_url = `data:text/css,${encodeURIComponent(css)}`;
+
+        target_node.setAttribute('data-original-href', original_url); // TODO!
+        target_node.setAttribute('data-relative-to', url_obj.href);
+        target_node.addEventListener('load', () => {
+            this.process(true);
+            // let sheet = Array.prototype.find.call(this.window.document.styleSheets, sheet => sheet.ownerNode && sheet.ownerNode === target_node);
+            // this.process_CSSStyleSheet(sheet, url_obj.href);
+        });
+        target_node.setAttribute('href', new_url);
     }
     process_CSSStyleSheet(CSSStyleSheet_v, base_url) {
         if (this.stop)
-            return false;
-        try {
-            if (CSSStyleSheet_v.cssRules === null) // access to .cssRules will throw in Firefox
-                throw {name: 'SecurityError'} // for chrome
-        } catch (e) {
-            // weird shit, but it happens
-            // it seems that such stylesheet just not yet ready
-            // TODO: will be great to know it exactly
-            console.error(e);
-            console.log(CSSStyleSheet_v);
-            if (e.name === 'SecurityError') {
-                fetch_and_insert_stylesheet(
-                    CSSStyleSheet_v.href,
-                    document.documentURI,
-                    CSSStyleSheet_v.ownerNode,
-                ).catch(rejection => console.error(rejection));
-                CSSStyleSheet_v.ownerNode.setAttribute('href', 'data:text/css,');
-            }
-            return false;
-        }
+            return 'stop';
         if (!base_url) {
-            if (CSSStyleSheet_v.href && CSSStyleSheet_v.href.indexOf('data:') !== 0)
+            if (CSSStyleSheet_v.ownerNode && CSSStyleSheet_v.ownerNode.hasAttribute('data-relative-to'))
+                base_url = CSSStyleSheet_v.ownerNode.getAttribute('data-relative-to');
+            else if (CSSStyleSheet_v.href && CSSStyleSheet_v.href.indexOf('data:') !== 0)
                 base_url = new URL(CSSStyleSheet_v.href, document.documentURI).href;
-            else if (CSSStyleSheet_v.ownerNode && CSSStyleSheet_v.ownerNode.hasAttribute('data-original-href'))
-                base_url = CSSStyleSheet_v.ownerNode.getAttribute('data-original-href');
             else
                 base_url = document.documentURI;
+        }
+        try {
+            if (CSSStyleSheet_v.cssRules === null) // access to .cssRules will throw in Firefox
+                throw {name: 'SecurityError'}; // for chrome
+        } catch (e) {
+            if (e.name === 'SecurityError') {
+                this.workaround_stylesheet(CSSStyleSheet_v, base_url).catch(rejection => console.error(rejection));
+                return 'bug 1393022';
+            }
+            else if (e.name === 'InvalidAccessError') {
+                // Chromium doesn't create stylesheet object for not loaded stylesheets
+                console.error('stylesheet isn\'t loaded yet. TODO: add watcher?', CSSStyleSheet_v);
+                return 'not ready';
+            } else
+                console.error('something really went wrong!', e, CSSStyleSheet_v);
+            return e;
         }
         Array.prototype.forEach.call(CSSStyleSheet_v.cssRules, rule => {
             this.process_CSSRule(rule, base_url);

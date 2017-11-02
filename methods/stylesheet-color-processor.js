@@ -290,9 +290,7 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
             url = url.trim();
             if (url.indexOf('"') === 0 && url.lastIndexOf('"') === (url.length - 1))
                 url = url.slice(1, url.length - 1);
-            console.log(url);
             url = new URL(url, base_url).href;
-            console.log(url);
             if (intersect(remove_background_image, [url, selector])) {
                 return ['none'];
             // yep, facebook-only fix (/rsrc.php/), it's too risky to apply it everywhere
