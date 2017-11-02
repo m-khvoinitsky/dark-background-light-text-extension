@@ -11,7 +11,7 @@
   - [x] base workaround
   - [ ] resolve relative urls for CSS properties
     - [x] background(-image)
-    - [ ] @font-face
+    - [x] @font-face
     - [ ] list-style
     - [ ] cursor
     - [ ] anything else?

@@ -237,12 +237,12 @@ class StylesheetProcessorAbstract {
                 console.error('something really went wrong!', e, CSSStyleSheet_v);
             return e;
         }
-        Array.prototype.forEach.call(CSSStyleSheet_v.cssRules, rule => {
-            this.process_CSSRule(rule, base_url);
+        Array.prototype.forEach.call(CSSStyleSheet_v.cssRules, (rule, index) => {
+            this.process_CSSRule(rule, index, base_url);
         });
         return true;
     }
-    process_CSSRule(CSSRule_v, base_url) {
+    process_CSSRule(CSSRule_v, index, base_url) {
         if (this.stop)
             return;
         switch (CSSRule_v.type) {
@@ -257,6 +257,31 @@ class StylesheetProcessorAbstract {
                 //this.process_CSSMediaRule(CSSRule_v);
                 this.process_CSSStyleSheet(CSSRule_v, base_url);
                 break;
+            case 5: // CSSRule.FONT_FACE_RULE
+                this.process_CSSFontFaceRule(CSSRule_v, index, base_url);
+                break;
+        }
+    }
+    process_CSSFontFaceRule(CSSFontFaceRule_v, index, base_url) {
+        let current = CSSFontFaceRule_v;
+        let current_index = index;
+        if (current.style.getPropertyValue('src')) {
+            let parent = current.parentStyleSheet;
+            let splitted = brackets_aware_split(current.cssText, ' ');
+            splitted = splitted.map(part => {
+                if (part.indexOf('url(') === 0) {
+                    let url = part.slice(part.indexOf('(') + 1, part.lastIndexOf(')')).trim();
+                    if (url.indexOf('"') === 0 && url.lastIndexOf('"') === (url.length - 1))
+                        url = url.slice(1, url.length - 1);
+                    url = new URL(url, base_url).href;
+                    return `url("${url}")`;
+                } else
+                    return part;
+            });
+            setTimeout(() => {
+                parent.deleteRule(current);
+                parent.insertRule(splitted.join(' '), current_index);
+            }, 0);
         }
     }
     process_CSSStyleRule(CSSStyleRule_v, base_url) {
