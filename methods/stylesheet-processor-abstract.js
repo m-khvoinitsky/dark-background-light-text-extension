@@ -97,6 +97,9 @@ class StylesheetProcessorAbstract {
                         ownerNode.setAttribute('href', ownerNode.getAttribute('data-original-href'));
                         ownerNode.removeAttribute('data-original-href');
                     }
+                    if (ownerNode.hasAttribute('data-relative-to')) {
+                        ownerNode.removeAttribute('data-relative-to');
+                    }
                     parentNode.insertBefore(ownerNode, insertBefore);
                 }
             });
@@ -140,8 +143,8 @@ class StylesheetProcessorAbstract {
                 let process_result = this.process_CSSStyleSheet(sheet);
                 if (process_result === true)
                     this.processed_stylesheets.set(sheet, sheet.cssRules.length);
-                else
-                    console.error('process_CSSStyleSheet error, reason:', process_result, sheet);
+                // else
+                //     console.error('process_CSSStyleSheet error, reason:', process_result, sheet);
             }
         });
         Array.prototype.forEach.call(
@@ -231,7 +234,9 @@ class StylesheetProcessorAbstract {
             }
             else if (e.name === 'InvalidAccessError') {
                 // Chromium doesn't create stylesheet object for not loaded stylesheets
-                console.error('stylesheet isn\'t loaded yet. TODO: add watcher?', CSSStyleSheet_v);
+                // console.error('stylesheet isn\'t loaded yet. TODO: add watcher?', CSSStyleSheet_v);
+                // if (CSSStyleSheet_v.ownerNode)
+                //     CSSStyleSheet_v.ownerNode.addEventListener('load', () => this.process(true));
                 return 'not ready';
             } else
                 console.error('something really went wrong!', e, CSSStyleSheet_v);
