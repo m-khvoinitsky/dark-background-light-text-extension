@@ -37,6 +37,7 @@ class StylesheetProcessorAbstract {
         this.processed_stylesheets = new WeakMap();
         this.processed_htmlelements = new WeakMap();
         this.workaround_requested = new WeakSet();
+        this.broken_stylesheets = new WeakSet();
         this.style_selector = (!!style_selector) ? style_selector : '[style]';
         function process_MO_record(record) {
             if (
@@ -139,7 +140,7 @@ class StylesheetProcessorAbstract {
         }*/
 
         Array.prototype.forEach.call(this.window.document.styleSheets, sheet => {
-            if (!this.processed_stylesheets.has(sheet) && sheet !== this.inline_override) {
+            if (!this.processed_stylesheets.has(sheet) && sheet !== this.inline_override && !this.broken_stylesheets.has(sheet)) {
                 let process_result = this.process_CSSStyleSheet(sheet);
                 if (process_result === true)
                     this.processed_stylesheets.set(sheet, sheet.cssRules.length);
@@ -179,15 +180,25 @@ class StylesheetProcessorAbstract {
         let original_url = stylesheet.href;
         let { ownerNode, ownerRule } = stylesheet;
 
+        let url_obj = new URL(stylesheet.href, rel_to);
+        let new_url;
+        try {
+            let css = await (await fetch(url_obj)).text();
+            new_url = `data:text/css,${encodeURIComponent(css)}`;
+        } catch (e) {
+            console.error('inaccessible for fetch() stylesheet', stylesheet);
+            this.broken_stylesheets.add(stylesheet);
+            return;
+        }
+
         let target_node;
+        // reusing original node to preserve order of stylesheets (it matters because cascading depends on it and some websites break if it doesn't preserved)
         if (ownerNode) {
             target_node = ownerNode;
-            ownerNode.setAttribute('href', 'data:text/css,');
         } else if (ownerRule) {
             // if we make this in place, process_CSSRule iteration below will skip next rule
             setTimeout(() => ownerRule.parentStyleSheet.deleteRule(ownerRule), 0);
 
-            // TODO: media!!!
             let link = this.window.document.createElement('link');
             link.setAttribute('rel', 'stylesheet');
             link.setAttribute('data-is-imported', 'true');
@@ -198,19 +209,9 @@ class StylesheetProcessorAbstract {
         } else
             console.error('something else?', stylesheet);
 
-        let url_obj = new URL(stylesheet.href, rel_to);
-        let css = await (await fetch(url_obj)).text();
-        // reusing original node to preserve order of stylesheet (it matters because cascading depends on it and some websites break if it doesn't honored)
-
-        let new_url = `data:text/css,${encodeURIComponent(css)}`;
-
-        target_node.setAttribute('data-original-href', original_url); // TODO!
+        target_node.setAttribute('data-original-href', original_url);
         target_node.setAttribute('data-relative-to', url_obj.href);
-        target_node.addEventListener('load', () => {
-            this.process(true);
-            // let sheet = Array.prototype.find.call(this.window.document.styleSheets, sheet => sheet.ownerNode && sheet.ownerNode === target_node);
-            // this.process_CSSStyleSheet(sheet, url_obj.href);
-        });
+        target_node.addEventListener('load', () => this.process(true), {once: true});
         target_node.setAttribute('href', new_url);
     }
     process_CSSStyleSheet(CSSStyleSheet_v, base_url) {
@@ -236,7 +237,7 @@ class StylesheetProcessorAbstract {
                 // Chromium doesn't create stylesheet object for not loaded stylesheets
                 // console.error('stylesheet isn\'t loaded yet. TODO: add watcher?', CSSStyleSheet_v);
                 // if (CSSStyleSheet_v.ownerNode)
-                //     CSSStyleSheet_v.ownerNode.addEventListener('load', () => this.process(true));
+                //     CSSStyleSheet_v.ownerNode.addEventListener('load', () => this.process(true), {once: true});
                 return 'not ready';
             } else
                 console.error('something really went wrong!', e, CSSStyleSheet_v);
