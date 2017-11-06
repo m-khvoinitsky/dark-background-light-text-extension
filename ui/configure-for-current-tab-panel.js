@@ -7,6 +7,7 @@
     try {
         await browser.tabs.executeScript(current_tab.id, {
             code: '{}',
+            runAt: 'document_start',
         });
     } catch (e) {
         message = `Modification of this page is not available due to ${(await browser.runtime.getBrowserInfo()).name} restrictions`;
