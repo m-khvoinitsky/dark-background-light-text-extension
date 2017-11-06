@@ -158,7 +158,7 @@
     var prefs_button = document.createElement('button');
     prefs_button.setAttribute('icon', 'properties');
     prefs_button.textContent = 'Global Preferences';
-    prefs_button.onclick = () => { browser.runtime.openOptionsPage(); window.close(); };
+    prefs_button.onclick = () => { /* see bug 1414917 */ browser.runtime.sendMessage({action: 'open_options_page'}); close(); };
     preferences.appendChild(prefs_button);
 
     body.appendChild(preferences);
