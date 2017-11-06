@@ -28,6 +28,17 @@ async function update_all() {
     //TODO: separate configured pages refresh (see commented code below)
     let saved_prefs = await get_prefs();
     let isTouchscreen = (await browser.runtime.getPlatformInfo()).os === 'android';
+    if (document.readyState === 'loading') {
+        let at_least_interactive = new Promise((resolve, reject) => {
+            function readystatechange(event) {
+                if (event.target.readyState !== 'loading')
+                    resolve();
+            }
+            document.addEventListener('readystatechange', readystatechange);
+            readystatechange({target: document});
+        });
+        await at_least_interactive;
+    }
     let container = document.querySelector('#main');
     let current_preferences = preferences.map(pref => Object.assign({}, pref, {
         value: saved_prefs[pref.name],

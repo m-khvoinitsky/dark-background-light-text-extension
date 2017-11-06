@@ -12,11 +12,12 @@
         {
             width: 100%;
             overflow-x: hidden;
+            box-sizing: border-box; /* on Fennec it's content-box by default */
+            margin: 0px;
         }
 
-        body
-        {
-            padding: 4px 10px 10px;
+        html {
+            padding: 10px;
         }
 
         hr
@@ -32,7 +33,7 @@
         }
         button
         {
-            max-width: 100%
+            max-width: 100%;
             display: inline-block;
             padding: 0.1em;
             margin: 1px;
