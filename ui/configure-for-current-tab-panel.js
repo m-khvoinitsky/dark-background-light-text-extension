@@ -3,6 +3,12 @@
     let current_tab = (await browser.tabs.query({currentWindow: true, active: true}))[0];
     let url = current_tab.url;
 
+    function close() {
+        window.close(); // works for pop-up on desktop
+        if (!current_tab.active) // this is the case for Fennec where pop-up is actually a tab
+            browser.tabs.update(current_tab.id, {active: true}); // activating any tab other than our fake pop-up will close pop-up
+    }
+
     let message = false;
     try {
         await browser.tabs.executeScript(current_tab.id, {
@@ -43,7 +49,7 @@
     let checkbox = document.createElement('input');
     checkbox.setAttribute('type', 'checkbox');
     checkbox.checked = enabled;
-    checkbox.onchange = () => { set_pref('enabled', checkbox.checked); window.close(); };
+    checkbox.onchange = () => { set_pref('enabled', checkbox.checked); close(); };
     checkbox_label.appendChild(checkbox);
     body.appendChild(checkbox_label);
 
@@ -114,7 +120,7 @@
                     value: method_n >= 0 ? method_n : null,
                 });
             }
-            window.close();
+            close();
         };
 
         for (var method in methods) {
