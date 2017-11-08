@@ -269,11 +269,9 @@ class StylesheetProcessorAbstract {
         }
     }
     process_CSSFontFaceRule(CSSFontFaceRule_v, index, base_url) {
-        let current = CSSFontFaceRule_v;
-        let current_index = index;
-        if (current.style.getPropertyValue('src')) {
-            let parent = current.parentStyleSheet;
-            let splitted = brackets_aware_split(current.cssText, ' ');
+        if (CSSFontFaceRule_v.style.getPropertyValue('src')) {
+            let parent = CSSFontFaceRule_v.parentStyleSheet;
+            let splitted = brackets_aware_split(CSSFontFaceRule_v.cssText, ' ');
             splitted = splitted.map(part => {
                 if (part.indexOf('url(') === 0) {
                     let url = part.slice(part.indexOf('(') + 1, part.lastIndexOf(')')).trim();
@@ -285,8 +283,8 @@ class StylesheetProcessorAbstract {
                     return part;
             });
             setTimeout(() => {
-                parent.deleteRule(current);
-                parent.insertRule(splitted.join(' '), current_index);
+                parent.deleteRule(index);
+                parent.insertRule(splitted.join(' '), index);
             }, 0);
         }
     }
