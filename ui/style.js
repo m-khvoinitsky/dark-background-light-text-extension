@@ -10,3 +10,10 @@ async function query_style() {
     }
     ext_style.textContent = await css_promise;
 }
+if (document.readyState === 'loading') {
+    document.addEventListener('readystatechange', event => {
+        query_style().catch(rejection => console.error(rejection));
+    }, {once: true});
+} else {
+    query_style().catch(rejection => console.error(rejection));
+}
