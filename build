@@ -1,4 +1,4 @@
 #!/bin/bash
 OUTPUT=./build.xpi
 rm "${OUTPUT}"
-zip "${OUTPUT}" $(git ls-tree -r HEAD --name-only | grep -Ev '^build$|^test/|\.eslintrc\.js|\.gitignore|\.gitmodules|README.md|WE-TODO.md|package.json'; echo lib/css-color-parser/csscolorparser.js lib/webextension-polyfill/dist/browser-polyfill.min.js)
+zip "${OUTPUT}" $(git ls-tree -r HEAD --name-only | grep -Ev '^build$|^test/|\.eslintrc\.js|\.gitignore|\.gitmodules|README.md|WE-TODO.md|package.json'; echo lib/css-color-parser/csscolorparser.js lib/webextension-polyfill/dist/browser-polyfill.min.js lib/csp-parse/index.js)

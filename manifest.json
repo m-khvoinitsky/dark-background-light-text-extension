@@ -35,6 +35,7 @@
       "lib/shared.js",
       "lib/css-color-parser/csscolorparser.js",
       "lib/color_utils.js",
+      "lib/csp-parse/index.js",
       "lib/background-script.js"
     ]
   },
@@ -71,6 +72,8 @@
     "<all_urls>",
     "tabs",
     "storage",
-    "notifications"
+    "notifications",
+    "webRequest",
+    "webRequestBlocking"
   ]
 }

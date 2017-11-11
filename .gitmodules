@@ -4,3 +4,6 @@
 [submodule "lib/webextension-polyfill"]
 	path = lib/webextension-polyfill
 	url = https://github.com/mozilla/webextension-polyfill.git
+[submodule "lib/csp-parse"]
+	path = lib/csp-parse
+	url = https://github.com/c0nrad/csp-parse.git
