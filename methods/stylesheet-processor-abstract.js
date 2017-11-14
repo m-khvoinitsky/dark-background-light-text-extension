@@ -271,6 +271,9 @@ class StylesheetProcessorAbstract {
     process_CSSFontFaceRule(CSSFontFaceRule_v, index, base_url) {
         if (CSSFontFaceRule_v.style.getPropertyValue('src')) {
             let parent = CSSFontFaceRule_v.parentStyleSheet;
+            let owner_node = this.constructor.find_ancestor_ownerNode(parent);
+            if (!owner_node.hasAttribute('data-relative-to'))
+                return;
             let splitted = brackets_aware_split(CSSFontFaceRule_v.cssText, ' ');
             splitted = splitted.map(part => {
                 if (part.indexOf('url(') === 0) {
