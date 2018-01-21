@@ -177,10 +177,10 @@ class StylesheetProcessorAbstract {
         if (this.workaround_requested.has(stylesheet))
             return;
         this.workaround_requested.add(stylesheet);
-        let original_url = stylesheet.href;
         let { ownerNode, ownerRule } = stylesheet;
+        let original_url = stylesheet.href !== 'about:invalid' ? stylesheet.href : ownerRule.href;
 
-        let url_obj = new URL(stylesheet.href, rel_to);
+        let url_obj = new URL(original_url, rel_to);
         let new_url;
         try {
             let css = await (await fetch(url_obj)).text();
@@ -202,7 +202,12 @@ class StylesheetProcessorAbstract {
             let link = this.window.document.createElement('link');
             link.setAttribute('rel', 'stylesheet');
             link.setAttribute('data-is-imported', 'true');
-            link.setAttribute('media', ownerRule.media.mediaText);
+            try {
+                link.setAttribute('media', ownerRule.media.mediaText);
+            } catch (e) {
+                // no idea what's going on
+                console.error(e, ownerRule);
+            }
             target_node = link;
             let real_owner_node = this.constructor.find_ancestor_ownerNode(stylesheet);
             real_owner_node.parentNode.insertBefore(link, real_owner_node);
@@ -228,6 +233,9 @@ class StylesheetProcessorAbstract {
         try {
             if (CSSStyleSheet_v.cssRules === null) // access to .cssRules will throw in Firefox
                 throw {name: 'SecurityError'}; // for chrome
+            else if (CSSStyleSheet_v.href === 'about:invalid')
+                // happens with relative @import rules inside workarounded stylesheets
+                throw {name: 'SecurityError'};
         } catch (e) {
             if (e.name === 'SecurityError') {
                 this.workaround_stylesheet(CSSStyleSheet_v, base_url).catch(rejection => console.error(rejection));
