@@ -39,7 +39,7 @@
     ]
   },
   "browser_action": {
-    "browser_style": true,
+    "browser_style": false,
     "default_icon": {
       "16": "icons/icon16.png",
       "24": "icons/icon24.png",
@@ -51,7 +51,7 @@
     "default_popup": "ui/configure-for-current-tab-panel.html"
   },
   "page_action": {
-    "browser_style": true,
+    "browser_style": false,
     "default_icon": {
       "16": "icons/icon16.png",
       "24": "icons/icon24.png",
@@ -64,7 +64,7 @@
   },
   "options_ui": {
     "page": "ui/preferences.html",
-    "browser_style": true,
+    "browser_style": false,
     "open_in_tab": true
   },
   "permissions": [
