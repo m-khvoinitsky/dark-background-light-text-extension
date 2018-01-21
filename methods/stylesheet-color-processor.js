@@ -16,12 +16,12 @@ const parse_text_shadow = (value) => {
     return [splitted, color_index]
 };
 const intersect = (set1, set2) => set1.some(
-        set1_cur => set2.some(
-            set2_cur => (  //TODO: remove redundant .toLowerCase()
-                set2_cur.toLowerCase().indexOf(set1_cur.toLowerCase()) >= 0 ||
-                set1_cur.toLowerCase().indexOf(set2_cur.toLowerCase()) >= 0
-            )
+    set1_cur => set1_cur && set2.some(
+        set2_cur => set2_cur && (  //TODO: remove redundant .toLowerCase()
+            set2_cur.toLowerCase().indexOf(set1_cur.toLowerCase()) >= 0 ||
+            set1_cur.toLowerCase().indexOf(set2_cur.toLowerCase()) >= 0
         )
+    )
 );
 
 const preserve_background_color = [
@@ -146,13 +146,13 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
                 CSSStyleDeclaration_v.getPropertyPriority('color')
             );
 
-        if (background.indexOf('var(') >= 0 && !(preserve_background_color.some(val => selector.indexOf(val) >= 0)))
+        if (background.indexOf('var(') >= 0 && !(preserve_background_color.some(val => selector && selector.indexOf(val) >= 0)))
             CSSStyleDeclaration_v.setProperty(
                 'background',
                 this.process_background_property(background),
                 CSSStyleDeclaration_v.getPropertyPriority('background')
             );
-        if (background_color && !(preserve_background_color.some(val => selector.indexOf(val) >= 0)))
+        if (background_color && !(preserve_background_color.some(val => selector && selector.indexOf(val) >= 0)))
             CSSStyleDeclaration_v.setProperty(
                 'background-color',
                 this.process_color_property(background_color, false),
