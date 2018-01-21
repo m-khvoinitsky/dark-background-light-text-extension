@@ -1,7 +1,7 @@
 window,
 page,
-html:not(.dark-background-light-text-is-pdf-viewer),
-img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),    /* TODO: "black on transparent" mark */
+html:not(.dark-background-light-text-is-pdf-viewer):not(.dark-background-light-text-is-top-level-image-document),
+html:not(.dark-background-light-text-is-top-level-image-document) img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),    /* TODO: "black on transparent" mark */
 embed[type="application/x-shockwave-flash"],
 object[type="application/x-shockwave-flash"],
 video,
@@ -11,10 +11,7 @@ div#viewer.pdfViewer div.page
 }
 /* #28 */
 :fullscreen video,
-video:fullscreen,
-/* #50 */
-html.dark-background-light-text-is-top-level-image-document,
-html.dark-background-light-text-is-top-level-image-document img:not(#ewpsxkrvgmsydgu) /* just a random unlikely id to increase specificity */
+video:fullscreen
 {
     filter: none !important;
 }
