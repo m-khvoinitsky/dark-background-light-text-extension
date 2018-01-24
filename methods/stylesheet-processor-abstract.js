@@ -153,9 +153,9 @@ class StylesheetProcessorAbstract {
             node => {
                 if (!this.processed_htmlelements.has(node)) {
                     this.processed_htmlelements.set(node, {
-                        last: node.getAttribute('style'),
-                        original: node.getAttribute('style'),
-                    });
+                            last: node.getAttribute('style'),
+                            original: node.getAttribute('style')
+                        });
                     this.process_HTMLElement_init(node);
                 }
             }
@@ -323,7 +323,7 @@ class StylesheetProcessorAbstract {
         this.process_CSSStyleDeclaration(
             HTMLElement_v.style,
             this.window.location.href,
-            null,
+            '',
             HTMLElement_v.classList,
             HTMLElement_v.getAttribute('id'),
             HTMLElement_v.tagName
