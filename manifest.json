@@ -39,11 +39,17 @@
     ]
   },
   "commands": {
-    "toggle-global": {
+    "global_toggle_hotkey": {
       "suggested_key": {
 	      "default": "Ctrl+Shift+D"
       },
       "description": "Toggle enabled globally"
+    },
+    "tab_toggle_hotkey": {
+      "suggested_key": {
+	      "default": "F2"
+      },
+      "description": "Toggle enabled for current tab"
     }
   },
   "browser_action": {
