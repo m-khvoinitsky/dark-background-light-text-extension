@@ -38,6 +38,14 @@
       "lib/background-script.js"
     ]
   },
+  "commands": {
+    "toggle-global": {
+      "suggested_key": {
+	      "default": "Ctrl+Shift+D"
+      },
+      "description": "Toggle enabled globally"
+    }
+  },
   "browser_action": {
     "browser_style": false,
     "default_icon": {

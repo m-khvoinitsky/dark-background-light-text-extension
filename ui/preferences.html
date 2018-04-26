@@ -51,6 +51,39 @@
                 margin-top: 0.2em;
             }
         }
+
+        #grab-overlay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #00000080;
+            padding: 3em;
+            z-index: 1;
+        }
+        #grab-overlay h1 {
+            font-size: 5em;
+            font-weight: normal;
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        .blurred {
+            filter: blur(10px);
+        }
+        .note {
+            margin: 0.5em;
+        }
+        .i_sign {
+            font-size: 2.5em;
+        }
+        .note_list {
+            margin: 0;
+            padding-left: 0.5em;
+            list-style: none;
+        }
     </style>
     <script src="../lib/webextension-polyfill/dist/browser-polyfill.min.js"></script>
 
@@ -68,6 +101,27 @@
     <!--</script>-->
 </head>
 <body>
+<div class="hidden" id="grab-overlay">
+    <h1 id="grab-hotkey">Ctrl+Shift+D</h1>
+    <table class="note">
+        <tr>
+            <td>
+                <span class="i_sign">ⓘ</span>
+            </td>
+            <td>
+                <ul class="note_list">
+                    <li>
+                        When <strong>valid</strong> hotkey is pressed, this dialog will be closed and hotkey will be applied
+                    </li>
+                    <li>
+                        Refer to <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/manifest.json/commands#Shortcut_values">this page</a> to learn what is valid hotkey
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+    <button class="full-width" id="grab-stop">Cancel</button>
+</div>
 <div class="container-fluid" id="main">
     <div class="row">
         <div class="col-xs-12">
