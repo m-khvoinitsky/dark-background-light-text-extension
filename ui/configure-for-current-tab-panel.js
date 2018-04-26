@@ -1,4 +1,5 @@
 (async function() {
+    const CURRENT_TAB_LABEL = '< Current Tab >';
     let current_tab = (await browser.tabs.query({currentWindow: true, active: true}))[0];
     let url = current_tab.url;
 
@@ -24,6 +25,12 @@
 
     let configured = await get_merged_configured();
     let { preselect, list:urls } = await generate_urls(url);
+    let current_url_method = await browser.runtime.sendMessage({
+        action: 'get_tab_configuration',
+        tab_id: current_tab.id,
+    });
+    if (current_url_method)
+        preselect = CURRENT_TAB_LABEL;
     let isPrivate = current_tab.incognito;
     let enabled = await get_prefs('enabled');
     let body = document.querySelector('body');
@@ -34,13 +41,56 @@
         body.removeChild(body.firstChild);
     }
 
-    function handle_choose_url(){
-        let current_url_method = configured[document.querySelector('#url_select').value];
+    async function handle_choose_url(){
+        let url = document.querySelector('#url_select').value;
+        let current_url_method;
+        if (url === CURRENT_TAB_LABEL) {
+            current_url_method = await browser.runtime.sendMessage({
+                action: 'get_tab_configuration',
+                tab_id: current_tab.id,
+            });
+        } else
+            current_url_method = configured[document.querySelector('#url_select').value];
         if (current_url_method)
             document.querySelector(`#method_${current_url_method}`).checked = true;
         else
             document.querySelector('#method_-1').checked = true;
     }
+
+    async function handle_method_change() {
+        let methods = document.querySelectorAll('input.methods');
+        let checked_method;
+        for (let i = 0; i < methods.length; ++i) {
+            if (methods[i].checked) {
+                checked_method = methods[i];
+                break;
+            }
+        }
+        let method_n = checked_method.value;
+        let url = document.querySelector('#url_select').value;
+
+        if (url === CURRENT_TAB_LABEL) {
+            browser.runtime.sendMessage({
+                action: 'set_configured_tab',
+                key: current_tab.id,
+                value: method_n >= 0 ? method_n : null,
+            });
+        } else if (isPrivate) {
+            browser.runtime.sendMessage({
+                action: 'set_configured_private',
+                key: url,
+                value: method_n >= 0 ? method_n : null,
+            });
+        } else {
+            let configured_pages = await get_prefs('configured_pages');
+            if (method_n < 0)
+                delete configured_pages[url];
+            else
+                configured_pages[url] = method_n;
+            await set_pref('configured_pages', configured_pages);
+        }
+        close();
+    };
 
     let checkbox_label = document.createElement('label');
     checkbox_label.setAttribute('class', 'enabled_label');
@@ -76,6 +126,7 @@
         var select = document.createElement('select');
         select.id = 'url_select';
         select.onchange = handle_choose_url;
+        urls.push(CURRENT_TAB_LABEL);
         for (let url in urls) {
             var option = document.createElement('option');
             option.textContent = urls[url];
@@ -92,35 +143,6 @@
         var form_methods = document.createElement('form');
         var ul_methods = document.createElement('ul');
         form_methods.appendChild(ul_methods);
-
-        var handle_method_change = async function () {
-            let methods = document.querySelectorAll("input.methods");
-            let checked_method;
-            for (let i = 0; i < methods.length; ++i) {
-                if (methods[i].checked) {
-                    checked_method = methods[i];
-                    break
-                }
-            }
-            let method_n = checked_method.value;
-            let url = document.querySelector('#url_select').value;
-
-            if (!isPrivate) {
-                let configured_pages = await get_prefs('configured_pages');
-                if (method_n < 0)
-                    delete configured_pages[url];
-                else
-                    configured_pages[url] = method_n;
-                await set_pref('configured_pages', configured_pages);
-            } else {
-                browser.runtime.sendMessage({
-                    action: 'set_configured_private',
-                    key: url,
-                    value: method_n >= 0 ? method_n : null,
-                });
-            }
-            close();
-        };
 
         for (var method in methods) {
             if (parseInt(method) > -5) {  // TODO: document it somehow? (or remove?)
