@@ -44,7 +44,6 @@ select,
     -moz-appearance: none !important;
     color: #{default_foreground_color} !important;
     background-color: #{default_background_color};
-    opacity: 1;
     border-radius: 4px;
     border-width: 1px;
     border-color: #{default_foreground_color};
