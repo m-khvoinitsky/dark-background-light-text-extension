@@ -210,9 +210,11 @@ async function update_all() {
             ])
         ])
     );
-    current_preferences.forEach(function(pref){
+    for (let pref of current_preferences) {
+        if (pref.hasOwnProperty('available') && !(await pref.available))
+            continue;
         if (pref.name === 'configured_pages')
-            return;
+            continue;
         let row = createElement('div', ['row'], null, null, null, [
             // title label
             createElement(
@@ -341,7 +343,7 @@ async function update_all() {
         );
 
         container.appendChild(row);
-    });
+    }
     container.appendChild(
         createElement('div', ['row'], null, null, null, [
             createElement('div', ['col-xs-12'], null, null, null, [

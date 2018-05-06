@@ -40,15 +40,11 @@
   },
   "commands": {
     "global_toggle_hotkey": {
-      "suggested_key": {
-	      "default": "Ctrl+Shift+D"
-      },
+      "suggested_key": {},
       "description": "Toggle enabled globally"
     },
     "tab_toggle_hotkey": {
-      "suggested_key": {
-	      "default": "F2"
-      },
+      "suggested_key": {},
       "description": "Toggle enabled for current tab"
     }
   },
