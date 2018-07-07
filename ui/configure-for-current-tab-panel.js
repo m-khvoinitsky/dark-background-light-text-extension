@@ -98,7 +98,7 @@
     let checkbox = document.createElement('input');
     checkbox.setAttribute('type', 'checkbox');
     checkbox.checked = enabled;
-    checkbox.onchange = () => { set_pref('enabled', checkbox.checked); close(); };
+    checkbox.onchange = () => { set_pref('enabled', checkbox.checked); };
     checkbox_label.appendChild(checkbox);
     body.appendChild(checkbox_label);
 
