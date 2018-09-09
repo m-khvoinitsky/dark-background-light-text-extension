@@ -15,6 +15,9 @@
             border-radius: 2px;
             margin: 5px;
         }
+        li.nomarker {
+            list-style-type: none;
+        }
         li {
             line-height: 150%;
         }
@@ -30,6 +33,14 @@
         <li>in <span class="fx-control">General</span> tab, <span class="fx-control">Language and Appearance</span> paragraph, press <span class="fx-control">Colors...</span> button</li>
         <li>in a dialog, set <span class="fx-control">Override the colors specified by the page with your selections above</span> to <span class="fx-control">Never</span></li>
     </ul>
+    You see this notification because:
+    <ul>
+        <li>You have <span class="fx-control">Override the colors specified by the page with your selections above</span> set to <span class="fx-control">Only with High Contrast themes</span> and you have High Contrast theme enabled in your Operating System.</li>
+        <li class='nomarker'>OR</li>
+        <li>You have <span class="fx-control">Override the colors specified by the page with your selections above</span> set to <span class="fx-control">Always</span></li>
+    </ul>
+    Note that situations above completely prevent Background and Light Text from changing page colors therefore it doesn't makes much sense to use the extension at all in such cases.<br>
+    If none of above circumstances is your case, you use the most recent Firefox version but still see this notification, please, <a href="https://github.com/m-khvoinitsky/dark-background-light-text-extension/issues">report a bug</a> precisely decribing your case.
 </div>
 </body>
 </html>
