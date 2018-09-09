@@ -169,7 +169,10 @@ class StylesheetProcessorAbstract {
         if (ownerNode)
             return ownerNode;
         if (ownerRule)
-            return this.find_ancestor_ownerNode(ownerRule.parentStyleSheet);
+            if (ownerRule.parentStyleSheet) // #169
+                return this.find_ancestor_ownerNode(ownerRule.parentStyleSheet);
+            else
+                return this.find_ancestor_ownerNode(stylesheet.parentStyleSheet); // #169
     }
     async workaround_stylesheet(stylesheet, rel_to) {
         // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1393022
@@ -197,7 +200,10 @@ class StylesheetProcessorAbstract {
             target_node = ownerNode;
         } else if (ownerRule) {
             // if we make this in place, process_CSSRule iteration below will skip next rule
-            setTimeout(() => ownerRule.parentStyleSheet.deleteRule(ownerRule), 0);
+            if (ownerRule.parentStyleSheet) // #169
+                setTimeout(() => ownerRule.parentStyleSheet.deleteRule(ownerRule), 0);
+            else
+                setTimeout(() => stylesheet.parentStyleSheet.deleteRule(ownerRule), 0); // #169
 
             let link = this.window.document.createElement('link');
             link.setAttribute('rel', 'stylesheet');
