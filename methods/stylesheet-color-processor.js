@@ -68,6 +68,7 @@ const do_not_remove_background_image = [
     'progress',
     'face',
     '.svg',
+    'image/svg',
     '/rsrc.php/', // facebook sprites/icons
     '.i-tip', // http://catalog.onliner.by
     '.dijitCheckBox', // at least tt-rss checkboxes
