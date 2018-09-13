@@ -125,7 +125,7 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
             );
             CSSStyleDeclaration_v.setProperty(
                 this.rename_var_bg(p),
-                this.process_background_property(CSSStyleDeclaration_v.getPropertyValue(p)),
+                this.process_background_property(CSSStyleDeclaration_v.getPropertyValue(p), selector, base_url),
                 CSSStyleDeclaration_v.getPropertyPriority(p)
             );
         }
@@ -150,7 +150,7 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         if (background.indexOf('var(') >= 0 && !(preserve_background_color.some(val => selector.indexOf(val) >= 0)))
             CSSStyleDeclaration_v.setProperty(
                 'background',
-                this.process_background_property(background),
+                this.process_background_property(background, selector, base_url),
                 CSSStyleDeclaration_v.getPropertyPriority('background')
             );
         if (background_color && !(preserve_background_color.some(val => selector.indexOf(val) >= 0)))
@@ -251,24 +251,24 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         } else
             return `var(${var_cb(s.trim())})`;
     }
-    process_bg_part(bg_part) {
+    process_bg_part(bg_part, selector, base_url) {
         bg_part = bg_part.trim();
         if (StylesheetColorProcessor.is_css_var(bg_part))
-            return StylesheetColorProcessor.process_css_var_usage(bg_part, this.rename_var_bg, s => this.process_bg_part(s));
+            return StylesheetColorProcessor.process_css_var_usage(bg_part, this.rename_var_bg, s => this.process_bg_part(s, selector, base_url));
         let probably_color = this.process_color_property(bg_part, false, true);
         if (probably_color)
             return probably_color;
-        // TODO: safe text shadow?                      TODO: bg_repeat, bg_position, selector, base_url
-        return this.process_background_image(bg_part, 'TODO bg_repeat', 'TODO bg_position', 'selector TODO')[0];
+        // TODO: safe text shadow?                      TODO: bg_repeat, bg_position
+        return this.process_background_image(bg_part, 'TODO bg_repeat', 'TODO bg_position', selector, base_url)[0];
     }
-    process_background_property(bg_prop) {
+    process_background_property(bg_prop, selector, base_url) {
         let bgs = brackets_aware_split(bg_prop, ',');
         let new_bgs = [];
         for (let bg of bgs) {
             let bg_parts = brackets_aware_split(bg, ' ');
             let new_bg_parts = [];
             for (let bg_part of bg_parts)
-                new_bg_parts.push(this.process_bg_part(bg_part));
+                new_bg_parts.push(this.process_bg_part(bg_part, selector, base_url));
             new_bgs.push(new_bg_parts.join(' '));
         }
         return new_bgs.join(', ');
