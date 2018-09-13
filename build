@@ -2,7 +2,7 @@
 OUTPUT="$(readlink -f ./build.xpi)"
 TEMPDIR="$(mktemp -d)"
 rm "${OUTPUT}"
-for f in $(git ls-tree -r HEAD --name-only | grep -Ev '^build$|^test/|\.eslintrc\.js|\.gitignore|\.gitmodules|README.md|WE-TODO.md|package.json'; echo lib/css-color-parser/csscolorparser.js); do
+for f in $(git ls-tree -r HEAD --name-only | grep -Ev '^build$|^test/|\.eslintrc\.js|\.gitignore|\.gitmodules|README.md|WE-TODO.md|LICENSE|package.json'; echo lib/css-color-parser/csscolorparser.js); do
     if [ -f "${f}" ]; then
         OUT="${TEMPDIR}/${f}"
         mkdir -p "$(dirname ${OUT})"
