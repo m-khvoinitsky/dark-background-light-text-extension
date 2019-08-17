@@ -1,4 +1,73 @@
 (async function() {
+    async function generate_urls(url_str) {
+        let url_obj = new window.URL(url_str);
+
+        let result_list = [];
+        let preselect;
+
+        let before_path;
+        if (['http:', 'https:', 'ftp:'].indexOf(url_obj.protocol) >= 0) {
+            let hostname_splitted = url_obj.hostname.split('.');
+            let tld = hostname_splitted[hostname_splitted.length - 1]; //TODO: sdk_url.getTLD(url_str);
+            let hostname_short = url_obj.hostname
+                .replace(new RegExp('^www\\.'), '');
+            if (tld) {
+                hostname_short = hostname_short
+                    .replace(new RegExp(`\\.${tld.split('.').join('\\.')}$`), '');
+            } // 'else' is most likely bare IP  TODO: it used to be with sdk_url.getTLD
+
+            if (url_obj.hostname === tld) { // domain itself is top-level (eg. localhost)
+                result_list.push(tld);
+                preselect = tld;
+                before_path = tld;
+            } else {
+                hostname_short.split('.').reverse().forEach((part, index, parts) => {
+                    let result = parts.slice(0, index + 1).reverse().join('.') + (!!tld ? ('.' + tld) : '');
+                    result_list.push(result);
+                    preselect = result;
+                    before_path = result;
+                });
+            }
+            if (url_obj.port) { /* //TODO:
+                let result = before_path + ':' + url_obj.port;
+                result_list.push(result);
+                preselect = result;
+                before_path = result; */
+            }
+        } else {
+            if (url_obj.protocol !== url_obj.origin) {
+                result_list.push(url_obj.origin);
+                preselect = url_obj.origin;
+            }
+            before_path = url_obj.origin;
+        }
+
+        let path_starts_with_slash = false;
+        url_obj.pathname.split('/').forEach((part, index, parts) => {
+            if (part.length === 0 && index === 0) {
+                // if path starts with '/'
+                path_starts_with_slash = true;
+                return;
+            }
+            if (part.length === 0 && index === 1)
+                return; // path is only '/'
+            let result = path_starts_with_slash ?
+                [before_path].concat( parts.slice(1, index + 1) ).join('/') :
+                before_path + parts.slice(0, index + 1).join('/');
+            result_list.push(result);
+            if (!(preselect))
+                preselect = result;
+        });
+
+        let merged = await get_merged_configured();
+        result_list.forEach(url => {
+            if (url in merged)
+                preselect = url;
+        });
+
+        return { list: result_list, preselect };
+    }
+
     const CURRENT_TAB_LABEL = '< Current Tab >';
     let current_tab = (await browser.tabs.query({currentWindow: true, active: true}))[0];
     let url = current_tab.url;
