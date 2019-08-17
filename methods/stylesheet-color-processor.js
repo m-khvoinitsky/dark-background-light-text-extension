@@ -94,14 +94,9 @@ const system_colors = [
 class StylesheetColorProcessor extends StylesheetProcessorAbstract {
     constructor(window, options) {
         super(window, options, '[style*="color"], [style*="background"]');
-        let default_foreground_color = parseCSSColor(this.options.default_foreground_color);
-        let default_background_color = parseCSSColor(this.options.default_background_color);
-        let is_dark_background = relative_luminance(default_background_color) < relative_luminance(default_foreground_color);
-        let default_colors = is_dark_background ?
-            {default_light_color: default_foreground_color, default_dark_color: default_background_color} :
-            {default_light_color: default_background_color, default_dark_color: default_foreground_color};
-        this.backgroundify_color = color_array => lighten_or_darken_color(color_array, is_dark_background, default_colors);
-        this.foregroundify_color = color_array => lighten_or_darken_color(color_array, !is_dark_background, default_colors);
+
+        this.backgroundify_color = color_array => adjust_luminance(color_array, parseCSSColor(this.options.default_background_color));
+        this.foregroundify_color = color_array => adjust_luminance(color_array, parseCSSColor(this.options.default_foreground_color));
 
         this.var_name_postfix = '-dark-background-light-text-add-on-';
         this.rename_var_fg = var_name => `${var_name}${this.var_name_postfix}fg`;
