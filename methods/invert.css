@@ -1,23 +1,43 @@
-window,
-page,
-html:not(.dark-background-light-text-is-pdf-viewer):not(.dark-background-light-text-is-top-level-image-document),
-html:not(.dark-background-light-text-is-top-level-image-document) img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),    /* TODO: "black on transparent" mark */
-embed[type="application/x-shockwave-flash"],
-object[type="application/x-shockwave-flash"],
-video,
-div#viewer.pdfViewer div.page
-{
-    filter: invert(100%) hue-rotate(180deg) !important;
+@supports (backdrop-filter: invert(100%)) {
+    #mybpwaycfxccmnp-dblt-backdrop-filter {
+        display: block !important;
+        position: fixed !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        pointer-events: none !important;
+        z-index: 2147483647 !important;
+        backdrop-filter: invert(100%) hue-rotate(180deg) !important;
+    }
+    img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),
+    video {
+        filter: invert(100%) hue-rotate(180deg) !important;
+    }
 }
-/* #28 */
-:fullscreen video,
-video:fullscreen
-{
-    filter: none !important;
+@supports not (backdrop-filter: invert(100%)) {
+    html,
+    img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),    /* TODO: "black on transparent" mark */
+    embed[type="application/x-shockwave-flash"],
+    object[type="application/x-shockwave-flash"],
+    video,
+    div#viewer.pdfViewer div.page
+    {
+        filter: invert(100%) hue-rotate(180deg) !important;
+    }
+    /* #28 */
+    :fullscreen video,
+    video:fullscreen
+    {
+        filter: none !important;
+    }
+
+    html {
+        background-color: black !important;
+    }
 }
-html {
-    background-color: black !important;
-}
+
 button,
 input,
 optgroup,
@@ -25,8 +45,4 @@ select,
 textarea {
     background-color: white;
     color: black;
-}
-
-@-moz-document domain(facebook.com) {
-
 }
