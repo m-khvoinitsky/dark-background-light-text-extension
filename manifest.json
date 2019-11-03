@@ -81,7 +81,7 @@
     "<all_urls>",
     "tabs",
     "storage",
-    "notifications",
+    "browserSettings",
     "webRequest",
     "webRequestBlocking"
   ]
