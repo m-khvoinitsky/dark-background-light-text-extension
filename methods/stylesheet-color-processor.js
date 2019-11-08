@@ -287,8 +287,13 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
             return is_foreground ? this.options.default_foreground_color : this.options.default_background_color;
         else if (StylesheetColorProcessor.is_css_var(color.trim()))
             return StylesheetColorProcessor.process_css_var_usage(color, is_foreground ? this.rename_var_fg : this.rename_var_bg, s => this.process_color_property(s, is_foreground));
-        if (!no_ret_if_fail)
-            return color;
+        if (!no_ret_if_fail) {
+            if (color.indexOf('rgba(') === 0 || color.indexOf('rgb(') === 0 ) { // instagram weird variable use crutches
+                return is_foreground ? this.options.default_foreground_color : this.options.default_background_color;
+            } else {
+                return color;
+            }
+        }
     }
     process_background_image(bg_image, bg_repeat, bg_position, selector, base_url) {
         if (bg_image.indexOf('url(') === 0) {
