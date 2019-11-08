@@ -1,11 +1,16 @@
 #!/bin/bash
+set -e
 OUTPUT="$(readlink -f ./build.xpi)"
 TEMPDIR="$(mktemp -d)"
 rm "${OUTPUT}"
-for f in $(git ls-tree -r HEAD --name-only | grep -Ev '^build$|^test/|\.eslintrc\.js|\.gitignore|\.gitmodules|README.md|WE-TODO.md|LICENSE|package.json'; echo lib/css-color-parser/csscolorparser.js); do
+{
+    git ls-tree -r HEAD --name-only | \
+    grep -Ev '^build$|^test/|\.eslintrc\.js|\.gitignore|\.gitmodules|\.pre-commit-config\.yaml|README.md|WE-TODO.md|LICENSE|package.json'
+    echo lib/css-color-parser/csscolorparser.js
+} | while read -r f; do
     if [ -f "${f}" ]; then
         OUT="${TEMPDIR}/${f}"
-        mkdir -p "$(dirname ${OUT})"
+        mkdir -p "$(dirname "${OUT}")"
         sed '/\/browser-polyfill.min.js/d' "${f}" > "${OUT}"
     fi
 done
