@@ -106,6 +106,12 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
 
         this.use_webkit_text_stroke = false; // window.CSS.supports('-webkit-text-stroke', '1px red');
     }
+    all_sheets_have_been_processed() {
+        let nodes = document.querySelectorAll('style[data-source="methods/simple-css.css"]');
+        for (let node of nodes)
+            node.parentElement.removeChild(node);
+        super.all_sheets_have_been_processed();
+    }
     //CSS2Properties
     process_CSSStyleDeclaration(CSSStyleDeclaration_v,
                                 base_url,

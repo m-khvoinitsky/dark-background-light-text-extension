@@ -35,6 +35,8 @@ class StylesheetProcessorAbstract {
         this.window = window;
         this.url = window.document.documentURI;
         this.processed_stylesheets = new WeakMap();
+        this.self_stylesheets = new WeakSet();
+        this.all_initial_sheets_have_been_processed = false;
         this.processed_htmlelements = new WeakMap();
         this.workaround_requested = new WeakSet();
         this.broken_stylesheets = new WeakSet();
@@ -64,7 +66,7 @@ class StylesheetProcessorAbstract {
         this.options = options;
         this.stop = false;
     }
-    load_into_window(window, options) {
+    load_into_window() {
         this.process();
         this.handle_visibilitychange = event => {
             if (this.stop)
@@ -115,6 +117,9 @@ class StylesheetProcessorAbstract {
             )
         }
     }
+    all_sheets_have_been_processed() {
+        this.all_initial_sheets_have_been_processed = true;
+    }
     process(no_schedule) {
         //TODO: https://bugzilla.mozilla.org/show_bug.cgi?id=839103
         //
@@ -140,7 +145,11 @@ class StylesheetProcessorAbstract {
         }*/
 
         Array.prototype.forEach.call(this.window.document.styleSheets, sheet => {
-            if (!this.processed_stylesheets.has(sheet) && sheet !== this.inline_override && !this.broken_stylesheets.has(sheet)) {
+            if (!this.processed_stylesheets.has(sheet) && sheet !== this.inline_override && !this.broken_stylesheets.has(sheet) && !this.self_stylesheets.has(sheet)) {
+                if (sheet.ownerNode && sheet.ownerNode.classList.contains('dblt-ykjmwcnxmi')) {
+                    this.self_stylesheets.add(sheet);
+                    return;
+                }
                 let process_result = this.process_CSSStyleSheet(sheet);
                 if (process_result === true)
                     this.processed_stylesheets.set(sheet, sheet.cssRules.length);
@@ -148,6 +157,17 @@ class StylesheetProcessorAbstract {
                 //     console.error('process_CSSStyleSheet error, reason:', process_result, sheet);
             }
         });
+        if (!this.all_initial_sheets_have_been_processed) {
+            if (this.window.document.readyState === 'complete') {
+                if (Array.prototype.filter.call(this.window.document.styleSheets, sheet => (!this.processed_stylesheets.has(sheet) && sheet !== this.inline_override && !this.broken_stylesheets.has(sheet) && !this.self_stylesheets.has(sheet))).length === 0) {
+                    this.all_sheets_have_been_processed();
+                } else {
+                    this.window.setTimeout(this.all_sheets_have_been_processed, 2000);
+                }
+            } else {
+                this.window.setTimeout(this.all_sheets_have_been_processed, 10000);
+            }
+        }
         Array.prototype.forEach.call(
             this.window.document.querySelectorAll(this.style_selector),
             node => {

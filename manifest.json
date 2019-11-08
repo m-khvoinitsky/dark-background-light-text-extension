@@ -16,12 +16,13 @@
       "matches": ["<all_urls>"],
       "js": [
         "lib/webextension-polyfill/dist/browser-polyfill.min.js",
-        "lib/shared.js",
         "lib/css-color-parser/csscolorparser.js",
         "lib/get_acceptable_range.js",
         "lib/color_utils.js",
         "methods/stylesheet-processor-abstract.js",
         "methods/stylesheet-color-processor.js",
+        "methods/invert.js",
+        "lib/shared.js",
         "lib/content-script.js"
       ],
       "run_at": "document_start",
