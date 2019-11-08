@@ -1,0 +1,18 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.4.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-json
+  - id: check-added-large-files
+- repo: https://github.com/jumanjihouse/pre-commit-hooks.git
+  rev: 1.11.0
+  hooks:
+  - id: shellcheck
+    args: ['--shell=bash', '--color=always', '--external-sources']
+- repo: https://github.com/pre-commit/mirrors-eslint
+  rev: v6.6.0
+  hooks:
+  - id: eslint
