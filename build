@@ -5,7 +5,7 @@ TEMPDIR="$(mktemp -d)"
 rm "${OUTPUT}"
 {
     git ls-tree -r HEAD --name-only | \
-    grep -Ev '^build$|^test/|\.eslintrc\.js|\.gitignore|\.gitmodules|\.pre-commit-config\.yaml|README.md|WE-TODO.md|LICENSE|package.json'
+    grep -Ev '^build$|^test/|\.eslintrc\.js|\.gitignore|\.gitmodules|\.pre-commit-config\.yaml|README.md|LICENSE|package.json'
     echo lib/css-color-parser/csscolorparser.js
 } | while read -r f; do
     if [ -f "${f}" ]; then
