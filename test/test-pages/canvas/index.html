@@ -32,12 +32,12 @@
 <canvas id="canvas" width="360" height="101"></canvas>
 
 <script type="text/javascript">
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
+    let canvas = document.getElementById("canvas");
+    let ctx = canvas.getContext("2d");
     ctx.createImageData(360, 101);
-    for (var h = 0; h < 360; h++) {
-        var a_r = get_acceptable_range(h);
-        for (var l = 0; l <= 100; l++) {
+    for (let h = 0; h < 360; h++) {
+        let a_r = get_acceptable_range(h);
+        for (let l = 0; l <= 100; l++) {
             if (l == a_r[0])
                 ctx.fillStyle = 'hsl(0, 100%, 100%)';
             else if (l == a_r[1])
@@ -47,15 +47,13 @@
             ctx.fillRect(h, l, 1, 1);
         }
     }
-    var rm_px = function(l){return l.replace('px', '')};
+    let rm_px = function(l){return l.replace('px', '')};
     canvas.addEventListener('mousemove', function(event){
-        var style = window.getComputedStyle(this);
-        var x = Math.floor( (event.layerX - this.offsetLeft) * (360/rm_px(style.width)) );
-        var y = Math.floor( (event.layerY - this.offsetTop) *  (101/rm_px(style.height)) );
+        let style = window.getComputedStyle(this);
+        let x = Math.floor( (event.layerX - this.offsetLeft) * (360/rm_px(style.width)) );
+        let y = Math.floor( (event.layerY - this.offsetTop) *  (101/rm_px(style.height)) );
         get_acceptable_range(x);
-        var new_color = 'hsl(_H_, 100%, _L_)'
-                .replace('_H_', ''+x)
-                .replace('_L_', ''+y+'%');
+        let new_color = `hsl(${x}, 100%, ${y}%)`;
         window.document.querySelector('#bg_example').style.backgroundColor = new_color;
         window.document.querySelector('#fg_example').style.color = new_color;
         window.document.querySelector('#color_itself').innerHTML = new_color;
