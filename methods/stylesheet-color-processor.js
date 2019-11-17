@@ -78,6 +78,9 @@ const do_not_remove_background_image = [
     'chrome://wot/', // Web of Trust icons are invisible #13
     '.ytp-gradient-top',     // #70
     '.ytp-gradient-bottom',  // #70
+    'thumbnail',
+    'tooltip', // ytp-tooltip-bg class
+    'avatar',
 ];
 
 const system_colors = [
