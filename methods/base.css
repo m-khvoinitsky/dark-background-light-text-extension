@@ -244,3 +244,10 @@ groupbox#dialogBox { /* about:preferences dialogs */
     }
     {if_dark_background_end}
 }
+
+/* buttons on many google services (Books, Translate, etc) */
+{if_dark_background_start}
+.jfk-button-img {
+    filter: invert(100%);
+}
+{if_dark_background_end}
