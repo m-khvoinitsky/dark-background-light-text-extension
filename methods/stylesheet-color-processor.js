@@ -34,6 +34,7 @@ const preserve_background_color = [
     '.ytp-load-progress',
     '.ytp-progress-list',
     '.paper-toggle-button',
+    '.barchart',  // sentry charts
 ];
 
 const remove_background_image = [
