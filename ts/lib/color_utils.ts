@@ -1,4 +1,7 @@
-var RGB_to_HSL = function(rgb_array) {
+import type {RGBA, RGB, HSL, HSV_obj, RGB_obj, DefaultColors} from './types';
+declare var { get_acceptable_range }: typeof import('./get_acceptable_range');
+
+export function RGB_to_HSL(rgb_array: RGB): HSL {
     let R = (1.0 * rgb_array[0]) / 255;
     let G = (1.0 * rgb_array[1]) / 255;
     let B = (1.0 * rgb_array[2]) / 255;
@@ -16,6 +19,8 @@ var RGB_to_HSL = function(rgb_array) {
         H = 60.0 * (B - R)/(MAX - MIN) + 120;
     else if (MAX == B)
         H = 60.0 * (R - G)/(MAX - MIN) + 240;
+    else
+        throw new Error('this code should have hever been reached')
     let L = (MAX + MIN)/2;
     let S = (MAX - MIN)/(1 - Math.abs(1 - (MAX + MIN)));
     if (Number.isNaN(S)) // isNaN is too slow
@@ -23,7 +28,7 @@ var RGB_to_HSL = function(rgb_array) {
     return [H, S * 100, L * 100];
 };
 
-var RGB_to_HSV = function (R_, G_, B_) {
+export function RGB_to_HSV(R_: number, G_: number, B_: number): HSV_obj {
     let R = 1.0 * R_ / 255;
     let G = 1.0 * G_ / 255;
     let B = 1.0 * B_ / 255;
@@ -46,6 +51,8 @@ var RGB_to_HSV = function (R_, G_, B_) {
         H = 60 * ( (B - R) / (MAX - MIN) ) + 120;
     else if (MAX == B)
         H = 60 * ( (R - G) / (MAX - MIN) ) + 240;
+    else
+        throw new Error('this code should have hever been reached')
 
     /*S*/
     if (MAX == 0)
@@ -60,7 +67,7 @@ var RGB_to_HSV = function (R_, G_, B_) {
     };
 };
 
-var HSV_to_RGB = function (H_, S_, V_) {
+export function HSV_to_RGB(H_: number, S_: number, V_: number): RGB_obj {
     let H = H_ * 1.0;
     let S = S_ * 100.0;
     let V = V_ * 100.0;
@@ -70,47 +77,55 @@ var HSV_to_RGB = function (H_, S_, V_) {
     let a = ( V - V_min ) * ( (H % 60) * 1.0 / 60);
     let V_inc = V_min + a;
     let V_dec = V - a;
-    let R, G, B;
+    let R, G, B: number;
 
-    if (H_i == 0) {
-        R = V;
-        G = V_inc;
-        B = V_min;
-    }
-    else if (H_i == 1) {
-        R = V_dec;
-        G = V;
-        B = V_min;
-    }
-    else if (H_i == 2) {
-        R = V_min;
-        G = V;
-        B = V_inc;
-    }
-    else if (H_i == 3) {
-        R = V_min;
-        G = V_dec;
-        B = V;
-    }
-    else if (H_i == 4) {
-        R = V_inc;
-        G = V_min;
-        B = V;
-    }
-    else if (H_i == 5) {
-        R = V;
-        G = V_min;
-        B = V_dec;
+    switch (H_i) {
+        case 0:
+            R = V
+            G = V_inc
+            B = V_min
+            break
+        case 1:
+            R = V_dec
+            G = V
+            B = V_min
+            break
+        case 2:
+            R = V_min
+            G = V
+            B = V_inc
+            break
+        case 3:
+            R = V_min
+            G = V_dec
+            B = V
+            break
+        case 4:
+            R = V_inc
+            G = V_min
+            B = V
+            break
+        case 5:
+            R = V
+            G = V_min
+            B = V_dec
+            break
+        default:
+            throw new Error('bad H_i value')
     }
     return {
         'R': Math.floor(R * 2.55),
         'G': Math.floor(G * 2.55),
-        'B': Math.floor(B * 2.55)
+        'B': Math.floor(B * 2.55),
     };
 };
 
-var lighten_or_darken_color = function(rgba_color_array, darken_not_lighten, options){
-    let hsl_color_array = RGB_to_HSL(rgba_color_array);
+export function lighten_or_darken_color(
+    rgba_color_array: RGBA,
+    darken_not_lighten: boolean,
+    options: DefaultColors,
+): string {
+    let hsl_color_array = RGB_to_HSL(rgba_color_array.slice(0, 3) as RGB);
     let H = hsl_color_array[0];
     let S = hsl_color_array[1];
     let L = hsl_color_array[2];
@@ -156,15 +171,15 @@ var lighten_or_darken_color = function(rgba_color_array, darken_not_lighten, opt
             alpha + ')'
 };
 
-var lighten_color = function(rgba_color_array, options){
+export function lighten_color(rgba_color_array: RGBA, options: DefaultColors): string {
     return lighten_or_darken_color(rgba_color_array, false, options);
 };
 
-var darken_color = function (rgba_color_array, options) {
+export function darken_color(rgba_color_array: RGBA, options: DefaultColors): string {
     return lighten_or_darken_color(rgba_color_array, true, options);
 };
 
-function relative_luminance(color_array) {
+export function relative_luminance(color_array: RGB): number {
     let R = (1.0 * color_array[0]) / 255;
     let G = (1.0 * color_array[1]) / 255;
     let B = (1.0 * color_array[2]) / 255;

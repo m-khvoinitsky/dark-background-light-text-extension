@@ -1,4 +1,6 @@
-async function query_style() {
+declare var { browser }: typeof import('webextension-polyfill-ts');
+
+export async function query_style() {
     let css_promise = await browser.runtime.sendMessage({action: 'query_base_style'});
 
     let ext_style = document.getElementById('base-extension-style');
@@ -11,7 +13,7 @@ async function query_style() {
     ext_style.textContent = await css_promise;
 }
 if (document.readyState === 'loading') {
-    document.addEventListener('readystatechange', event => {
+    document.addEventListener('readystatechange', _event => {
         query_style().catch(rejection => console.error(rejection));
     }, {once: true});
 } else {

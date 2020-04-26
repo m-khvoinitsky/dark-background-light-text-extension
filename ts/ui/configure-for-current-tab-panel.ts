@@ -1,11 +1,14 @@
+declare var { browser }: typeof import('webextension-polyfill-ts');
+declare var { get_merged_configured, get_prefs, set_pref, methods }: typeof import('../lib/shared');
+
 (async function() {
-    async function generate_urls(url_str) {
+    async function generate_urls(url_str: string): Promise<{list: string[], preselect?: string}> {
         let url_obj = new window.URL(url_str);
 
-        let result_list = [];
-        let preselect;
+        let result_list: string[] = [];
+        let preselect: string | undefined;
 
-        let before_path;
+        let before_path: string;
         if (['http:', 'https:', 'ftp:'].indexOf(url_obj.protocol) >= 0) {
             let hostname_splitted = url_obj.hostname.split('.');
             let tld = hostname_splitted[hostname_splitted.length - 1]; //TODO: sdk_url.getTLD(url_str);
@@ -21,7 +24,7 @@
                 preselect = tld;
                 before_path = tld;
             } else {
-                hostname_short.split('.').reverse().forEach((part, index, parts) => {
+                hostname_short.split('.').reverse().forEach((_part, index, parts) => {
                     let result = parts.slice(0, index + 1).reverse().join('.') + (!!tld ? ('.' + tld) : '');
                     result_list.push(result);
                     preselect = result;
@@ -70,7 +73,7 @@
 
     const CURRENT_TAB_LABEL = '< Current Tab >';
     let current_tab = (await browser.tabs.query({currentWindow: true, active: true}))[0];
-    let url = current_tab.url;
+    let url = current_tab.url!;
 
     function close() {
         window.close(); // works for pop-up on desktop
@@ -78,7 +81,7 @@
             browser.tabs.update(current_tab.id, {active: true}); // activating any tab other than our fake pop-up will close pop-up
     }
 
-    let message = false;
+    let message: string | boolean = false;
     try {
         await browser.tabs.executeScript(current_tab.id, {
             code: '{}',
@@ -102,7 +105,7 @@
         preselect = CURRENT_TAB_LABEL;
     let isPrivate = current_tab.incognito;
     let enabled = await get_prefs('enabled');
-    let body = document.querySelector('body');
+    let body = document.querySelector('body')!;
     if ((await browser.runtime.getPlatformInfo()).os === 'android')
         body.setAttribute('class', 'touchscreen');
 
@@ -111,7 +114,7 @@
     }
 
     async function handle_choose_url(){
-        let url = document.querySelector('#url_select').value;
+        let url = (document.querySelector('#url_select') as HTMLFormElement).value;
         let current_url_method;
         if (url === CURRENT_TAB_LABEL) {
             current_url_method = await browser.runtime.sendMessage({
@@ -119,24 +122,24 @@
                 tab_id: current_tab.id,
             });
         } else
-            current_url_method = configured[document.querySelector('#url_select').value];
+            current_url_method = configured[(document.querySelector('#url_select') as HTMLFormElement).value];
         if (current_url_method)
-            document.querySelector(`#method_${current_url_method}`).checked = true;
+            (document.querySelector(`#method_${current_url_method}`) as HTMLFormElement).checked = true;
         else
-            document.querySelector('#method_-1').checked = true;
+            (document.querySelector('#method_-1') as HTMLFormElement).checked = true;
     }
 
     async function handle_method_change() {
-        let methods = document.querySelectorAll('input.methods');
-        let checked_method;
+        let methods = document.querySelectorAll('input.methods') as NodeListOf<HTMLFormElement>;
+        let checked_method: HTMLFormElement;
         for (let i = 0; i < methods.length; ++i) {
             if (methods[i].checked) {
                 checked_method = methods[i];
                 break;
             }
         }
-        let method_n = checked_method.value;
-        let url = document.querySelector('#url_select').value;
+        let method_n = checked_method!.value;
+        let url: string = (document.querySelector('#url_select') as HTMLFormElement).value;
 
         if (url === CURRENT_TAB_LABEL) {
             browser.runtime.sendMessage({

@@ -1,24 +1,17 @@
-let browser_info = ('getBrowserInfo' in browser.runtime) ?
-    browser.runtime.getBrowserInfo() :
-    new Promise((resolve, reject) => {
-        // TODO
-    });
-let platform_info = ('getPlatformInfo' in browser.runtime) ?
+import type { ConfiguredPages, ConfiguredTabs, RGB } from "./types";
+import type { Runtime, ContentScripts, Manifest, ExtensionTypes, Storage } from 'webextension-polyfill-ts';
+declare var { on_prefs_change, preferences }: typeof import('./shared');
+declare var { parseCSSColor }: typeof import("./csscolorparser");
+declare var { relative_luminance }: typeof import("./color_utils");
+
+let platform_info: Promise<Runtime.PlatformInfo> = ('getPlatformInfo' in browser.runtime) ?
     browser.runtime.getPlatformInfo() :
-    new Promise((resolve, reject) => {
+    new Promise((_resolve, _reject) => {
         // TODO
     });
 
-let is_gecko; // TODO: deprecated
-try {
-    browser.runtime.getBrowserInfo();
-    is_gecko = true;
-} catch (e) {
-    is_gecko = false;
-}
-
-const configured_private = {};
-const configured_tabs = {};
+const configured_private: ConfiguredPages = {};
+const configured_tabs: ConfiguredTabs = {};
 browser.tabs.onRemoved.addListener(async (tabId) => {
     try {
         if (Object.keys(configured_private).length > 0) {
@@ -35,9 +28,9 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
     } catch (e) {console.error(e);}
 });
 
-async function process_stylesheet(sheet, is_top_level_frame) {
+async function process_stylesheet(sheet: string, is_top_level_frame: boolean) {
     let options = await get_prefs();
-    let is_dark_background = relative_luminance(parseCSSColor(options.default_background_color)) < relative_luminance(parseCSSColor(options.default_foreground_color));
+    let is_dark_background = relative_luminance(parseCSSColor(options.default_background_color as string)!.slice(0, 3) as RGB) < relative_luminance(parseCSSColor(options.default_foreground_color as string)!.slice(0, 3) as RGB);
     let if_toplevel_start = is_top_level_frame ? '' : '/*';
     let if_toplevel_end = is_top_level_frame ? '' : '*/';
     let if_dark_background_start = is_dark_background ? '' : '/*';
@@ -59,10 +52,11 @@ async function process_stylesheet(sheet, is_top_level_frame) {
     );
     let sheet_text = await (await fetch(browser.extension.getURL(sheet))).text();
     for (let key in render_params) {
-        sheet_text = sheet_text.replace(
-            new RegExp(`{${key}}`, 'g'),
-            (render_params[key].indexOf && render_params[key].indexOf('#') === 0) ? render_params[key].slice(1) : render_params[key]
-        );
+        if (typeof render_params[key] === 'string')
+            sheet_text = sheet_text.replace(
+                new RegExp(`{${key}}`, 'g'),
+                (render_params[key] as string).indexOf('#') === 0 ? (render_params[key] as string).slice(1) : render_params[key] as string
+            );
     }
     return sheet_text;
 }
@@ -75,7 +69,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         }
         switch (message.action) {
             case 'query_tabId':
-                return sender.tab.id;
+                return sender.tab?.id;
             case 'query_base_style':
                 return await process_stylesheet('methods/base.css', true);
             case 'get_configured_private':
@@ -87,8 +81,9 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
                     configured_private[message.key] = message.value;
                 send_prefs({});
                 break;
+            // @ts-ignore: 7029
             case 'get_my_tab_configuration':
-                message.tab_id = sender.tab.id;
+                message.tab_id = sender.tab?.id;
                 // falls through
             case 'get_tab_configuration':
                 if (configured_tabs.hasOwnProperty(message.tab_id))
@@ -118,7 +113,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
                     return await get_prefs('default_method');
                 }
                 return await browser.tabs.sendMessage(
-                    sender.tab.id,
+                    sender.tab!.id!,
                     { action: 'get_method_number' },
                     { frameId: 0 },
                 );
@@ -145,12 +140,12 @@ on_prefs_change(changes => {
     }
 });
 
-const prev_scripts = [];
-async function send_prefs(changes) {
+const prev_scripts: ContentScripts.RegisteredContentScript[] = [];
+async function send_prefs(changes: {[s: string]: Storage.StorageChange}) {
     prev_scripts.forEach(cs => cs.unregister());
-    let from_manifest = browser.runtime.getManifest().content_scripts[0];
-    let new_data = {};
-    let rendered_stylesheets = {};
+    let from_manifest = (browser.runtime.getManifest() as Manifest.WebExtensionManifest).content_scripts![0];
+    let new_data: ContentScripts.RegisteredContentScriptOptions = {matches: ["<all_urls>"]};
+    let rendered_stylesheets: {[key: string]: string} = {};
     for (let css_path of Array.from(new Set(Object.values(methods).map(m => m.stylesheets).flat()))) {
         rendered_stylesheets[`${css_path}_iframe`] = await process_stylesheet(css_path, false);
         rendered_stylesheets[`${css_path}_toplevel`] = await process_stylesheet(css_path, true);
@@ -181,16 +176,16 @@ async function send_prefs(changes) {
         } else {
             // convert to camelCase
             let new_key = key.split('_').map((el, index) => index === 0 ? el : el.charAt(0).toUpperCase() + el.slice(1)).join('');
-            new_data[new_key] = from_manifest[key];
+            (new_data as any)[new_key] = (from_manifest as any)[key];
         }
     }
     prev_scripts.push(await browser.contentScripts.register(new_data));
 
     // same for already loaded pages
-    let new_data_for_tabs = {code};
+    let new_data_for_tabs: ExtensionTypes.InjectDetails = {code};
     for (let key in new_data) {
         if (['allFrames', 'matchAboutBlank', 'runAt'].indexOf(key) >= 0) {
-            new_data_for_tabs[key] = new_data[key];
+            (new_data_for_tabs as any)[key] = (new_data as any)[key];
         }
     }
     for (let tab of await browser.tabs.query({})) {
@@ -211,7 +206,7 @@ if (browser.hasOwnProperty('commands')) {
                 try {
                     browser.commands.update({
                         name: k,
-                        shortcut: values[k],
+                        shortcut: values[k] as string,
                     })
                 } catch (e) {console.exception(e);}
         });
@@ -225,10 +220,10 @@ if (browser.hasOwnProperty('commands')) {
                     break;
                 case 'tab_toggle_hotkey':
                     current_tab = (await browser.tabs.query({currentWindow: true, active: true}))[0];
-                    if (configured_tabs.hasOwnProperty(current_tab.id))
-                        delete configured_tabs[current_tab.id];
+                    if (configured_tabs.hasOwnProperty(current_tab.id!))
+                        delete configured_tabs[current_tab.id!];
                     else
-                        configured_tabs[current_tab.id] = '0';
+                        configured_tabs[current_tab.id!] = '0';
                     send_prefs({});
                     break;
                 default:
@@ -253,10 +248,10 @@ get_prefs('do_not_set_overrideDocumentColors_to_never').then(val => {
             browser.pageAction.show(tab_id);
         });
         browser.tabs.onCreated.addListener(tab => {
-            browser.pageAction.show(tab.id);
+            browser.pageAction.show(tab.id!);
         });
         (await browser.tabs.query({})).forEach(tab => {
-            browser.pageAction.show(tab.id);
+            browser.pageAction.show(tab.id!);
         });
     }
 })().catch(rejection => console.error(rejection));
@@ -273,13 +268,13 @@ browser.runtime.onInstalled.addListener(details => {
 browser.webRequest.onHeadersReceived.addListener(
     details => {
         try {
-            let headers = details.responseHeaders.map(header => {
+            let headers = details.responseHeaders!.map(header => {
                 if (header.name.toLowerCase() === 'content-security-policy') {
-                    let new_values = header.value.split(',').map(value => {
-                        let directives = {};
+                    let new_values = header.value!.split(',').map(value => {
+                        let directives: {[key: string]: string[]} = {};
                         for (let directive of value.split(';').map(d => d.trim()).filter(d => d.length > 0)) {
                             let parts = directive.split(' ').map(p => p.trim()).filter(p => p.length > 0);
-                            let name = parts.shift();
+                            let name = parts.shift()!;
                             directives[name] = parts;
                         }
 

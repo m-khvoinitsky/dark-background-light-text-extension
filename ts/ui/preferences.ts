@@ -1,7 +1,10 @@
-'use strict';
+import type { ConfiguredPages } from '../lib/types';
+declare var { preferences, prefs_keys_with_defaults, methods, get_prefs, set_pref }: typeof import('../lib/shared');
+declare var { browser }: typeof import('webextension-polyfill-ts');
+declare var { query_style }: typeof import('./style');
 
-function createElement(tagName, classList, id, textContent, attrs, children, properties) {
-    let element = document.createElement(tagName);
+function createElement(tagName: string, classList?: string[], id?: string, textContent?: string, attrs?: {[key: string]: string}, children?: HTMLElement[], properties?: {[key: string]: any}): HTMLElement {
+    let element: HTMLElement = document.createElement(tagName);
     if (classList)
         classList.forEach(function(className){ element.classList.add(className) });
     if (id)
@@ -18,12 +21,12 @@ function createElement(tagName, classList, id, textContent, attrs, children, pro
         });
     if (properties)
         Object.keys(properties).forEach(function (property) {
-            element[property] = properties[property];
+            (element as any)[property] = properties[property];
         });
     return element;
 }
 
-function intersection(setA, setB) {
+function intersection(setA: Set<any>, setB: Set<any>) {
     let intersection = new Set();
     for (let elem of setB) {
         if (setA.has(elem)) {
@@ -32,8 +35,7 @@ function intersection(setA, setB) {
     }
     return intersection;
 }
-function union() {
-    const args = Array.from(arguments);
+function union(...args: any[]) {
     let union = new Set(args.shift());
     for (let set of args) {
         for (let elem of set) {
@@ -80,7 +82,7 @@ const other = new Set([
     'Home',
     'Insert',
 ]);
-function grabshortcut_format(is_for_echo) {
+function grabshortcut_format(is_for_echo: boolean): string {
     let order = [];
     for (let what of [
         modifiers,
@@ -96,7 +98,7 @@ function grabshortcut_format(is_for_echo) {
     return order.join(is_for_echo ? ' + ' : '+');
 }
 function grabshortcut_submit() {
-    let node = document.querySelector(`.pref_${grabshortcut_target}`);
+    let node = document.querySelector(`.pref_${grabshortcut_target}`) as HTMLFormElement;
     node.value = grabshortcut_format(false);
     let change = new Event('change');
     node.dispatchEvent(change);
@@ -120,15 +122,15 @@ function grabshortcut_verify() {
             grabshortcut_submit();
         }
     }
-    document.querySelector('#grab-hotkey').innerText = grabshortcut_format(grabshortcut_downKeys);
+    (document.querySelector('#grab-hotkey') as HTMLElement).innerText = grabshortcut_format(true);
 }
 function grabshortcut_exit() {
-    document.querySelector('#grab-overlay').classList.add('hidden');
-    document.querySelector('#main').classList.remove('blurred');
+    document.querySelector('#grab-overlay')!.classList.add('hidden');
+    document.querySelector('#main')!.classList.remove('blurred');
     window.removeEventListener('keydown', grabshortcut_keyupdown);
     window.removeEventListener('keyup', grabshortcut_keyupdown);
 }
-const grabshortcut_map = {
+const grabshortcut_map: {[key: string]: string} = {
     'Control': 'Ctrl',
     'MediaTrackPrevious': 'MediaPrevTrack',
     'MediaTrackNext': 'MediaNextTrack',
@@ -138,7 +140,7 @@ if (window.navigator.platform.toLowerCase().includes('mac'))
         'Control': 'MacCtrl',
         'OS': 'Command',
     });
-function grabshortcut_keyupdown(event) {
+function grabshortcut_keyupdown(event: KeyboardEvent) {
     event.preventDefault();
     let code = event.code;
     let key;
@@ -167,13 +169,13 @@ function grabshortcut_keyupdown(event) {
     }
     grabshortcut_verify();
 }
-function grabshortcut_start(pref_name) {
+function grabshortcut_start(pref_name: string) {
     grabshortcut_downKeys.clear();
     grabshortcut_target = pref_name;
-    document.querySelector('#grab-hotkey').innerText = '...';
-    document.querySelector('#grab-overlay').classList.remove('hidden');
-    document.querySelector('#main').classList.add('blurred');
-    document.querySelector('#grab-stop').onclick = grabshortcut_exit;
+    (document.querySelector('#grab-hotkey') as HTMLElement).innerText = '...';
+    (document.querySelector('#grab-overlay') as HTMLElement).classList.remove('hidden');
+    (document.querySelector('#main') as HTMLElement).classList.add('blurred');
+    (document.querySelector('#grab-stop') as HTMLElement).onclick = grabshortcut_exit;
     window.addEventListener('keydown', grabshortcut_keyupdown);
     window.addEventListener('keyup', grabshortcut_keyupdown);
 }
@@ -184,17 +186,17 @@ async function update_all() {
     let saved_prefs = await get_prefs();
     let isTouchscreen = (await browser.runtime.getPlatformInfo()).os === 'android';
     if (document.readyState === 'loading') {
-        let at_least_interactive = new Promise((resolve, reject) => {
-            function readystatechange(event) {
-                if (event.target.readyState !== 'loading')
+        let at_least_interactive = new Promise((resolve, _reject) => {
+            function readystatechange(event: Event) {
+                if ((event.target as HTMLDocument).readyState !== 'loading')
                     resolve();
             }
             document.addEventListener('readystatechange', readystatechange);
-            readystatechange({target: document});
+            readystatechange({target: document} as unknown as Event);
         });
         await at_least_interactive;
     }
-    let container = document.querySelector('#main');
+    let container = document.querySelector('#main') as HTMLElement;
     let current_preferences = preferences.map(pref => Object.assign({}, pref, {
         value: saved_prefs[pref.name],
     }));
@@ -204,9 +206,9 @@ async function update_all() {
         container.removeChild(container.firstChild);
     }
     container.appendChild(
-        createElement('div', ['row'], null, null, null, [
-            createElement('div', ['col-xs-12'], null, null, null, [
-                createElement('h2', null, null, 'Options')
+        createElement('div', ['row'], undefined, undefined, undefined, [
+            createElement('div', ['col-xs-12'], undefined, undefined, undefined, [
+                createElement('h2', undefined, undefined, 'Options')
             ])
         ])
     );
@@ -215,41 +217,40 @@ async function update_all() {
             continue;
         if (pref.name === 'configured_pages')
             continue;
-        let row = createElement('div', ['row'], null, null, null, [
+        let row = createElement('div', ['row'], undefined, undefined, undefined, [
             // title label
             createElement(
                 'div',
                 pref.type === 'bool' ?
                     ['col-xs-10', 'col-sm-4', 'col-md-4'] :
                     ['col-xs-12', 'col-sm-12', 'col-md-4'],
-                null, null, null, [
-                    createElement('label', ['full-width'], null, pref.title, {for: `labeled_pref_${pref.name}`})
+                undefined, undefined, undefined, [
+                    createElement('label', ['full-width'], undefined, pref.title, {for: `labeled_pref_${pref.name}`})
                 ]
             )
         ]);
 
         // control
-        var col;
         var id = `labeled_pref_${pref.name}`;
         switch (pref.type) {
             case 'menulist':
                 row.appendChild(
-                    createElement('div', ['col-xs-12', 'col-sm-8', 'col-md-6'], null, null, null, [
+                    createElement('div', ['col-xs-12', 'col-sm-8', 'col-md-6'], undefined, undefined, undefined, [
                         createElement(
                             'select',
                             ['pref_'+pref.name, 'full-width', 'form-control'],
-                            id, null,
+                            id, undefined,
                             { 'data-pref-type': pref.type },
                             // children
-                            pref.options.map(function (option) {
+                            pref.options!.map(function (option) {
                                 return createElement(
-                                    'option', null, null,
+                                    'option', undefined, undefined,
                                     option.label,
-                                    (pref.value === parseInt(option.value)) ? {selected: ''} : null
+                                    (pref.value === parseInt(option.value)) ? {selected: ''} : undefined
                                 )
                             }),
-                            {onchange: function(event) {
-                                set_pref(pref.name, event.target.selectedIndex);
+                            {onchange: function(event: Event) {
+                                set_pref(pref.name, (event.target as HTMLFormElement).selectedIndex);
                             }}
                         )
                     ])
@@ -257,22 +258,22 @@ async function update_all() {
                 break;
             case 'color':
                 ['color', 'text'].forEach(function(input_type) {
-                    row.appendChild(createElement('div', ['col-xs-6', 'col-sm-4', 'col-md-3'], null, null, null, [
+                    row.appendChild(createElement('div', ['col-xs-6', 'col-sm-4', 'col-md-3'], undefined, undefined, undefined, [
                         createElement(
                             'input',
                             ['input_color', 'input_color_' + input_type, 'pref_' + pref.name, 'full-width', 'form-control'],
-                            (input_type === 'color') ? id : null, null,
+                            (input_type === 'color') ? id : undefined, undefined,
                             {
                                 'data-pref-type': pref.type,
                                 type: input_type
-                            }, null,
+                            }, undefined,
                             {
-                                onchange: function(event){
+                                onchange: function(event: Event){
                                     //TODO: support any CSS color format // RegExp('^#(?:[\\da-fA-F]{3}){1,2}$')
-                                    if (event.target.value.search(new RegExp('^#[\\da-fA-F]{6}$')) === 0) {
-                                        set_pref(pref.name, event.target.value);
+                                    if ((event.target as HTMLFormElement).value.search(new RegExp('^#[\\da-fA-F]{6}$')) === 0) {
+                                        set_pref(pref.name, (event.target as HTMLFormElement).value);
                                     } else {
-                                        event.target.value = Array.prototype.find.call(document.getElementsByClassName('pref_' + pref.name), function(node) {return node !== event.target}).value;
+                                        (event.target as HTMLFormElement).value = Array.prototype.find.call(document.getElementsByClassName('pref_' + pref.name), function(node) {return node !== event.target}).value;
                                     }
                                 },
                                 value: pref.value
@@ -283,35 +284,35 @@ async function update_all() {
                 break;
             case 'hotkey':
                 row.appendChild(
-                    createElement('div', ['col-xs-6', 'col-sm-4', 'col-md-3'], null, null, null, [
+                    createElement('div', ['col-xs-6', 'col-sm-4', 'col-md-3'], undefined, undefined, undefined, [
                         createElement(
                             'input',
                             [`pref_${pref.name}`, 'full-width', 'form-control'],
                             id,
-                            null,
+                            undefined,
                             {
                                 type: 'text',
                                 'data-pref-type': pref.type,
-                            }, null, {
+                            }, undefined, {
                                 value: pref.value,
-                                onchange: function(event){
-                                    set_pref(pref.name, event.target.value);
+                                onchange: function(event: Event){
+                                    set_pref(pref.name, (event.target as HTMLFormElement).value);
                                 },
                             }
                         ),
                     ])
                 );
                 row.appendChild(
-                    createElement('div', ['col-xs-6', 'col-sm-4', 'col-md-3'], null, null, null, [
+                    createElement('div', ['col-xs-6', 'col-sm-4', 'col-md-3'], undefined, undefined, undefined, [
                         createElement(
                             'button',
                             ['btn', 'btn-default', 'full-width'],
-                            null,
+                            undefined,
                             'Grab',
                             {},
-                            null,
+                            undefined,
                             {
-                                onclick: event => grabshortcut_start(pref.name),
+                                onclick: (_event: Event) => grabshortcut_start(pref.name),
                             }
                         ),
                     ])
@@ -319,14 +320,14 @@ async function update_all() {
                 break;
             case 'bool':
                 row.appendChild(
-                    createElement('div', ['col-xs-2', 'col-sm-4', 'col-md-6'], null, null, null, [
-                        createElement('input', ['pref_'+pref.name, 'full-width', 'form-control'], id, null, {
+                    createElement('div', ['col-xs-2', 'col-sm-4', 'col-md-6'], undefined, undefined, undefined, [
+                        createElement('input', ['pref_'+pref.name, 'full-width', 'form-control'], id, undefined, {
                             type: 'checkbox',
                             'data-pref-type': pref.type
-                        }, null, {
+                        }, undefined, {
                             checked: pref.value,
-                            onchange: function(event){
-                                set_pref(pref.name, event.target.checked);
+                            onchange: function(event: Event){
+                                set_pref(pref.name, (event.target as HTMLFormElement).checked);
                             }
                         })
                     ])
@@ -335,8 +336,8 @@ async function update_all() {
         }
 
         row.appendChild(
-            createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2'], null, null, null, [
-                createElement('button', ['btn', 'btn-default', 'full-width'], null, 'Reset', null, null, {
+            createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2'], undefined, undefined, undefined, [
+                createElement('button', ['btn', 'btn-default', 'full-width'], undefined, 'Reset', undefined, undefined, {
                     onclick: () => set_pref(pref.name, prefs_keys_with_defaults[pref.name]),
                 })
             ])
@@ -345,40 +346,40 @@ async function update_all() {
         container.appendChild(row);
     }
     container.appendChild(
-        createElement('div', ['row'], null, null, null, [
-            createElement('div', ['col-xs-12'], null, null, null, [
-                createElement('h2', null, null, 'Configured pages')
+        createElement('div', ['row'], undefined, undefined, undefined, [
+            createElement('div', ['col-xs-12'], undefined, undefined, undefined, [
+                createElement('h2', undefined, undefined, 'Configured pages')
             ])
         ])
     );
-    update_configured(saved_prefs['configured_pages']);
+    update_configured(saved_prefs['configured_pages'] as ConfiguredPages);
 }
-function update_configured(data) {
-    let container = document.querySelector('#main');
+function update_configured(data: ConfiguredPages) {
+    let container = document.querySelector('#main') as HTMLElement;
 
     Array.prototype.forEach.call(container.querySelectorAll('.configured_page'), function(node) {
         node.parentNode.removeChild(node);
     });
     if (Object.keys(data).length === 0) {
         container.appendChild(
-            createElement('div', ['row', 'configured_page'], null, null, null, [
-                createElement('div', ['col-xs-12'], null, 'There is no single configured page')
+            createElement('div', ['row', 'configured_page'], undefined, undefined, undefined, [
+                createElement('div', ['col-xs-12'], undefined, 'There is no single configured page')
             ])
         );
     } else
         Object.keys(data).forEach(function (url) {
             let method = data[url];
             container.appendChild(
-                createElement('div', ['row', 'configured_page'], null, null, null, [
-                    createElement('div', ['col-xs-12', 'col-sm-12', 'col-md-5', 'col-lg-8', 'configured_page_url'], null, url),
-                    createElement('div', ['col-xs-12', 'col-sm-8', 'col-md-5', 'col-lg-2'], null, methods[method].label),
-                    createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2', 'col-lg-2'], null, null, null, [
-                        createElement('button', ['btn', 'btn-default', 'full-width'], null, 'Remove', {
+                createElement('div', ['row', 'configured_page'], undefined, undefined, undefined, [
+                    createElement('div', ['col-xs-12', 'col-sm-12', 'col-md-5', 'col-lg-8', 'configured_page_url'], undefined, url),
+                    createElement('div', ['col-xs-12', 'col-sm-8', 'col-md-5', 'col-lg-2'], undefined, methods[method].label),
+                    createElement('div', ['col-xs-12', 'col-sm-4', 'col-md-2', 'col-lg-2'], undefined, undefined, undefined, [
+                        createElement('button', ['btn', 'btn-default', 'full-width'], undefined, 'Remove', {
                             'data-url': url,
-                        }, null, {
-                            onclick: async function (event) {
+                        }, undefined, {
+                            onclick: async function (event: Event) {
                                 let configured = await get_prefs('configured_pages');
-                                delete configured[event.target.getAttribute('data-url')];
+                                delete configured[(event.target as HTMLElement).getAttribute('data-url')!];
                                 set_pref('configured_pages', configured);
                             },
                         }),

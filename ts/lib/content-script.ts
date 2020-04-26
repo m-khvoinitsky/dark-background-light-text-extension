@@ -1,26 +1,30 @@
+import type { AddonOptions, ConfiguredPages, ConfiguredTabs, MethodIndex, MethodMetadata, MethodExecutor } from "./types";
+import type { Storage } from 'webextension-polyfill-ts'
+
 const tabId_promise = browser.runtime.sendMessage({action: 'query_tabId'});
-let is_iframe;
+let is_iframe: boolean;
 try {
     is_iframe = window.self !== window.top;
 } catch (e) {
     is_iframe = true;
 }
 
+// @ts-ignore: 2454
 if (typeof content_script_state === 'undefined') { /* #226 part 1 workaround */
     /* eslint-disable no-var */
     var content_script_state = 'normal_order';
 
-    var prefs;
-    var merged_configured;
-    var configured_tabs;
-    var rendered_stylesheets;
+    var prefs: AddonOptions;
+    var merged_configured: ConfiguredPages;
+    var configured_tabs: ConfiguredTabs;
+    var rendered_stylesheets: {[key: string]: string};
     /* eslint-enable no-var */
 }
 
 const protocol_and_www = new RegExp('^(?:(?:https?)|(?:ftp))://(?:www\\.)?');
-async function get_method_for_url(url) {
+async function get_method_for_url(url: string): Promise<MethodMetadata> {
     //TODO: merge somehow part of this code with generate_urls()
-    let method = 'unspecified';
+    let method: MethodMetadata | 'unspecified' = 'unspecified';
     if (prefs.enabled) {
         if (is_iframe) {
             let parent_method_number = await browser.runtime.sendMessage({action: 'query_parent_method_number'});
@@ -31,7 +35,7 @@ async function get_method_for_url(url) {
             }
         }
         // TODO: get rid of await here, https://bugzilla.mozilla.org/show_bug.cgi?id=1574713
-        let tab_configuration = false;
+        let tab_configuration: MethodIndex | boolean = false;
         if (Object.keys(configured_tabs).length > 0) {
             let tabId = await tabId_promise;
             tab_configuration = configured_tabs.hasOwnProperty(tabId) ? configured_tabs[tabId] : false;
@@ -50,14 +54,15 @@ async function get_method_for_url(url) {
         }
         let pure_domains = Object.keys(merged_configured).filter(key => (key.indexOf('/') < 0));
         let with_path = Object.keys(merged_configured).filter(key => (key.indexOf('/') >= 0));
-        if (with_path.sort((a, b) => a.length < b.length).some(saved_url => {
+        if (with_path.sort((a, b) => a.length - b.length).some((saved_url: string): boolean => {
             if (url.indexOf(saved_url) === 0) {
                 method = methods[merged_configured[saved_url]];
                 return true;
-            }
+            } else
+                return false;
         })) {
         } // if .some() returns true => we found it!
-        else if (pure_domains.sort((a, b) => a.length < b.length).some(saved_url => {
+        else if (pure_domains.sort((a, b) => a.length - b.length).some((saved_url: string): boolean => {
             let saved_arr = saved_url.split('.').reverse();
             let test_arr = url.split('/')[0].split('.').reverse();
             if (saved_arr.length > test_arr.length)
@@ -66,22 +71,23 @@ async function get_method_for_url(url) {
                 method = methods[merged_configured[saved_url]];
                 return true;
             }
+            return false;
         })) {
         }
         else
             method = methods[prefs.default_method];
-        return method;
+        return method as MethodMetadata;
     } else
         return methods[0];
 }
 
 
 
-let current_method;
-let resolve_current_method_promise;
-let current_method_promise = new Promise((resolve) => { resolve_current_method_promise = resolve; });
-let current_method_executor;
-async function do_it(changes) {
+let current_method: MethodMetadata;
+let resolve_current_method_promise: ((mmd: MethodMetadata) => void) | null;
+let current_method_promise: Promise<MethodMetadata> = new Promise((resolve: (mmd: MethodMetadata) => void) => { resolve_current_method_promise = resolve; });
+let current_method_executor: MethodExecutor | undefined;
+async function do_it(changes: {[s: string]: Storage.StorageChange}) {
     try {
         let new_method = await get_method_for_url(window.document.documentURI);
         if (resolve_current_method_promise) {
@@ -96,7 +102,7 @@ async function do_it(changes) {
             Object.keys(changes).some(key => key.indexOf('_color') >= 0) // TODO: better condition
         ) {
             for (let node of document.querySelectorAll('style[class="dblt-ykjmwcnxmi"]')) {
-                node.parentElement.removeChild(node);
+                node.parentElement!.removeChild(node);
             }
             for (let css of new_method.stylesheets) {
                 let style_node = document.createElement('style');
@@ -124,7 +130,10 @@ async function do_it(changes) {
     } catch (e) { console.exception(e); }
 }
 
-browser.runtime.onMessage.addListener(async (message, sender) => {
+interface GetMethodNumberMsg {
+    action: 'get_method_number'
+}
+browser.runtime.onMessage.addListener(async (message: GetMethodNumberMsg, _sender) => {
     try {
         if (!message.action) {
             console.error('bad message!', message);
@@ -135,9 +144,9 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
                 return (await current_method_promise).number;
             default:
                 console.error('bad message 2!', message);
-                break;
+                return;
         }
-    } catch (e) { console.exception(e); }
+    } catch (e) { console.exception(e); return; }
 });
 
 if (content_script_state === 'registered_content_script_first') { /* #226 part 1 workaround */

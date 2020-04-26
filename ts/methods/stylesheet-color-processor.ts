@@ -1,21 +1,25 @@
-"use strict";
+import type { AddonOptions, MethodExecutor, RGBA, RGB, DefaultColors } from '../lib/types'
+declare var { relative_luminance, lighten_or_darken_color }: typeof import('../lib/color_utils')
+declare var { StylesheetProcessorAbstract }: typeof import('./stylesheet-processor-abstract')
+declare var { brackets_aware_split }: typeof import('./stylesheet-processor-abstract')
+declare var { parseCSSColor }: typeof import('../lib/csscolorparser')
 
-const parse_text_shadow = (value) => {
+function parse_text_shadow(value: string): [null, null] | [Array<string | RGBA>, number] {
     let color_index;
-    let splitted = brackets_aware_split(value, ' ');
+    let splitted = brackets_aware_split(value, ' ') as Array<string | RGBA>;
     for (let i = 0; i < splitted.length; i++) {
-        let parsed_color = parseCSSColor(splitted[i]);
+        let parsed_color = parseCSSColor(splitted[i] as string);
         if (parsed_color) {
             color_index = i;
             splitted[i] = parsed_color;
             break;
         }
     }
-    if (!Number.isInteger(color_index))
+    if (typeof color_index === 'undefined')
         return [null, null];
     return [splitted, color_index]
 };
-const intersect = (set1, set2) => set1.some(
+const intersect = (set1: string[], set2: string[]): boolean => set1.some(
         set1_cur => set2.some(
             set2_cur => (  //TODO: remove redundant .toLowerCase()
                 set2_cur.toLowerCase().indexOf(set1_cur.toLowerCase()) >= 0 ||
@@ -24,7 +28,7 @@ const intersect = (set1, set2) => set1.some(
         )
 );
 
-const preserve_background_color = [
+const preserve_background_color: string[] = [
     '.colorpickertile',
     '.colorpicker-button-colorbox',
     // Youtube
@@ -37,7 +41,7 @@ const preserve_background_color = [
     '.barchart',  // sentry charts
 ];
 
-const remove_background_image = [
+const remove_background_image: string[] = [
     /*'static/cm-bkg.jpg',  //http://review.cyanogenmod.org/
      'images/homepagetop.gif',  //http://trv-science.ru/
      'images/homepagetoptop.gif',
@@ -47,7 +51,7 @@ const remove_background_image = [
      'images/bottom.gif'*/ // removed due to "remove bg-image if no-repeat too"
 ];
 
-const do_not_remove_background_image = [
+const do_not_remove_background_image: string[] = [
     'a.add', //test
     'favorite.gif', // habrahabr.ru
     'pageviews.png', //
@@ -84,7 +88,7 @@ const do_not_remove_background_image = [
     'avatar',
 ];
 
-const system_colors = [
+const system_colors: string[] = [
     // https://developer.mozilla.org/en/docs/Web/CSS/color_value#System_Colors
     'ActiveBorder', 'ActiveCaption', 'AppWorkspace', 'Background', 'ButtonFace', 'ButtonHighlight', 'ButtonShadow',
     'ButtonText', 'CaptionText', 'GrayText', 'Highlight', 'HighlightText', 'InactiveBorder', 'InactiveCaption',
@@ -92,37 +96,47 @@ const system_colors = [
     'ThreeDFace', 'ThreeDHighlight', 'ThreeDLightShadow', 'ThreeDShadow', 'Window', 'WindowFrame', 'WindowText'
 ].map(c => c.toLowerCase());
 
-class StylesheetColorProcessor extends StylesheetProcessorAbstract {
-    constructor(window, options) {
-        super(window, options, '[style*="color"], [style*="background"]');
-        let default_foreground_color = parseCSSColor(this.options.default_foreground_color);
-        let default_background_color = parseCSSColor(this.options.default_background_color);
-        let is_dark_background = relative_luminance(default_background_color) < relative_luminance(default_foreground_color);
-        let default_colors = is_dark_background ?
+export class StylesheetColorProcessor extends StylesheetProcessorAbstract implements MethodExecutor {
+    options: AddonOptions
+    backgroundify_color: (color_array: RGBA) => string
+    foregroundify_color: (color_array: RGBA) => string
+    readonly var_name_postfix = '-dark-background-light-text-add-on-'
+    readonly rename_var_fg = (var_name: string) => `${var_name}${this.var_name_postfix}fg`
+    readonly rename_var_bg = (var_name: string) => `${var_name}${this.var_name_postfix}bg`
+    readonly use_webkit_text_stroke = false // window.CSS.supports('-webkit-text-stroke', '1px red');
+    constructor(window: Window, options: AddonOptions) {
+        super(window, '[style*="color"], [style*="background"]');
+        this.options = options;
+        let default_foreground_color: RGBA = parseCSSColor(this.options.default_foreground_color)!;
+        let default_background_color: RGBA = parseCSSColor(this.options.default_background_color)!;
+        let is_dark_background = relative_luminance(default_background_color.slice(0, 3) as RGB) < relative_luminance(default_foreground_color.slice(0, 3) as RGB);
+        let default_colors: DefaultColors = is_dark_background ?
             {default_light_color: default_foreground_color, default_dark_color: default_background_color} :
             {default_light_color: default_background_color, default_dark_color: default_foreground_color};
         this.backgroundify_color = color_array => lighten_or_darken_color(color_array, is_dark_background, default_colors);
         this.foregroundify_color = color_array => lighten_or_darken_color(color_array, !is_dark_background, default_colors);
-
-        this.var_name_postfix = '-dark-background-light-text-add-on-';
-        this.rename_var_fg = var_name => `${var_name}${this.var_name_postfix}fg`;
-        this.rename_var_bg = var_name => `${var_name}${this.var_name_postfix}bg`;
-
-        this.use_webkit_text_stroke = false; // window.CSS.supports('-webkit-text-stroke', '1px red');
+    }
+    unload_from_window() {
+        StylesheetProcessorAbstract.prototype.unload_from_window.call(this, false)
     }
     all_sheets_have_been_processed() {
         let nodes = document.querySelectorAll('style[data-source="methods/simple-css.css"]');
         for (let node of nodes)
-            node.parentElement.removeChild(node);
+            node.parentElement?.removeChild(node);
         super.all_sheets_have_been_processed();
     }
     //CSS2Properties
-    process_CSSStyleDeclaration(CSSStyleDeclaration_v,
-                                base_url,
-                                selector,
-                                classList_v,
-                                node_id,
-                                tagname) {
+    process_CSSStyleDeclaration(
+        CSSStyleDeclaration_v: CSSStyleDeclaration,
+        base_url: string,
+        selector: string,
+        // @ts-ignore: 6133
+        classList_v: string[],
+        // @ts-ignore: 6133
+        node_id: string | null,
+        // @ts-ignore: 6133
+        tagname: string,
+    ): void {
         let var_properties = [];
         for (let p of CSSStyleDeclaration_v)
             if (p.indexOf('--') === 0 && p.indexOf(this.var_name_postfix) < 0)
@@ -130,7 +144,7 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         for (let p of var_properties) {
             CSSStyleDeclaration_v.setProperty(
                 this.rename_var_fg(p),
-                this.process_color_property(CSSStyleDeclaration_v.getPropertyValue(p), true),
+                this.process_color_property(CSSStyleDeclaration_v.getPropertyValue(p), true, false) as string,
                 CSSStyleDeclaration_v.getPropertyPriority(p)
             );
             CSSStyleDeclaration_v.setProperty(
@@ -153,7 +167,7 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         if (color)
             CSSStyleDeclaration_v.setProperty(
                 'color',
-                this.process_color_property(color, true),
+                this.process_color_property(color, true, false) as string,
                 CSSStyleDeclaration_v.getPropertyPriority('color')
             );
 
@@ -166,13 +180,13 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         if (background_color && !(preserve_background_color.some(val => selector.indexOf(val) >= 0)))
             CSSStyleDeclaration_v.setProperty(
                 'background-color',
-                this.process_color_property(background_color, false),
+                this.process_color_property(background_color, false, false) as string,
                 CSSStyleDeclaration_v.getPropertyPriority('background-color')
             );
         if (background_image) {
-            let bg_images = brackets_aware_split(background_image);
-            let bg_repeats;
-            let bg_positions;
+            let bg_images = brackets_aware_split(background_image, undefined);
+            let bg_repeats: string[];
+            let bg_positions: string[];
 
             //TODO: combine next two splits:
             if (background_repeat)
@@ -202,10 +216,10 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
             );
         }
         if (!add_safe_text_shadow && text_shadow) {
-            let parts = brackets_aware_split(text_shadow).map(text_shadow => {
+            let parts = brackets_aware_split(text_shadow, undefined).map(text_shadow => {
                 let [parsed, color_index] = parse_text_shadow(text_shadow);
-                if (parsed) {
-                    parsed[color_index] = this.backgroundify_color(parsed[color_index]);
+                if (parsed !== null && color_index !== null) {
+                    parsed[color_index] = this.backgroundify_color(parsed[color_index] as RGBA);
                     return parsed.join(' ');
                 } else
                     return text_shadow;
@@ -245,13 +259,17 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         }
     }
     // detects only trimmed!
-    static is_css_var(s) {
+    static is_css_var(s: string): boolean {
         return s.indexOf('var(') === 0 && s.lastIndexOf(')') === (s.length - 1);
     }
-    static process_css_var_usage(css, var_cb, fallback_cb) {
+    static process_css_var_usage(
+        css: string,
+        var_cb: (var_part: string) => string,
+        fallback_cb: (var_part: string) => string
+    ): string {
         let s = css.trim();
         if (!StylesheetColorProcessor.is_css_var(s))
-            return;
+            throw new Error(`${s} is not CSS var!`);
         s = s.slice(4, s.length - 1);
         let comma_index = s.indexOf(',');
         if (comma_index >= 0) {
@@ -261,7 +279,7 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         } else
             return `var(${var_cb(s.trim())})`;
     }
-    process_bg_part(bg_part, selector, base_url) {
+    process_bg_part(bg_part: string, selector: string, base_url: string): string {
         bg_part = bg_part.trim();
         if (StylesheetColorProcessor.is_css_var(bg_part))
             return StylesheetColorProcessor.process_css_var_usage(bg_part, this.rename_var_bg, s => this.process_bg_part(s, selector, base_url));
@@ -271,7 +289,7 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         // TODO: safe text shadow?                      TODO: bg_repeat, bg_position
         return this.process_background_image(bg_part, 'TODO bg_repeat', 'TODO bg_position', selector, base_url)[0];
     }
-    process_background_property(bg_prop, selector, base_url) {
+    process_background_property(bg_prop: string, selector: string, base_url: string): string {
         let bgs = brackets_aware_split(bg_prop, ',');
         let new_bgs = [];
         for (let bg of bgs) {
@@ -283,14 +301,14 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
         }
         return new_bgs.join(', ');
     }
-    process_color_property(color, is_foreground, no_ret_if_fail) {
+    process_color_property(color: string, is_foreground: boolean, no_ret_if_fail: boolean): string | void { // TODO: let compiler know for sure return type
         let rgb_color_array = parseCSSColor(color);
         if (rgb_color_array)
             return is_foreground ? this.foregroundify_color(rgb_color_array) : this.backgroundify_color(rgb_color_array);
         else if (color.indexOf('-moz-') >= 0 || system_colors.indexOf(color.toLowerCase().trim()) >= 0)
             return is_foreground ? this.options.default_foreground_color : this.options.default_background_color;
         else if (StylesheetColorProcessor.is_css_var(color.trim()))
-            return StylesheetColorProcessor.process_css_var_usage(color, is_foreground ? this.rename_var_fg : this.rename_var_bg, s => this.process_color_property(s, is_foreground));
+            return StylesheetColorProcessor.process_css_var_usage(color, is_foreground ? this.rename_var_fg : this.rename_var_bg, s => this.process_color_property(s, is_foreground, false) as string);
         if (!no_ret_if_fail) {
             if (color.indexOf('rgba(') === 0 || color.indexOf('rgb(') === 0 ) { // instagram weird variable use crutches
                 return is_foreground ? this.options.default_foreground_color : this.options.default_background_color;
@@ -299,7 +317,7 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
             }
         }
     }
-    process_background_image(bg_image, bg_repeat, bg_position, selector, base_url) {
+    process_background_image(bg_image: string, bg_repeat: string, bg_position: string, selector: string, base_url: string): [string, boolean] {
         if (bg_image.indexOf('url(') === 0) {
             /// all urls will be like url("lalala") UPD: not necessary in var()
             let url = bg_image.slice(bg_image.indexOf('(') + 1, bg_image.lastIndexOf(')'));
@@ -308,12 +326,12 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
                 url = url.slice(1, url.length - 1);
             url = new URL(url, base_url).href;
             if (intersect(remove_background_image, [url, selector])) {
-                return ['none'];
+                return ['none', false];
             // yep, facebook-only fix (/rsrc.php/), it's too risky to apply it everywhere
             //TODO: check impact of this on other websites
             } else if (bg_repeat !== 'no-repeat' && bg_repeat !== 'no-repeat no-repeat' &&
                 bg_image.indexOf('/rsrc.php/') >= 0) {
-                return ['none'];
+                return ['none', false];
             } else if (intersect(do_not_remove_background_image, [url, selector])) {
                 return ['url("' + url + '")', true];
             } else if ( // no-repeat combined with exact bg position is most likely sprite
@@ -322,7 +340,7 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
             ) {
                 return ['url("' + url + '")', true];
             } else {
-                return ['none'];
+                return ['none', false];
             } /*
              if (url.indexOf('data:') != 0) {
              if (intersect(remove_background_image, [url, selector])) {
@@ -348,14 +366,13 @@ class StylesheetColorProcessor extends StylesheetProcessorAbstract {
             let close_bracket_i = bg_image.lastIndexOf(')');
             let gradient_function = bg_image.slice(0, open_bracket_i);
             let params_str = bg_image.slice(open_bracket_i + 1, close_bracket_i);
-            let params_arr = brackets_aware_split(params_str);
+            let params_arr = brackets_aware_split(params_str, undefined);
             let result_arr = params_arr.map(
-                param => brackets_aware_split(param, ' ').map(s => this.process_color_property(s, false)).join(' ')
+                param => brackets_aware_split(param, ' ').map(s => this.process_color_property(s, false, false)).join(' ')
             );
-            return [gradient_function + '(' + result_arr.join(', ') + ')'];
+            return [gradient_function + '(' + result_arr.join(', ') + ')', false];
         } else {
-            return [bg_image];
+            return [bg_image, false];
         }
-        return [bg_image];
     }
 }
