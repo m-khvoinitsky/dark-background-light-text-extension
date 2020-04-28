@@ -108,7 +108,7 @@ async function do_it(changes: {[s: string]: Storage.StorageChange}) {
                 let style_node = document.createElement('style');
                 style_node.setAttribute('data-source', css);
                 style_node.classList.add('dblt-ykjmwcnxmi');
-                style_node.innerHTML = rendered_stylesheets[`${css}_${ is_iframe ? 'iframe' : 'toplevel' }`];
+                style_node.innerText = rendered_stylesheets[`${css}_${ is_iframe ? 'iframe' : 'toplevel' }`];
                 document.documentElement.appendChild(style_node);
                 if (!document.body) {
                     // this should move our element after <body> which is important in specificity fight
