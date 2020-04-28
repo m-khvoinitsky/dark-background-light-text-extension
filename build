@@ -1,21 +1,30 @@
 #!/bin/bash
-set -e
+set -ex
+if [[ ! -f ./manifest.json || ! -d ./.git ]]; then
+    echo 'build script is not launched from add-on root source directory which is not supported'
+    exit 1
+fi
 OUTPUT="$(readlink -f ./build.xpi)"
-TEMPDIR="$(mktemp -d)"
-rm "${OUTPUT}"
+rm -f "${OUTPUT}"
+rm -rf ./dist
+
+# compile typescript
+./node_modules/typescript/bin/tsc
+# remove "export" from compiled files — ESMAScript modules aren't yet supported in content scripts, see https://bugzilla.mozilla.org/show_bug.cgi?id=1451545
+sed -i -e 's/^export //g' ./dist/*/*.js
+# remove empty file
+rm ./dist/lib/types.js
 {
-    git ls-tree -r HEAD --name-only | \
-    grep -Ev '^build$|^test/|\.eslintrc\.js|\.gitignore|\.gitmodules|\.pre-commit-config\.yaml|README.md|LICENSE|package.json'
+    git ls-tree -r HEAD --name-only ./manifest.json ./icons/ ./methods/ ./ui/
     echo lib/css-color-parser/csscolorparser.js
 } | while read -r f; do
-    if [ -f "${f}" ]; then
-        OUT="${TEMPDIR}/${f}"
+    if [[ -f "${f}" ]]; then
+        OUT="./dist/${f}"
         mkdir -p "$(dirname "${OUT}")"
         sed '/\/browser-polyfill.min.js/d' "${f}" > "${OUT}"
     fi
 done
 (
-    cd "${TEMPDIR}"
+    cd "./dist/"
     zip -r "${OUTPUT}" .
 )
-rm -r "${TEMPDIR}"
