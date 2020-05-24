@@ -1,26 +1,19 @@
 html {
-/* some webpages set html's bgcolor to transparent which is becomes white so it should be !important */
-{if_toplevel_start}
+/* some pages set html bgcolor to transparent which becomes white: add !important */
+  {if_toplevel_start}
     background-color: #{default_background_color} !important;
-{if_toplevel_end}
+  {if_toplevel_end}
     color: #{default_foreground_color} !important; /* #29 */
 }
-                                                                                                /*                  last.fm                           */
-/*[style*='background']:not(.newtab-thumbnail):not(.colorpicker-button-colorbox):not(.colorpickertile):not(.cover-image):not(.sidekick-image):not(.hero-image):not(.embed2yt-thumbnail),
-[bgcolor] {
-    background-color: #000000 !important;
-    background-image: none !important;
-} */
-/*.colorpickertile, .colorpicker-button-colorbox*/
-/*Legacy Attributes*/
+
+/* legacy attributes */
 [bgcolor] {
     background-color: #{default_background_color} !important;
 }
-[text], /* there is such attribute! */
+[text],
 [color] {
     color: #{default_foreground_color} !important;
 }
-
 [alink]:link:active {
     color: #FFA0A0 !important;
 }
@@ -30,23 +23,8 @@ html {
 [link]:link {
     color: #7FD7FF !important;
 }
-/*Legacy Attributes*/
 
-/*Bittorrent sync webui fix*/
+/* Bittorrent sync */
 .qrCode > canvas {
     border: 10px white solid;
 }
-
-@-moz-document url-prefix("https://davdroid.bitfire.at/") {
-    /* fix for huge white peace due to "border-left: 68px solid #EDEDED;" */
-    article {
-        border-left-color: #000000 !important;
-    }
-}
-
-/*@-moz-document url-prefix("http://music.yandex.ru")
-{
-    svg {
-        filter: invert(100%) hue-rotate(180deg) !important;
-    }
-}*/
