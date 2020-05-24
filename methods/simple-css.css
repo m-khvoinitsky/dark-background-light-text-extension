@@ -11,8 +11,7 @@ button *,
 input *,
 optgroup *,
 select *,
-textarea *
-{
+textarea * {
     background-color: transparent !important;
     text-shadow: #{default_background_color} 0pt 0pt 1pt,
     #{default_background_color} 0pt 0pt 2pt,
@@ -27,8 +26,7 @@ button,
 input,
 optgroup,
 select,
-textarea
-{
+textarea {
     text-shadow: #{default_background_color} 0pt 0pt 1pt,
     #{default_background_color} 0pt 0pt 2pt,
     #{default_background_color} 0pt 0pt 3pt,
