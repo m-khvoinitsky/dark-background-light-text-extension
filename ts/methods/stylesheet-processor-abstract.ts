@@ -330,6 +330,9 @@ export abstract class StylesheetProcessorAbstract {
             case 5: // CSSRule.FONT_FACE_RULE
                 this.process_CSSFontFaceRule(CSSRule_v as CSSFontFaceRule, index, base_url);
                 break;
+            case 12: // CSSRule.SUPPORTS_RULE
+                this.process_CSSGroupingRule(CSSRule_v as CSSSupportsRule, base_url);
+                break;
         }
     }
     process_CSSFontFaceRule(CSSFontFaceRule_v: CSSFontFaceRule, index: number, base_url: string) {
