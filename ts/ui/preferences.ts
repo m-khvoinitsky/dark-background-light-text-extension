@@ -26,160 +26,6 @@ function createElement(tagName: string, classList?: string[], id?: string, textC
     return element;
 }
 
-function intersection(setA: Set<any>, setB: Set<any>) {
-    let intersection = new Set();
-    for (let elem of setB) {
-        if (setA.has(elem)) {
-            intersection.add(elem);
-        }
-    }
-    return intersection;
-}
-function union(...args: any[]) {
-    let union = new Set(args.shift());
-    for (let set of args) {
-        for (let elem of set) {
-            union.add(elem);
-        }
-    }
-    return union;
-}
-const grabshortcut_downKeys = new Set();
-let grabshortcut_target = '';
-const modifiers = new Set([
-    'Ctrl',
-    'MacCtrl',
-    'Command',
-    'Alt',
-]);
-const secondary_modifiers = new Set([
-    'Shift',
-]);
-// 'A', 'B', ... 'Z'
-const letters = new Set(Array.from({length: 26}, (_, i) => String.fromCharCode(65 + i)));
-// '0', '1', ... '9'
-const numbers = new Set(Array.from({length: 10}, (_, i) => `${i}`));
-// 'F1', 'F2', ... 'F24'
-const func_keys = new Set(Array.from({length: 24}, (_, i) => `F${i + 1}`));
-const media_keys = new Set([
-    'MediaPrevTrack',
-    'MediaNextTrack',
-    'MediaPlayPause',
-    'MediaStop',
-]);
-const other = new Set([
-    'Space',
-    'Comma',
-    'Period',
-    'Left',
-    'Up',
-    'Right',
-    'Down',
-    'Delete',
-    'End',
-    'PageDown',
-    'PageUp',
-    'Home',
-    'Insert',
-]);
-function grabshortcut_format(is_for_echo: boolean): string {
-    let order = [];
-    for (let what of [
-        modifiers,
-        secondary_modifiers,
-        union(letters, numbers, func_keys, media_keys, other),
-    ]) {
-        let found = intersection(grabshortcut_downKeys, what);
-        if (found.size > 0)
-            found.forEach(k => order.push(k));
-    }
-    if (is_for_echo)
-        order.push('...');
-    return order.join(is_for_echo ? ' + ' : '+');
-}
-function grabshortcut_submit() {
-    let node = document.querySelector(`.pref_${grabshortcut_target}`) as HTMLFormElement;
-    node.value = grabshortcut_format(false);
-    let change = new Event('change');
-    node.dispatchEvent(change);
-    grabshortcut_exit();
-}
-function grabshortcut_verify() {
-    // https://developer.mozilla.org/en-US/Add-ons/WebExtensions/manifest.json/commands#Shortcut_values
-
-    if (intersection(grabshortcut_downKeys, media_keys).size === 1) {
-        if (grabshortcut_downKeys.size === 1) {
-            grabshortcut_submit();
-        }
-    }
-
-    if (intersection(grabshortcut_downKeys, func_keys).size === 1) {
-        grabshortcut_submit();
-    }
-
-    if (intersection(grabshortcut_downKeys, union(letters, numbers, other)).size === 1) {
-        if (intersection(grabshortcut_downKeys, modifiers).size === 1) {
-            grabshortcut_submit();
-        }
-    }
-    (document.querySelector('#grab-hotkey') as HTMLElement).innerText = grabshortcut_format(true);
-}
-function grabshortcut_exit() {
-    document.querySelector('#grab-overlay')!.classList.add('hidden');
-    document.querySelector('#main')!.classList.remove('blurred');
-    window.removeEventListener('keydown', grabshortcut_keyupdown);
-    window.removeEventListener('keyup', grabshortcut_keyupdown);
-}
-const grabshortcut_map: {[key: string]: string} = {
-    'Control': 'Ctrl',
-    'MediaTrackPrevious': 'MediaPrevTrack',
-    'MediaTrackNext': 'MediaNextTrack',
-};
-if (window.navigator.platform.toLowerCase().includes('mac'))
-    Object.assign(grabshortcut_map, {
-        'Control': 'MacCtrl',
-        'OS': 'Command',
-    });
-function grabshortcut_keyupdown(event: KeyboardEvent) {
-    event.preventDefault();
-    let code = event.code;
-    let key;
-    if (code.indexOf('Key') === 0)
-        key = code.replace('Key', '');
-    else if (code.indexOf('Digit') === 0)
-        key = code.replace('Digit', '');
-    else if (code.includes('Arrow'))
-        key = code.replace('Arrow', '');
-    else if (code.includes('Left') || code.includes('Right')) // and not includes('Arrow') (which handled above)
-        key = code.replace('Left', '').replace('Right', '');
-    else
-        key = code;
-    if (grabshortcut_map.hasOwnProperty(key))
-        key = grabshortcut_map[key];
-    switch (event.type) {
-        case 'keydown':
-            grabshortcut_downKeys.add(key);
-            break;
-        case 'keyup':
-            if (key === 'Escape')
-                grabshortcut_exit();
-            if (grabshortcut_downKeys.has(key))
-                grabshortcut_downKeys.delete(key);
-            break;
-    }
-    grabshortcut_verify();
-}
-function grabshortcut_start(pref_name: string) {
-    grabshortcut_downKeys.clear();
-    grabshortcut_target = pref_name;
-    (document.querySelector('#grab-hotkey') as HTMLElement).innerText = '...';
-    (document.querySelector('#grab-overlay') as HTMLElement).classList.remove('hidden');
-    (document.querySelector('#main') as HTMLElement).classList.add('blurred');
-    (document.querySelector('#grab-stop') as HTMLElement).onclick = grabshortcut_exit;
-    window.addEventListener('keydown', grabshortcut_keyupdown);
-    window.addEventListener('keyup', grabshortcut_keyupdown);
-}
-
 async function update_all() {
     query_style().catch(rej => console.exception(rej));
     //TODO: separate configured pages refresh (see commented code below)
@@ -282,42 +128,6 @@ async function update_all() {
                     ]));
                 });
                 break;
-            case 'hotkey':
-                row.appendChild(
-                    createElement('div', ['col-xs-6', 'col-sm-4', 'col-md-3'], undefined, undefined, undefined, [
-                        createElement(
-                            'input',
-                            [`pref_${pref.name}`, 'full-width', 'form-control'],
-                            id,
-                            undefined,
-                            {
-                                type: 'text',
-                                'data-pref-type': pref.type,
-                            }, undefined, {
-                                value: pref.value,
-                                onchange: function(event: Event){
-                                    set_pref(pref.name, (event.target as HTMLFormElement).value);
-                                },
-                            }
-                        ),
-                    ])
-                );
-                row.appendChild(
-                    createElement('div', ['col-xs-6', 'col-sm-4', 'col-md-3'], undefined, undefined, undefined, [
-                        createElement(
-                            'button',
-                            ['btn', 'btn-default', 'full-width'],
-                            undefined,
-                            'Grab',
-                            {},
-                            undefined,
-                            {
-                                onclick: (_event: Event) => grabshortcut_start(pref.name),
-                            }
-                        ),
-                    ])
-                );
-                break;
             case 'bool':
                 row.appendChild(
                     createElement('div', ['col-xs-2', 'col-sm-4', 'col-md-6'], undefined, undefined, undefined, [
@@ -344,6 +154,17 @@ async function update_all() {
         );
 
         container.appendChild(row);
+    }
+    if ((await browser.runtime.getPlatformInfo()).os !== 'android') {
+        container.appendChild(
+            createElement('div', ['row'], undefined, undefined, undefined, [
+                createElement('div', ['col-xs-12'], undefined, undefined, undefined, [
+                    createElement('h2', undefined, undefined, 'Shortcuts')
+                ])
+            ])
+        );
+        container.appendChild(createElement('div', undefined, undefined, 'In order to configure shortcuts, go to about:addons (Menu -> Add-ons), press on the cogwheel icon, then choose "Manage Extension Shortcuts"'))
+        container.appendChild(createElement('a', undefined, undefined, 'See this support article for the detais', {href: 'https://support.mozilla.org/en-US/kb/manage-extension-shortcuts-firefox'}))
     }
     container.appendChild(
         createElement('div', ['row'], undefined, undefined, undefined, [

@@ -124,22 +124,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     } catch (e) { console.exception(e); }
 });
 
-
-on_prefs_change(changes => {
-    for (let pref in changes) {
-        if (pref === 'global_toggle_hotkey') {
-            try {
-                browser.commands.update({
-                    name: 'toggle-global',
-                    shortcut: changes[pref]['newValue'],
-                })
-            } catch (e) {
-                set_pref('global_toggle_hotkey', changes[pref]['oldValue']);
-            }
-        }
-    }
-});
-
 const prev_scripts: ContentScripts.RegisteredContentScript[] = [];
 async function send_prefs(changes: {[s: string]: Storage.StorageChange}) {
     prev_scripts.forEach(cs => cs.unregister());
@@ -200,17 +184,6 @@ on_prefs_change(send_prefs);
 
 
 if (browser.hasOwnProperty('commands')) {
-    if (browser.commands.hasOwnProperty('update'))
-        get_prefs(preferences.filter(pref => pref.type === 'hotkey').map(pref => pref.name)).then(values => {
-            for (let k in values)
-                try {
-                    browser.commands.update({
-                        name: k,
-                        shortcut: values[k] as string,
-                    })
-                } catch (e) {console.exception(e);}
-        });
-
     browser.commands.onCommand.addListener(async (name) => {
         try {
             let current_tab;

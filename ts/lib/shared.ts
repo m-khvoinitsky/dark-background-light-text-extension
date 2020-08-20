@@ -51,20 +51,6 @@ export const preferences: Preference[] = [
         title: 'Enabled',
     },
     {
-        type: 'hotkey',
-        name: 'global_toggle_hotkey',
-        value: 'Ctrl+Shift+D',
-        title: 'Toggle "Enabled" hotkey',
-        available: Object.prototype.hasOwnProperty.call(browser, 'tabs') ? Promise.resolve(Object.prototype.hasOwnProperty.call(browser, 'commands') && Object.prototype.hasOwnProperty.call(browser.commands, 'update')) : browser.runtime.sendMessage({action: 'is_commands_update_available'}),
-    },
-    {
-        type: 'hotkey',
-        name: 'tab_toggle_hotkey',
-        value: 'F2',
-        title: 'Toggle enabled for current tab hotkey',
-        available: Object.prototype.hasOwnProperty.call(browser, 'tabs') ? Promise.resolve(Object.prototype.hasOwnProperty.call(browser, 'commands') && Object.prototype.hasOwnProperty.call(browser.commands, 'update')) : browser.runtime.sendMessage({action: 'is_commands_update_available'}),
-    },
-    {
         title: 'Default method of changing page colors',
         value: 1,
         type: 'menulist',
