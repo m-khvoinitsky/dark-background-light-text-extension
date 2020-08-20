@@ -72,7 +72,13 @@ declare var { get_merged_configured, get_prefs, set_pref, methods }: typeof impo
     }
 
     const CURRENT_TAB_LABEL = '< Current Tab >';
-    let current_tab = (await browser.tabs.query({currentWindow: true, active: true}))[0];
+    let current_tab = (
+        await browser.tabs.query({
+                           // popup in the new Fenix is now in a separate window
+            currentWindow: (await browser.runtime.getPlatformInfo()).os === 'android' ? undefined : true,
+            active: true
+        })
+    )[0];
     let url = current_tab.url!;
 
     function close() {
