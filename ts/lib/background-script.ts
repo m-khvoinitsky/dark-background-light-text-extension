@@ -215,29 +215,6 @@ get_prefs('do_not_set_overrideDocumentColors_to_never').then(val => {
     }
 });
 
-(async function() {
-    if ((await platform_info).os === 'android') {
-        browser.tabs.onUpdated.addListener(tab_id => {
-            browser.pageAction.show(tab_id);
-        });
-        browser.tabs.onCreated.addListener(tab => {
-            browser.pageAction.show(tab.id!);
-        });
-        (await browser.tabs.query({})).forEach(tab => {
-            browser.pageAction.show(tab.id!);
-        });
-    }
-})().catch(rejection => console.error(rejection));
-
-browser.runtime.onInstalled.addListener(details => {
-    if (details.reason === 'update' && details.previousVersion && details.previousVersion.indexOf('0.5.') === 0) {
-        browser.tabs.create({
-            active: true,
-            url: '/ui/webextensions-release-notes.html',
-        });
-    }
-});
-
 browser.webRequest.onHeadersReceived.addListener(
     details => {
         try {

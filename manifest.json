@@ -65,18 +65,6 @@
     "default_title": "Dark Background and Light Text",
     "default_popup": "ui/configure-for-current-tab-panel.html"
   },
-  "page_action": {
-    "browser_style": false,
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "24": "icons/icon24.png",
-      "32": "icons/icon32.png",
-      "48": "icons/icon48.png",
-      "64": "icons/icon64.png"
-    },
-    "default_title": "Dark Background and Light Text preferences for current tab",
-    "default_popup": "ui/configure-for-current-tab-panel.html"
-  },
   "options_ui": {
     "page": "ui/preferences.html",
     "browser_style": false,
