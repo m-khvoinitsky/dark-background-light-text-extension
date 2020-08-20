@@ -164,7 +164,7 @@ async function update_all() {
             ])
         );
         container.appendChild(createElement('div', undefined, undefined, 'In order to configure shortcuts, go to about:addons (Menu -> Add-ons), press on the cogwheel icon, then choose "Manage Extension Shortcuts"'))
-        container.appendChild(createElement('a', undefined, undefined, 'See this support article for the detais', {href: 'https://support.mozilla.org/en-US/kb/manage-extension-shortcuts-firefox'}))
+        container.appendChild(createElement('a', undefined, undefined, 'See this support article for the detais', {href: 'https://support.mozilla.org/kb/manage-extension-shortcuts-firefox'}))
     }
     container.appendChild(
         createElement('div', ['row'], undefined, undefined, undefined, [
