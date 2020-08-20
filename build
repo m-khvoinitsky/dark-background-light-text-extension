@@ -6,7 +6,7 @@ if [[ ! -f ./manifest.json || ! -d ./.git ]]; then
 fi
 OUTPUT="$(readlink -f ./build.xpi)"
 rm -f "${OUTPUT}"
-rm -rf ./dist
+rm -rf ./dist/*
 
 # compile typescript
 ./node_modules/typescript/bin/tsc
