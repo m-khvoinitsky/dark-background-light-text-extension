@@ -164,7 +164,17 @@ export abstract class StylesheetProcessorAbstract {
         }*/
 
         Array.prototype.forEach.call(this.window.document.styleSheets, sheet => {
-            if (!this.processed_stylesheets.has(sheet) && sheet !== this.inline_override && !this.broken_stylesheets.has(sheet) && !this.self_stylesheets.has(sheet)) {
+            if (
+                !(
+                    this.processed_stylesheets.has(sheet)
+                    // Some stylesheets may have already been processed but changed since then.
+                    // Checking its cssRules.length should help to detect the majority of such situations.
+                    && this.processed_stylesheets.get(sheet) === sheet.cssRules.length
+                )
+                && sheet !== this.inline_override
+                && !this.broken_stylesheets.has(sheet)
+                && !this.self_stylesheets.has(sheet)
+            ) {
                 if (sheet.ownerNode && sheet.ownerNode.classList.contains('dblt-ykjmwcnxmi')) {
                     this.self_stylesheets.add(sheet);
                     return;
