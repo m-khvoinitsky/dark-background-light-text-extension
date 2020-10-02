@@ -206,7 +206,7 @@ export abstract class StylesheetProcessorAbstract {
     static find_ancestor_ownerNode(stylesheet: CSSStyleSheet): Node | undefined {
         let { ownerNode, ownerRule } = stylesheet;
         if (stylesheet.ownerNode)
-            return ownerNode;
+            return ownerNode!;
         if (ownerRule)
             if (ownerRule.parentStyleSheet) // #169
                 return this.find_ancestor_ownerNode(ownerRule.parentStyleSheet);
