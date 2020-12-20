@@ -32,7 +32,7 @@ async function update_all() {
     let saved_prefs = await get_prefs();
     let isTouchscreen = (await browser.runtime.getPlatformInfo()).os === 'android';
     if (document.readyState === 'loading') {
-        let at_least_interactive = new Promise((resolve, _reject) => {
+        let at_least_interactive: Promise<void> = new Promise((resolve, _reject) => {
             function readystatechange(event: Event) {
                 if ((event.target as HTMLDocument).readyState !== 'loading')
                     resolve();
