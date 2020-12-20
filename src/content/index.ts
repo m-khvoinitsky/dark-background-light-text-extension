@@ -4,6 +4,7 @@ import { AddonOptions, ConfiguredPages, ConfiguredTabs, MethodIndex, MethodMetad
 import { methods } from '../common/shared';
 import { StylesheetColorProcessor } from './methods/stylesheet-color-processor';
 import { InvertMethod } from './methods/invert';
+import { generate_urls } from '../common/generate-urls';
 
 methods['1'].executor = StylesheetColorProcessor;
 methods['3'].executor = InvertMethod;
@@ -33,10 +34,8 @@ if (typeof window.content_script_state === 'undefined') { /* #226 part 1 workaro
     window.content_script_state = 'normal_order';
 }
 
-const protocol_and_www = new RegExp('^(?:(?:https?)|(?:ftp))://(?:www\\.)?');
 async function get_method_for_url(url: string): Promise<MethodMetadata> {
     //TODO: merge somehow part of this code with generate_urls()
-    let method: MethodMetadata | 'unspecified' = 'unspecified';
     if (window.prefs.enabled) {
         if (is_iframe) {
             let parent_method_number = await browser.runtime.sendMessage({action: 'query_parent_method_number'});
@@ -54,46 +53,17 @@ async function get_method_for_url(url: string): Promise<MethodMetadata> {
         }
         if (tab_configuration !== false)
             return methods[tab_configuration];
-        if (url.search(protocol_and_www) >= 0) {
-            url = url.replace(protocol_and_www, '');
-            // dirty removing of portnumber from url
-            //TODO: do not remove it but handle properly
-            let colon = url.indexOf(':');
-            let origin_end = url.indexOf('/');
-            if (origin_end === -1) origin_end = url.length;
-            if (colon < origin_end && url.substring(colon + 1, origin_end).search(/^(\d)+$/) === 0)
-                url = url.substr(0, colon) + url.substr(origin_end);
-        }
-        let pure_domains = Object.keys(window.merged_configured).filter(key => (key.indexOf('/') < 0));
-        let with_path = Object.keys(window.merged_configured).filter(key => (key.indexOf('/') >= 0));
-        if (with_path.sort((a, b) => a.length - b.length).some((saved_url: string): boolean => {
-            if (url.indexOf(saved_url) === 0) {
-                method = methods[window.merged_configured[saved_url]];
-                return true;
-            } else
-                return false;
-        })) {
-        } // if .some() returns true => we found it!
-        else if (pure_domains.sort((a, b) => a.length - b.length).some((saved_url: string): boolean => {
-            let saved_arr = saved_url.split('.').reverse();
-            let test_arr = url.split('/')[0].split('.').reverse();
-            if (saved_arr.length > test_arr.length)
-                return false;
-            if (saved_arr.every((part, index) => (part === test_arr[index]))) {
-                method = methods[window.merged_configured[saved_url]];
-                return true;
+
+        let configured_urls = Object.keys(window.merged_configured);
+        for (let gen_url of generate_urls(url)) {
+            if (configured_urls.indexOf(gen_url) >= 0) {
+                return methods[window.merged_configured[gen_url]];
             }
-            return false;
-        })) {
         }
-        else
-            method = methods[window.prefs.default_method];
-        return method as MethodMetadata;
+        return methods[window.prefs.default_method];
     } else
         return methods[0];
 }
-
-
 
 let current_method: MethodMetadata;
 let resolve_current_method_promise: ((mmd: MethodMetadata) => void) | null;

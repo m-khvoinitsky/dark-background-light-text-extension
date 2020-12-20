@@ -1,5 +1,6 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
 import { get_merged_configured_common, get_prefs, set_pref, methods } from '../common/shared';
+import { generate_urls, hint_marker } from '../common/generate-urls';
 import { ConfiguredPages } from '../common/types';
 import '../common/ui-style';
 
@@ -9,71 +10,34 @@ import '../common/ui-style';
             () => browser.runtime.sendMessage({action: 'get_configured_private'}),
         );
     }
-    async function generate_urls(url_str: string): Promise<{list: string[], preselect?: string}> {
-        let url_obj = new window.URL(url_str);
-
-        let result_list: string[] = [];
+    async function generate_urls_with_preselect_from_configured(url_str: string): Promise<{list: string[], preselect?: string}> {
+        let result_list = generate_urls(url_str, true);
         let preselect: string | undefined;
 
-        let before_path: string;
-        if (['http:', 'https:', 'ftp:'].indexOf(url_obj.protocol) >= 0) {
-            let hostname_splitted = url_obj.hostname.split('.');
-            let tld = hostname_splitted[hostname_splitted.length - 1]; //TODO: sdk_url.getTLD(url_str);
-            let hostname_short = url_obj.hostname
-                .replace(new RegExp('^www\\.'), '');
-            if (tld) {
-                hostname_short = hostname_short
-                    .replace(new RegExp(`\\.${tld.split('.').join('\\.')}$`), '');
-            } // 'else' is most likely bare IP  TODO: it used to be with sdk_url.getTLD
-
-            if (url_obj.hostname === tld) { // domain itself is top-level (eg. localhost)
-                result_list.push(tld);
-                preselect = tld;
-                before_path = tld;
-            } else {
-                hostname_short.split('.').reverse().forEach((_part, index, parts) => {
-                    let result = parts.slice(0, index + 1).reverse().join('.') + (!!tld ? ('.' + tld) : '');
-                    result_list.push(result);
-                    preselect = result;
-                    before_path = result;
-                });
-            }
-            if (url_obj.port) { /* //TODO:
-                let result = before_path + ':' + url_obj.port;
-                result_list.push(result);
-                preselect = result;
-                before_path = result; */
-            }
-        } else {
-            if (url_obj.protocol !== url_obj.origin) {
-                result_list.push(url_obj.origin);
-                preselect = url_obj.origin;
-            }
-            before_path = url_obj.origin;
-        }
-
-        let path_starts_with_slash = false;
-        url_obj.pathname.split('/').forEach((part, index, parts) => {
-            if (part.length === 0 && index === 0) {
-                // if path starts with '/'
-                path_starts_with_slash = true;
-                return;
-            }
-            if (part.length === 0 && index === 1)
-                return; // path is only '/'
-            let result = path_starts_with_slash ?
-                [before_path].concat( parts.slice(1, index + 1) ).join('/') :
-                before_path + parts.slice(0, index + 1).join('/');
-            result_list.push(result);
-            if (!(preselect))
-                preselect = result;
-        });
-
         let merged = await get_merged_configured();
-        result_list.forEach(url => {
-            if (url in merged)
+        for (let url of result_list) {
+            if (url === hint_marker) {
+                continue;
+            }
+            if (url in merged) {
                 preselect = url;
-        });
+                break;
+            }
+        }
+        if (!preselect) {
+            let next_is_preselected = false;
+            for (let url of result_list) {
+                if (url === hint_marker) {
+                    next_is_preselected = true;
+                    continue;
+                }
+                if (next_is_preselected) {
+                    preselect = url;
+                    break;
+                }
+            }
+        }
+        result_list = result_list.filter(url => url !== hint_marker).reverse();
 
         return { list: result_list, preselect };
     }
@@ -109,7 +73,7 @@ import '../common/ui-style';
     }
 
     let configured = await get_merged_configured();
-    let { preselect, list:urls } = await generate_urls(url);
+    let { preselect, list:urls } = await generate_urls_with_preselect_from_configured(url);
     let current_url_method = await browser.runtime.sendMessage({
         action: 'get_tab_configuration',
         tab_id: current_tab.id,
