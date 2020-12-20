@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.4.0
+  rev: v3.4.0
   hooks:
   - id: trailing-whitespace
   - id: end-of-file-fixer
@@ -8,11 +8,20 @@ repos:
   - id: check-json
   - id: check-added-large-files
 - repo: https://github.com/jumanjihouse/pre-commit-hooks.git
-  rev: 1.11.0
+  rev: 2.1.4
   hooks:
   - id: shellcheck
     args: ['--shell=bash', '--color=always', '--external-sources']
-- repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v6.6.0
+# - repo: https://github.com/pre-commit/mirrors-eslint
+#   rev: v7.16.0
+#   hooks:
+#   - id: eslint
+- repo: local
   hooks:
-  - id: eslint
+    - id: tests
+      name: Mocha tests
+      language: system
+      entry: npm test
+      always_run: true
+      pass_filenames: false
+      require_serial: true
