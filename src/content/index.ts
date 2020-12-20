@@ -35,7 +35,6 @@ if (typeof window.content_script_state === 'undefined') { /* #226 part 1 workaro
 }
 
 async function get_method_for_url(url: string): Promise<MethodMetadata> {
-    //TODO: merge somehow part of this code with generate_urls()
     if (window.prefs.enabled) {
         if (is_iframe) {
             let parent_method_number = await browser.runtime.sendMessage({action: 'query_parent_method_number'});
