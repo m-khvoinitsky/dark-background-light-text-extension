@@ -1,5 +1,5 @@
-import type {RGBA, RGB, HSL, HSV_obj, RGB_obj, DefaultColors} from './types';
-declare var { get_acceptable_range }: typeof import('./get_acceptable_range');
+import {RGBA, RGB, HSL, HSV_obj, RGB_obj, DefaultColors} from './types';
+import { get_acceptable_range } from './get_acceptable_range';
 
 export function RGB_to_HSL(rgb_array: RGB): HSL {
     let R = (1.0 * rgb_array[0]) / 255;

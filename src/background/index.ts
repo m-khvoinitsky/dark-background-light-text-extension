@@ -1,8 +1,15 @@
-import type { ConfiguredPages, ConfiguredTabs, RGB } from "./types";
+import { ConfiguredPages, ConfiguredTabs, RGB } from '../common/types';
 import type { Runtime, ContentScripts, Manifest, ExtensionTypes, Storage } from 'webextension-polyfill-ts';
-declare var { on_prefs_change, preferences }: typeof import('./shared');
-declare var { parseCSSColor }: typeof import("./csscolorparser");
-declare var { relative_luminance }: typeof import("./color_utils");
+declare var { browser }: typeof import('webextension-polyfill-ts');
+import {
+    get_prefs,
+    set_pref,
+    on_prefs_change,
+    methods,
+} from '../common/shared';
+import { parseCSSColor } from 'csscolorparser';
+import { relative_luminance } from '../common/color_utils';
+import { get_merged_configured_common } from '../common/shared';
 
 let platform_info: Promise<Runtime.PlatformInfo> = ('getPlatformInfo' in browser.runtime) ?
     browser.runtime.getPlatformInfo() :
@@ -12,6 +19,11 @@ let platform_info: Promise<Runtime.PlatformInfo> = ('getPlatformInfo' in browser
 
 const configured_private: ConfiguredPages = {};
 const configured_tabs: ConfiguredTabs = {};
+function get_merged_configured(): Promise<ConfiguredPages> {
+    return get_merged_configured_common(
+        () => new Promise((resolve, _) => resolve(configured_private))
+    );
+}
 browser.tabs.onRemoved.addListener(async (tabId) => {
     try {
         if (Object.keys(configured_private).length > 0) {
@@ -136,22 +148,15 @@ async function send_prefs(changes: {[s: string]: Storage.StorageChange}) {
     }
     let code = `
         if (typeof content_script_state === 'undefined') { /* #226 part 1 workaround */
-            /* eslint-disable no-var */
-            var content_script_state = 'registered_content_script_first';
-
-            var prefs;
-            var merged_configured;
-            var configured_tabs;
-            var rendered_stylesheets;
-            /* eslint-enable no-var */
+            window.content_script_state = 'registered_content_script_first';
         }
 
-        prefs = ${ JSON.stringify(await get_prefs()) };
-        merged_configured = ${ JSON.stringify(await get_merged_configured()) };
-        configured_tabs = ${ JSON.stringify(configured_tabs) };
-        rendered_stylesheets = ${ JSON.stringify(rendered_stylesheets) };
-        if (content_script_state !== 'registered_content_script_first') { /* #226 part 1 workaround */
-            do_it(${ JSON.stringify(changes) });
+        window.prefs = ${ JSON.stringify(await get_prefs()) };
+        window.merged_configured = ${ JSON.stringify(await get_merged_configured()) };
+        window.configured_tabs = ${ JSON.stringify(configured_tabs) };
+        window.rendered_stylesheets = ${ JSON.stringify(rendered_stylesheets) };
+        if (window.content_script_state !== 'registered_content_script_first') { /* #226 part 1 workaround */
+            window.do_it(${ JSON.stringify(changes) });
         }
     `;
     for (let key in from_manifest) {

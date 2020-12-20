@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
     "target": "ES2019",
-    "module": "es2020",
+    "module": "amd",
     "moduleResolution": "node",
+    "sourceMap": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
+    "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "dist"
-  },
-  "include": [
-    "ts/**/*"
-  ]
+    "paths": {
+      "*" : ["./src/types/*"]
+    }
+  }
 }

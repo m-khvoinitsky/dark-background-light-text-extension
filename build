@@ -6,24 +6,8 @@ if [[ ! -f ./manifest.json || ! -d ./.git ]]; then
 fi
 OUTPUT="$(readlink -f ./build.xpi)"
 rm -f "${OUTPUT}"
-rm -rf ./dist/*
 
-# compile typescript
-./node_modules/typescript/bin/tsc
-# remove "export" from compiled files — ESMAScript modules aren't yet supported in content scripts, see https://bugzilla.mozilla.org/show_bug.cgi?id=1451545
-sed -i -e 's/^export //g' ./dist/*/*.js
-# remove empty file
-rm ./dist/lib/types.js
-{
-    git ls-tree -r HEAD --name-only ./manifest.json ./icons/ ./methods/ ./ui/
-    echo lib/css-color-parser/csscolorparser.js
-} | while read -r f; do
-    if [[ -f "${f}" ]]; then
-        OUT="./dist/${f}"
-        mkdir -p "$(dirname "${OUT}")"
-        sed '/\/browser-polyfill.min.js/d' "${f}" > "${OUT}"
-    fi
-done
+npx webpack
 (
     cd "./dist/"
     zip -r "${OUTPUT}" .

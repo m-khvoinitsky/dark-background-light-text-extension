@@ -1,8 +1,6 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
 import type { Storage } from 'webextension-polyfill-ts'
 import type { MethodMetadata, Preference, PrefsType, ConfiguredPages, MethodIndex } from './types'
-declare var { StylesheetColorProcessor }: typeof import('../methods/stylesheet-color-processor')
-declare var { InvertMethod }: typeof import('../methods/invert')
 
 export const methods: { [key: string /* MethodIndex */]: MethodMetadata } = {
     '-1': {
@@ -24,7 +22,7 @@ export const methods: { [key: string /* MethodIndex */]: MethodMetadata } = {
         label: 'Stylesheet processor',    /* simple-css will be removed as soon as StylesheetColorProcessor do its work — this prevents bright flickering */
         stylesheets: ['methods/base.css', 'methods/simple-css.css', 'methods/stylesheet-processor.css'],
         affects_iframes: false,
-        executor: typeof StylesheetColorProcessor !== 'undefined' ? StylesheetColorProcessor : null,
+        executor: null, // StylesheetColorProcessor
     },
     2: {
         number: '2',
@@ -37,7 +35,7 @@ export const methods: { [key: string /* MethodIndex */]: MethodMetadata } = {
         number: '3',
         label: 'Invert',
         stylesheets: ['methods/invert.css'],
-        executor: typeof InvertMethod !== 'undefined' ? InvertMethod : null,
+        executor: null, // InvertMethod
         affects_iframes: true,
     },
 }
@@ -164,14 +162,12 @@ export function on_prefs_change(callback: (changes: {[s: string]: Storage.Storag
     });
 }
 
-export async function get_merged_configured(): Promise<ConfiguredPages> {
+export async function get_merged_configured_common(get_configured_private: () => Promise<ConfiguredPages>): Promise<ConfiguredPages> {
     let local_storage_p = browser.storage.local.get({configured_pages: {}});
-    // @ts-ignore: configured_private will be defined later or won't be: both cases are covered here. TODO: get rid of it - it won't work with real modules
-    let configured_private_data = typeof configured_private !== 'undefined' ? configured_private : await browser.runtime.sendMessage({action: 'get_configured_private'});
     return Object.assign(
         {},
         (await local_storage_p).configured_pages,
-        configured_private_data,
+        (await get_configured_private()),
         // built_in_configured,
     );
 }

@@ -1,7 +1,14 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
-declare var { get_merged_configured, get_prefs, set_pref, methods }: typeof import('../lib/shared');
+import { get_merged_configured_common, get_prefs, set_pref, methods } from '../common/shared';
+import { ConfiguredPages } from '../common/types';
+import '../common/ui-style';
 
 (async function() {
+    function get_merged_configured(): Promise<ConfiguredPages> {
+        return get_merged_configured_common(
+            () => browser.runtime.sendMessage({action: 'get_configured_private'}),
+        );
+    }
     async function generate_urls(url_str: string): Promise<{list: string[], preselect?: string}> {
         let url_obj = new window.URL(url_str);
 

@@ -1,4 +1,4 @@
-import type { AddonOptions, MethodExecutor } from '../lib/types';
+import { AddonOptions, MethodExecutor } from '../../common/types';
 
 export class InvertMethod implements MethodExecutor {
     window: Window;

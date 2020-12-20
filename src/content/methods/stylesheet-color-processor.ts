@@ -1,8 +1,7 @@
-import type { AddonOptions, MethodExecutor, RGBA, RGB, DefaultColors } from '../lib/types'
-declare var { relative_luminance, lighten_or_darken_color }: typeof import('../lib/color_utils')
-declare var { StylesheetProcessorAbstract }: typeof import('./stylesheet-processor-abstract')
-declare var { brackets_aware_split }: typeof import('./stylesheet-processor-abstract')
-declare var { parseCSSColor }: typeof import('../lib/csscolorparser')
+import { AddonOptions, MethodExecutor, RGBA, RGB, DefaultColors } from '../../common/types';
+import { relative_luminance, lighten_or_darken_color } from '../../common/color_utils';
+import { StylesheetProcessorAbstract, brackets_aware_split } from './stylesheet-processor-abstract';
+import { parseCSSColor } from 'csscolorparser';
 
 function parse_text_shadow(value: string): [null, null] | [Array<string | RGBA>, number] {
     let color_index;

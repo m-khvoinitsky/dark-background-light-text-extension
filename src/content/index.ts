@@ -1,5 +1,12 @@
-import type { AddonOptions, ConfiguredPages, ConfiguredTabs, MethodIndex, MethodMetadata, MethodExecutor } from "./types";
+declare var { browser }: typeof import('webextension-polyfill-ts');
 import type { Storage } from 'webextension-polyfill-ts'
+import { AddonOptions, ConfiguredPages, ConfiguredTabs, MethodIndex, MethodMetadata, MethodExecutor } from '../common/types';
+import { methods } from '../common/shared';
+import { StylesheetColorProcessor } from './methods/stylesheet-color-processor';
+import { InvertMethod } from './methods/invert';
+
+methods['1'].executor = StylesheetColorProcessor;
+methods['3'].executor = InvertMethod;
 
 const tabId_promise = browser.runtime.sendMessage({action: 'query_tabId'});
 let is_iframe: boolean;
@@ -9,23 +16,28 @@ try {
     is_iframe = true;
 }
 
-// @ts-ignore: 2454
-if (typeof content_script_state === 'undefined') { /* #226 part 1 workaround */
-    /* eslint-disable no-var */
-    var content_script_state = 'normal_order';
+declare global {
+    interface Window {
+        content_script_state: 'normal_order' | 'registered_content_script_first' | 'does not matters anymore' | undefined,
+        prefs: AddonOptions,
+        merged_configured: ConfiguredPages,
+        configured_tabs: ConfiguredTabs,
+        rendered_stylesheets: {[key: string]: string},
+        do_it: (changes: {[s: string]: Storage.StorageChange}) => Promise<void>,
+    }
+}
 
-    var prefs: AddonOptions;
-    var merged_configured: ConfiguredPages;
-    var configured_tabs: ConfiguredTabs;
-    var rendered_stylesheets: {[key: string]: string};
-    /* eslint-enable no-var */
+try {
+// @ts-ignore: 2454
+if (typeof window.content_script_state === 'undefined') { /* #226 part 1 workaround */
+    window.content_script_state = 'normal_order';
 }
 
 const protocol_and_www = new RegExp('^(?:(?:https?)|(?:ftp))://(?:www\\.)?');
 async function get_method_for_url(url: string): Promise<MethodMetadata> {
     //TODO: merge somehow part of this code with generate_urls()
     let method: MethodMetadata | 'unspecified' = 'unspecified';
-    if (prefs.enabled) {
+    if (window.prefs.enabled) {
         if (is_iframe) {
             let parent_method_number = await browser.runtime.sendMessage({action: 'query_parent_method_number'});
             if (methods[parent_method_number].affects_iframes) {
@@ -36,9 +48,9 @@ async function get_method_for_url(url: string): Promise<MethodMetadata> {
         }
         // TODO: get rid of await here, https://bugzilla.mozilla.org/show_bug.cgi?id=1574713
         let tab_configuration: MethodIndex | boolean = false;
-        if (Object.keys(configured_tabs).length > 0) {
+        if (Object.keys(window.configured_tabs).length > 0) {
             let tabId = await tabId_promise;
-            tab_configuration = configured_tabs.hasOwnProperty(tabId) ? configured_tabs[tabId] : false;
+            tab_configuration = window.configured_tabs.hasOwnProperty(tabId) ? window.configured_tabs[tabId] : false;
         }
         if (tab_configuration !== false)
             return methods[tab_configuration];
@@ -52,11 +64,11 @@ async function get_method_for_url(url: string): Promise<MethodMetadata> {
             if (colon < origin_end && url.substring(colon + 1, origin_end).search(/^(\d)+$/) === 0)
                 url = url.substr(0, colon) + url.substr(origin_end);
         }
-        let pure_domains = Object.keys(merged_configured).filter(key => (key.indexOf('/') < 0));
-        let with_path = Object.keys(merged_configured).filter(key => (key.indexOf('/') >= 0));
+        let pure_domains = Object.keys(window.merged_configured).filter(key => (key.indexOf('/') < 0));
+        let with_path = Object.keys(window.merged_configured).filter(key => (key.indexOf('/') >= 0));
         if (with_path.sort((a, b) => a.length - b.length).some((saved_url: string): boolean => {
             if (url.indexOf(saved_url) === 0) {
-                method = methods[merged_configured[saved_url]];
+                method = methods[window.merged_configured[saved_url]];
                 return true;
             } else
                 return false;
@@ -68,14 +80,14 @@ async function get_method_for_url(url: string): Promise<MethodMetadata> {
             if (saved_arr.length > test_arr.length)
                 return false;
             if (saved_arr.every((part, index) => (part === test_arr[index]))) {
-                method = methods[merged_configured[saved_url]];
+                method = methods[window.merged_configured[saved_url]];
                 return true;
             }
             return false;
         })) {
         }
         else
-            method = methods[prefs.default_method];
+            method = methods[window.prefs.default_method];
         return method as MethodMetadata;
     } else
         return methods[0];
@@ -87,7 +99,7 @@ let current_method: MethodMetadata;
 let resolve_current_method_promise: ((mmd: MethodMetadata) => void) | null;
 let current_method_promise: Promise<MethodMetadata> = new Promise((resolve: (mmd: MethodMetadata) => void) => { resolve_current_method_promise = resolve; });
 let current_method_executor: MethodExecutor | undefined;
-async function do_it(changes: {[s: string]: Storage.StorageChange}) {
+window.do_it = async function do_it(changes: {[s: string]: Storage.StorageChange}) {
     try {
         let new_method = await get_method_for_url(window.document.documentURI);
         if (resolve_current_method_promise) {
@@ -108,7 +120,7 @@ async function do_it(changes: {[s: string]: Storage.StorageChange}) {
                 let style_node = document.createElement('style');
                 style_node.setAttribute('data-source', css);
                 style_node.classList.add('dblt-ykjmwcnxmi');
-                style_node.innerText = rendered_stylesheets[`${css}_${ is_iframe ? 'iframe' : 'toplevel' }`];
+                style_node.innerText = window.rendered_stylesheets[`${css}_${ is_iframe ? 'iframe' : 'toplevel' }`];
                 document.documentElement.appendChild(style_node);
                 if (!document.body) {
                     // this should move our element after <body> which is important in specificity fight
@@ -122,7 +134,7 @@ async function do_it(changes: {[s: string]: Storage.StorageChange}) {
                 current_method_executor = undefined;
             }
             if (new_method.executor) {
-                current_method_executor = new new_method.executor(window, prefs);
+                current_method_executor = new new_method.executor(window, window.prefs);
                 current_method_executor.load_into_window();
             }
         }
@@ -149,7 +161,8 @@ browser.runtime.onMessage.addListener(async (message: GetMethodNumberMsg, _sende
     } catch (e) { console.exception(e); return; }
 });
 
-if (content_script_state === 'registered_content_script_first') { /* #226 part 1 workaround */
-    do_it({});
-    content_script_state = 'does not matters anymore';
+if (window.content_script_state === 'registered_content_script_first') { /* #226 part 1 workaround */
+    window.do_it({});
+    window.content_script_state = 'does not matters anymore';
 }
+} catch (e) { console.exception(e); }
