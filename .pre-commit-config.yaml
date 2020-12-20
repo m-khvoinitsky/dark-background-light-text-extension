@@ -25,3 +25,12 @@ repos:
       always_run: true
       pass_filenames: false
       require_serial: true
+- repo: local
+  hooks:
+    - id: webpack
+      name: Webpack dry run
+      language: system
+      entry: sh -c 'TMPDIR="$(mktemp -d)"; npx webpack --output-path "${TMPDIR}"; EXITCODE=$?; rm -r "${TMPDIR}"; exit "${EXITCODE}"'
+      always_run: true
+      pass_filenames: false
+      require_serial: true
