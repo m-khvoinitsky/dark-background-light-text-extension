@@ -139,6 +139,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 const prev_scripts: ContentScripts.RegisteredContentScript[] = [];
 async function send_prefs(changes: {[s: string]: Storage.StorageChange}) {
     prev_scripts.forEach(cs => cs.unregister());
+    prev_scripts.length = 0;
     let from_manifest = (browser.runtime.getManifest() as Manifest.WebExtensionManifest).content_scripts![0];
     let new_data: ContentScripts.RegisteredContentScriptOptions = {matches: ["<all_urls>"]};
     let rendered_stylesheets: {[key: string]: string} = {};
