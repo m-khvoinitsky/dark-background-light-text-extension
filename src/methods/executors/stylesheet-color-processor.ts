@@ -151,8 +151,8 @@ export class StylesheetColorProcessor extends StylesheetProcessorAbstract implem
     unload_from_window() {
         StylesheetProcessorAbstract.prototype.unload_from_window.call(this, false)
     }
-    all_sheets_have_been_processed() {
-        let nodes = document.querySelectorAll('style[data-source="methods/simple-css.css"]');
+    all_sheets_have_been_processed() { // TODO: remove hardcoded "simple-css"
+        let nodes = document.querySelectorAll('style[data-source="simple-css"]');
         for (let node of nodes)
             node.parentElement?.removeChild(node);
         super.all_sheets_have_been_processed();

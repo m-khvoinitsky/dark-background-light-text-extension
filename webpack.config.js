@@ -33,7 +33,6 @@ module.exports = (env, options) => {
         patterns: [
           { from: "manifest.json" },
           { from: "icons", to: "icons" },
-          { from: "methods", to: "methods" },
           { from: "ui", to: "ui" },
         ],
       }),

@@ -1,52 +1,53 @@
+import { RenderOptions } from '../../common/types';
+export const name = 'stylesheet-processor';
+export function render({
+    default_foreground_color,
+    default_background_color,
+    default_link_color,
+    default_visited_color,
+    default_active_color,
+    is_toplevel,
+}: RenderOptions) {
+    return `
 html {
-/* some webpages set html's bgcolor to transparent which is becomes white so it should be !important */
-{if_toplevel_start}
-    background-color: #{default_background_color} !important;
-{if_toplevel_end}
-    color: #{default_foreground_color} !important; /* #29 */
+${''/* some webpages set html's bgcolor to transparent which is becomes white so it should be !important */}\
+${is_toplevel ? `\
+  background-color: ${default_background_color} !important;
+` : ''}\
+${''/* #29 */}\
+  color: ${default_foreground_color} !important;
 }
-                                                                                                /*                  last.fm                           */
-/*[style*='background']:not(.newtab-thumbnail):not(.colorpicker-button-colorbox):not(.colorpickertile):not(.cover-image):not(.sidekick-image):not(.hero-image):not(.embed2yt-thumbnail),
+
+${''/*Legacy Attributes*/}\
 [bgcolor] {
-    background-color: #000000 !important;
-    background-image: none !important;
-} */
-/*.colorpickertile, .colorpicker-button-colorbox*/
-/*Legacy Attributes*/
-[bgcolor] {
-    background-color: #{default_background_color} !important;
+  background-color: ${default_background_color} !important;
 }
-[text], /* there is such attribute! */
+[text],
 [color] {
-    color: #{default_foreground_color} !important;
+  color: ${default_foreground_color} !important;
 }
 
 [alink]:link:active {
-    color: #FFA0A0 !important;
+  color: ${default_active_color} !important;
 }
 [vlink]:visited {
-    color: #FFAFFF !important;
+  color: ${default_visited_color} !important;
 }
 [link]:link {
-    color: #7FD7FF !important;
+  color: ${default_link_color} !important;
 }
-/*Legacy Attributes*/
+${''/*Legacy Attributes*/}\
 
-/*Bittorrent sync webui fix*/
+${''/*Bittorrent sync webui fix*/}\
 .qrCode > canvas {
-    border: 10px white solid;
+  border: 10px white solid;
 }
 
 @-moz-document url-prefix("https://davdroid.bitfire.at/") {
-    /* fix for huge white peace due to "border-left: 68px solid #EDEDED;" */
-    article {
-        border-left-color: #000000 !important;
-    }
+${''/* fix for huge white peace due to "border-left: 68px solid #EDEDED;" */}\
+  article {
+    border-left-color: #000000 !important;
+  }
 }
-
-/*@-moz-document url-prefix("http://music.yandex.ru")
-{
-    svg {
-        filter: invert(100%) hue-rotate(180deg) !important;
-    }
-}*/
+`;
+}

@@ -1,45 +1,7 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
 import type { Storage } from 'webextension-polyfill-ts'
-import type { MethodMetadata, Preference, PrefsType, ConfiguredPages, MethodIndex } from './types'
-
-export const methods: { [key: string /* MethodIndex */]: MethodMetadata } = {
-    '-1': {
-        number: '-1',
-        label: 'Default',
-        stylesheets: [],
-        executor: null,
-        affects_iframes: false,
-    },
-    0: {
-        number: '0',
-        label: 'Disabled',
-        stylesheets: [],
-        executor: null,
-        affects_iframes: true,
-    },
-    1: {
-        number: '1',
-        label: 'Stylesheet processor',    /* simple-css will be removed as soon as StylesheetColorProcessor do its work — this prevents bright flickering */
-        stylesheets: ['methods/base.css', 'methods/simple-css.css', 'methods/stylesheet-processor.css'],
-        affects_iframes: false,
-        executor: null, // StylesheetColorProcessor
-    },
-    2: {
-        number: '2',
-        label: 'Simple CSS',
-        stylesheets: ['methods/base.css', 'methods/simple-css.css'],
-        executor: null,
-        affects_iframes: false,
-    },
-    3: {
-        number: '3',
-        label: 'Invert',
-        stylesheets: ['methods/invert.css'],
-        executor: null, // InvertMethod
-        affects_iframes: true,
-    },
-}
-Object.entries(methods).forEach(([key, value]) => console.assert(key === value['number'], `bad method index, ${key} !== ${value['number']}`));
+import { Preference, PrefsType, ConfiguredPages, MethodIndex } from './types'
+import { methods } from '../methods/methods';
 
 export const preferences: Preference[] = [
     {

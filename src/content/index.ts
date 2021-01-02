@@ -1,13 +1,16 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
 import type { Storage } from 'webextension-polyfill-ts'
-import { AddonOptions, ConfiguredPages, ConfiguredTabs, MethodIndex, MethodMetadata, MethodExecutor } from '../common/types';
-import { methods } from '../common/shared';
-import { StylesheetColorProcessor } from './methods/stylesheet-color-processor';
-import { InvertMethod } from './methods/invert';
+import {
+    AddonOptions,
+    ConfiguredPages,
+    ConfiguredTabs,
+    MethodIndex,
+    MethodExecutor,
+    MethodMetadataWithExecutors
+} from '../common/types';
+import { methods } from '../methods/methods-with-executors';
 import { generate_urls } from '../common/generate-urls';
 
-methods['1'].executor = StylesheetColorProcessor;
-methods['3'].executor = InvertMethod;
 
 const tabId_promise = browser.runtime.sendMessage({action: 'query_tabId'});
 let is_iframe: boolean;
@@ -34,7 +37,7 @@ if (typeof window.content_script_state === 'undefined') { /* #226 part 1 workaro
     window.content_script_state = 'normal_order';
 }
 
-async function get_method_for_url(url: string): Promise<MethodMetadata> {
+async function get_method_for_url(url: string): Promise<MethodMetadataWithExecutors> {
     if (window.prefs.enabled) {
         if (is_iframe) {
             let parent_method_number = await browser.runtime.sendMessage({action: 'query_parent_method_number'});
@@ -64,9 +67,9 @@ async function get_method_for_url(url: string): Promise<MethodMetadata> {
         return methods[0];
 }
 
-let current_method: MethodMetadata;
-let resolve_current_method_promise: ((mmd: MethodMetadata) => void) | null;
-let current_method_promise: Promise<MethodMetadata> = new Promise((resolve: (mmd: MethodMetadata) => void) => { resolve_current_method_promise = resolve; });
+let current_method: MethodMetadataWithExecutors;
+let resolve_current_method_promise: ((mmd: MethodMetadataWithExecutors) => void) | null;
+let current_method_promise: Promise<MethodMetadataWithExecutors> = new Promise((resolve: (mmd: MethodMetadataWithExecutors) => void) => { resolve_current_method_promise = resolve; });
 let current_method_executor: MethodExecutor | undefined;
 window.do_it = async function do_it(changes: {[s: string]: Storage.StorageChange}) {
     try {
@@ -85,11 +88,11 @@ window.do_it = async function do_it(changes: {[s: string]: Storage.StorageChange
             for (let node of document.querySelectorAll('style[class="dblt-ykjmwcnxmi"]')) {
                 node.parentElement!.removeChild(node);
             }
-            for (let css of new_method.stylesheets) {
+            for (let css_renderer of new_method.stylesheets) {
                 let style_node = document.createElement('style');
-                style_node.setAttribute('data-source', css);
+                style_node.setAttribute('data-source', css_renderer.name);
                 style_node.classList.add('dblt-ykjmwcnxmi');
-                style_node.innerText = window.rendered_stylesheets[`${css}_${ is_iframe ? 'iframe' : 'toplevel' }`];
+                style_node.innerText = window.rendered_stylesheets[`${css_renderer.name}_${ is_iframe ? 'iframe' : 'toplevel' }`];
                 document.documentElement.appendChild(style_node);
                 if (!document.body) {
                     // this should move our element after <body> which is important in specificity fight

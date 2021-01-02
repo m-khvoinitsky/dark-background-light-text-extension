@@ -1,68 +1,77 @@
+import { RenderOptions } from '../../common/types';
+export const name = 'base';
+export function render({
+    default_foreground_color,
+    default_background_color,
+    default_link_color,
+    default_visited_color,
+    default_active_color,
+    default_selection_color,
+    is_toplevel,
+    is_darkbg,
+}: RenderOptions) {
+    return `
 @namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
 :root {
-    --dark-background-light-text-add-on-foreground-color: #{default_foreground_color} !important;
-    --dark-background-light-text-add-on-background-color: #{default_background_color} !important;
-    --dark-background-light-text-add-on-link-color: #{default_link_color} !important;
-    --dark-background-light-text-add-on-visited-color: #{default_visited_color} !important;
-    --dark-background-light-text-add-on-active-color: #{default_active_color} !important;
-    --dark-background-light-text-add-on-selection-color: #{default_selection_color} !important;
+  --dark-background-light-text-add-on-foreground-color: ${default_foreground_color} !important;
+  --dark-background-light-text-add-on-background-color: ${default_background_color} !important;
+  --dark-background-light-text-add-on-link-color: ${default_link_color} !important;
+  --dark-background-light-text-add-on-visited-color: ${default_visited_color} !important;
+  --dark-background-light-text-add-on-active-color: ${default_active_color} !important;
+  --dark-background-light-text-add-on-selection-color: ${default_selection_color} !important;
 }
 
-html, page, window {
-{if_toplevel_start}
-  background-color: #{default_background_color};
-{if_toplevel_end}
-  color: #{default_foreground_color};
-  /* background-image: none !important; */
+html,
+page,
+window {
+${is_toplevel ? `\
+  background-color: ${default_background_color};
+` : ''}\
+  color: ${default_foreground_color};
 }
 
-* {
-  /* color: #{default_foreground_color}; */
-  /*background-color: black; <- do not set it here*/
+*:link,
+*:link * {
+  color: ${default_link_color} !important;
 }
 
-*:link, *:link * {
-    color: #{default_link_color} !important;
+*:visited,
+*:visited * {
+  color: ${default_visited_color} !important;
 }
 
-*:visited, *:visited * {
-    color: #{default_visited_color} !important;
-}
-
-input[type="range"]
-{
-    -moz-appearance: none;
+input[type="range"] {
+  -moz-appearance: none;
 }
 
 button,
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
 textarea,
 select,
-[contenteditable="true"]
-{
-    -moz-appearance: none !important;
-    color: #{default_foreground_color} !important;
-    background-color: #{default_background_color};
-    border-radius: 4px;
-    border-width: 1px;
-    border-color: #{default_foreground_color};
-    border-style: solid;
-    transition-duration: 0.3s;
-    transition-property: border-color, box-shadow;
+[contenteditable="true"] {
+  -moz-appearance: none !important;
+  color: ${default_foreground_color} !important;
+  background-color: ${default_background_color};
+  border-radius: 4px;
+  border-width: 1px;
+  border-color: ${default_foreground_color};
+  border-style: solid;
+  transition-duration: 0.3s;
+  transition-property: border-color, box-shadow;
 }
 
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="color"]):not([type="image"]):not([type="reset"]):not([type="submit"]),
 textarea,
 [contenteditable="true"] {
-    background-image: none !important;
+  background-image: none !important;
 }
 
 input:focus:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="color"]):not([type="image"]):not([type="reset"]):not([type="submit"]),
 textarea:focus,
 [contenteditable="true"]:focus {
-    box-shadow: inset 0 0 0.15em 0.15em #{default_selection_color} !important;
-    border-color: #{default_selection_color} !important;
+  box-shadow: inset 0 0 0.15em 0.15em ${default_selection_color} !important;
+  border-color: ${default_selection_color} !important;
 }
 
 button,
@@ -72,7 +81,7 @@ input[type="image"],
 input[type="reset"],
 input[type="submit"],
 select {
-    box-shadow: 0 0 0.15em 0.15em transparent !important;
+  box-shadow: 0 0 0.15em 0.15em transparent !important;
 }
 
 button:focus,
@@ -82,172 +91,175 @@ input[type="image"]:focus,
 input[type="reset"]:focus,
 input[type="submit"]:focus,
 select:focus {
-    box-shadow: 0 0 0.15em 0.15em #{default_selection_color} !important;
-    border-color: #{default_selection_color} !important;
+  box-shadow: 0 0 0.15em 0.15em ${default_selection_color} !important;
+  border-color: ${default_selection_color} !important;
 }
 
 select {
-    background-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="500" height="500"><path stroke="%23{default_foreground_color}" fill="transparent" stroke-width="40" d="M 100 175 L 250 350 L 400 175"/></svg>') !important;
-    background-position: right center !important;
-    background-repeat: no-repeat !important;
-    padding-right: 1em !important;
-    background-size: 1em !important;
+  background-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="500" height="500"><path stroke="${encodeURIComponent(default_foreground_color)}" fill="transparent" stroke-width="40" d="M 100 175 L 250 350 L 400 175"/></svg>') !important;
+  background-position: right center !important;
+  background-repeat: no-repeat !important;
+  padding-right: 1em !important;
+  background-size: 1em !important;
 }
 
-
 *::-moz-selection {
-    color: #{default_foreground_color} !important;
-    background: #{default_selection_color} !important;
-    text-shadow: #{default_background_color} 0pt 0pt 1pt,
-    #{default_background_color} 0pt 0pt 2pt,
-    #{default_background_color} 0pt 0pt 3pt,
-    #{default_background_color} 0pt 0pt 4pt,
-    #{default_background_color} 0pt 0pt 5pt,
-    #{default_background_color} 0pt 0pt 5pt,
-    #{default_background_color} 0pt 0pt 5pt !important;
+  color: ${default_foreground_color} !important;
+  background: ${default_selection_color} !important;
+  text-shadow:
+    ${default_background_color} 0 0 1pt,
+    ${default_background_color} 0 0 2pt,
+    ${default_background_color} 0 0 3pt,
+    ${default_background_color} 0 0 4pt,
+    ${default_background_color} 0 0 5pt,
+    ${default_background_color} 0 0 5pt,
+    ${default_background_color} 0 0 5pt !important;
 }
 
 xul|*.checkbox-check[checked] {
-    /* modified version of chrome://global/skin/in-content/check.svg */
-    list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"><path fill="%23{default_foreground_color}" d="M 9.39,16.5 16.28,6 14.77,4.5 9.37,12.7 6.28,9.2 4.7,10.7 z"/></svg>') !important;
+${''/* modified version of chrome://global/skin/in-content/check.svg */}\
+  list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"><path fill="${encodeURIComponent(default_foreground_color)}" d="M 9.39,16.5 16.28,6 14.77,4.5 9.37,12.7 6.28,9.2 4.7,10.7 z"/></svg>') !important;
 }
 xul|*.radio-check[selected] {
-    /* chrome://global/skin/in-content/radio.svg */
-    list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"><circle xmlns="http://www.w3.org/2000/svg" fill="%23{default_foreground_color}" cx="10.5" cy="10.5" r="6"/></svg>') !important;
+${''/* chrome://global/skin/in-content/radio.svg */}\
+  list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"><circle xmlns="http://www.w3.org/2000/svg" fill="${encodeURIComponent(default_foreground_color)}" cx="10.5" cy="10.5" r="6"/></svg>') !important;
 }
 xul|menulist:not([editable="true"]) > xul|*.menulist-dropmarker {
-    /* chrome://global/skin/in-content/dropdown.svg */
-    list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path xmlns="http://www.w3.org/2000/svg" fill="%23{default_foreground_color}" d="M12,6l-4.016,4L4,6H12z"/></svg>') !important;
+${''/* chrome://global/skin/in-content/dropdown.svg */}\
+  list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path xmlns="http://www.w3.org/2000/svg" fill="${encodeURIComponent(default_foreground_color)}" d="M12,6l-4.016,4L4,6H12z"/></svg>') !important;
 }
 
-/* https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Styling_a_Tree */
-/* #27 */
+${''/* https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Styling_a_Tree */}\
+${''/* #27 */}\
 treechildren {
-    background-color: #{default_background_color} !important;
+  background-color: ${default_background_color} !important;
 }
 treechildren::-moz-tree-cell,
 treechildren::-moz-tree-row,
-treechildren::-moz-tree-row(odd)
-{
-    background-color: transparent !important;
+treechildren::-moz-tree-row(odd) {
+  background-color: transparent !important;
 }
 treechildren::-moz-tree-cell-text {
-    color: #{default_foreground_color} !important;
+  color: ${default_foreground_color} !important;
 }
 treechildren::-moz-tree-row(even) {
-    background: rgba(127, 127, 127, 0.3) !important;
+  background: rgba(127, 127, 127, 0.3) !important;
 }
 treechildren::-moz-tree-row(selected) {
-    background: #{default_selection_color} !important;
+  background: ${default_selection_color} !important;
 }
 
-
-/* TODO: "black on transparent" mark */
+${''/* TODO: "black on transparent" mark */}\
+${is_darkbg ? `\
 img[alt="inline_formula"],
 .mwe-math-fallback-image-inline,
-.highcharts-container /* charts, for example on https://addons.mozilla.org/en-US/firefox/addon/black-background-white-text/statistics/ */
-{
-    {if_dark_background_start}
-    filter: invert(100%) hue-rotate(180deg) !important;
-    {if_dark_background_end}
+${''/* charts, for example on https://addons.mozilla.org/en-US/firefox/addon/black-background-white-text/statistics/ */}\
+.highcharts-container {
+  filter: invert(100%) hue-rotate(180deg) !important;
+}
+` : ''}\
+
+${''/* about:preferences dialogs */}\
+groupbox#dialogBox {
+  box-shadow: 0 0 4px 3px ${default_foreground_color} !important;
 }
 
-groupbox#dialogBox { /* about:preferences dialogs */
-    box-shadow: 0 0 4px 3px #{default_foreground_color} !important;
+${''/* Google Hangouts fixes */}\
+@-moz-document url-prefix("https://talkgadget.google.com/") {
+  div.PD.IF,
+  img.Yf {
+    border: 1pt solid ${default_foreground_color} !important;
+  }
+  div.ci {
+    visibility: hidden !important;
+  }
 }
 
-/*Google Hangouts fixes*/
-@-moz-document url-prefix("https://talkgadget.google.com/")
-{
-    div.PD.IF, img.Yf {
-        border: 1pt solid #{default_foreground_color} !important;
-    }
-
-    div.ci {
-        visibility: hidden !important;
-    }
-}
-{if_dark_background_start}
+${is_darkbg ? `\
 @-moz-document url-prefix("http://catalog.onliner.by/") {
-    .i-checkbox__faux::before {
-        filter: invert(100%);
-    }
+  .i-checkbox__faux::before {
+    filter: invert(100%);
+  }
 }
-{if_dark_background_end}
-/* google scholar bars on right sidebar fix #8 */
+` : ''}\
+
+${''/* google scholar bars on right sidebar fix #8 */}\
 @-moz-document url-prefix("https://scholar.google.") {
-    #gsc_g_bars .gsc_g_a[style*="height"] {
-        background-color: rgb(119, 119, 119) !important;
-    }
+  #gsc_g_bars .gsc_g_a[style*="height"] {
+    background-color: rgb(119, 119, 119) !important;
+  }
 }
 
-/* youtube annotations backgrounds #32 */
+${''/* youtube annotations backgrounds #32 */}\
 @-moz-document domain('youtube.com') {
-    /* document.querySelectorAll('.annotation-shape svg path').forEach(node => { let color = node.getAttribute('fill'); console.log(`.video-annotations .annotation-shape svg path[fill="${color}"] { fill: ${color} !important; }`)}) */
-    /* TODO: proportional color change */
-    /* TODO: less hardcode */
-    {if_dark_background_start}
-    .video-annotations .annotation-shape svg path[fill="#fdda36"] { fill: #664627 !important; }
-    .video-annotations .annotation-shape svg path[fill="#fcc228"] { fill: #664b14 !important; }
-    .video-annotations .annotation-shape svg path[fill="#ffe673"] { fill: #685b2e !important; }
-    .video-annotations .annotation-shape svg path[fill="#ffffff"] { fill: #000000 !important; }
-    .video-annotations .annotation-shape svg path[fill="#000000"] { fill: #000000 !important; }
-    .video-annotations .annotation-shape svg path[fill="#e28751"] { fill: #9b5240 !important; }
-    .video-annotations .annotation-shape svg path[fill="#d65b3f"] { fill: #d65b3f !important; }
-    .video-annotations .annotation-shape svg path[fill="#333333"] { fill: #333333 !important; }
-    .video-annotations .annotation-shape svg path[fill="#971919"] { fill: #971919 !important; }
-    .video-annotations .annotation-shape svg path[fill="#999999"] { fill: #666666 !important; }
-    .video-annotations .annotation-shape svg path[fill="#c068d3"] { fill: #884f9a !important; }
-    .video-annotations .annotation-shape svg path[fill="#de3434"] { fill: #de3434 !important; }
-    .video-annotations .annotation-shape svg path[fill="#de60ad"] { fill: #994974 !important; }
-    .video-annotations .annotation-shape svg path[fill="#eaeaea"] { fill: #171717 !important; }
-    .video-annotations .annotation-shape svg path[fill="#cb3e3e"] { fill: #cb3e3e !important; }
-    .video-annotations .annotation-shape svg path[fill="#666666"] { fill: #666666 !important; }
-    .video-annotations .annotation-shape svg path[fill="#4fa0d3"] { fill: #3e7199 !important; }
-    .video-annotations .annotation-shape svg path[fill="#64c9d8"] { fill: #417281 !important; }
-    .video-annotations .annotation-shape svg path[fill="#5fa0d3"] { fill: #405e80 !important; }
-    .video-annotations .annotation-shape svg path[fill="#a173d1"] { fill: #74549a !important; }
-    .video-annotations .annotation-shape svg path[fill="#5687d1"] { fill: #436099 !important; }
-    .video-annotations .annotation-shape svg path[fill="#9cd2da"] { fill: #436067 !important; }
-    .video-annotations .annotation-shape svg path[fill="#c0e6e4"] { fill: #526664 !important; }
-    .video-annotations .annotation-shape svg path[fill="#636fa9"] { fill: #636fa9 !important; }
-    .video-annotations .annotation-shape svg path[fill="#83e2ab"] { fill: #34684c !important; }
-    .video-annotations .annotation-shape svg path[fill="#615abb"] { fill: #615abb !important; }
-    .video-annotations .annotation-shape svg path[fill="#d1fe83"] { fill: #516834 !important; }
-    .video-annotations .annotation-shape svg path[fill="#9eed5e"] { fill: #3d6630 !important; }
-    .video-annotations .annotation-shape svg path[fill="#6ab975"] { fill: #37663e !important; }
-    .video-annotations .annotation-shape svg path[fill="#7ddf75"] { fill: #336633 !important; }
-    .video-annotations .annotation-shape svg path[fill="#7c54ae"] { fill: #7c54ae !important; }
-    .video-annotations .annotation-shape svg path[fill="#afecd1"] { fill: #4d6758 !important; }
-    .video-annotations .annotation-shape svg path[fill="#403e9a"] { fill: #403e9a !important; }
-    {if_dark_background_end}
+${''/* document.querySelectorAll('.annotation-shape svg path').forEach(node => { let color = node.getAttribute('fill'); console.log(`.video-annotations .annotation-shape svg path[fill="${color}"] { fill: ${color} !important; }`)}) */}\
+${''/* TODO: proportional color change */}\
+${''/* TODO: less hardcode */}\
+${is_darkbg ? `\
+  .video-annotations .annotation-shape svg path[fill="#fdda36"] { fill: #664627 !important; }
+  .video-annotations .annotation-shape svg path[fill="#fcc228"] { fill: #664b14 !important; }
+  .video-annotations .annotation-shape svg path[fill="#ffe673"] { fill: #685b2e !important; }
+  .video-annotations .annotation-shape svg path[fill="#ffffff"] { fill: #000000 !important; }
+  .video-annotations .annotation-shape svg path[fill="#000000"] { fill: #000000 !important; }
+  .video-annotations .annotation-shape svg path[fill="#e28751"] { fill: #9b5240 !important; }
+  .video-annotations .annotation-shape svg path[fill="#d65b3f"] { fill: #d65b3f !important; }
+  .video-annotations .annotation-shape svg path[fill="#333333"] { fill: #333333 !important; }
+  .video-annotations .annotation-shape svg path[fill="#971919"] { fill: #971919 !important; }
+  .video-annotations .annotation-shape svg path[fill="#999999"] { fill: #666666 !important; }
+  .video-annotations .annotation-shape svg path[fill="#c068d3"] { fill: #884f9a !important; }
+  .video-annotations .annotation-shape svg path[fill="#de3434"] { fill: #de3434 !important; }
+  .video-annotations .annotation-shape svg path[fill="#de60ad"] { fill: #994974 !important; }
+  .video-annotations .annotation-shape svg path[fill="#eaeaea"] { fill: #171717 !important; }
+  .video-annotations .annotation-shape svg path[fill="#cb3e3e"] { fill: #cb3e3e !important; }
+  .video-annotations .annotation-shape svg path[fill="#666666"] { fill: #666666 !important; }
+  .video-annotations .annotation-shape svg path[fill="#4fa0d3"] { fill: #3e7199 !important; }
+  .video-annotations .annotation-shape svg path[fill="#64c9d8"] { fill: #417281 !important; }
+  .video-annotations .annotation-shape svg path[fill="#5fa0d3"] { fill: #405e80 !important; }
+  .video-annotations .annotation-shape svg path[fill="#a173d1"] { fill: #74549a !important; }
+  .video-annotations .annotation-shape svg path[fill="#5687d1"] { fill: #436099 !important; }
+  .video-annotations .annotation-shape svg path[fill="#9cd2da"] { fill: #436067 !important; }
+  .video-annotations .annotation-shape svg path[fill="#c0e6e4"] { fill: #526664 !important; }
+  .video-annotations .annotation-shape svg path[fill="#636fa9"] { fill: #636fa9 !important; }
+  .video-annotations .annotation-shape svg path[fill="#83e2ab"] { fill: #34684c !important; }
+  .video-annotations .annotation-shape svg path[fill="#615abb"] { fill: #615abb !important; }
+  .video-annotations .annotation-shape svg path[fill="#d1fe83"] { fill: #516834 !important; }
+  .video-annotations .annotation-shape svg path[fill="#9eed5e"] { fill: #3d6630 !important; }
+  .video-annotations .annotation-shape svg path[fill="#6ab975"] { fill: #37663e !important; }
+  .video-annotations .annotation-shape svg path[fill="#7ddf75"] { fill: #336633 !important; }
+  .video-annotations .annotation-shape svg path[fill="#7c54ae"] { fill: #7c54ae !important; }
+  .video-annotations .annotation-shape svg path[fill="#afecd1"] { fill: #4d6758 !important; }
+  .video-annotations .annotation-shape svg path[fill="#403e9a"] { fill: #403e9a !important; }
+` : ''}\
 }
 
-/* https://github.com/qooob/authentic-theme radio buttons. unfortunately, there is no public available demo */
+${''/* https://github.com/qooob/authentic-theme radio buttons. unfortunately, there is no public available demo */}\
 .awradio label::after {
-    background-color: #{default_foreground_color} !important;
+  background-color: ${default_foreground_color} !important;
 }
 
-/* #39 */
+${''/* #39 */}\
 @-moz-document domain('blog.torproject.org') {
-    div#header, div#container {
-        background-color: #{default_background_color} !important;
-        position: relative;
-    }
+  div#header,
+  div#container {
+    background-color: ${default_background_color} !important;
+    position: relative;
+  }
 }
 
 @-moz-document domain('addons.mozilla.org') {
-    {if_dark_background_start}
-    .stars label[data-stars] {
-        background-repeat: no-repeat;
-        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmElEQVQY03XQXWoCQRAE4M8fNO+CQfzBI+QKPoQcWXKLBLyBiIIXcBekfemFdRwLhqKL6pqZEhEqZ1fTh16xwkfyE2rmNSbJTxgnT3varMd9vRlExHchwgj3QmsGEQE/+aSJOm747czwhUWx0OKMf0T/g6c3qVdE2cYyU++Z2Oa8qVX3mYYL9nl9i3lZXbd4xCHnPzTYdoYHwrRCbdd8fYkAAAAASUVORK5CYII=') !important;
-    }
-    {if_dark_background_end}
+${is_darkbg ? `\
+  .stars label[data-stars] {
+    background-repeat: no-repeat;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmElEQVQY03XQXWoCQRAE4M8fNO+CQfzBI+QKPoQcWXKLBLyBiIIXcBekfemFdRwLhqKL6pqZEhEqZ1fTh16xwkfyE2rmNSbJTxgnT3varMd9vRlExHchwgj3QmsGEQE/+aSJOm747czwhUWx0OKMf0T/g6c3qVdE2cYyU++Z2Oa8qVX3mYYL9nl9i3lZXbd4xCHnPzTYdoYHwrRCbdd8fYkAAAAASUVORK5CYII=') !important;
+  }
+` : ''}\
 }
 
-/* buttons on many google services (Books, Translate, etc) */
-{if_dark_background_start}
+${''/* buttons on many google services (Books, Translate, etc) */}\
+${is_darkbg ? `\
 .jfk-button-img {
-    filter: invert(100%);
+  filter: invert(100%);
 }
-{if_dark_background_end}
+` : ''}\
+`;
+}

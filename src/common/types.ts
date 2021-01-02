@@ -43,12 +43,48 @@ export interface Preference {
     available?: Promise<boolean>,
 }
 
-export interface MethodMetadata {
+export interface RenderOptions {
+    default_foreground_color: string,
+    default_background_color: string,
+    default_link_color: string,
+    default_visited_color: string,
+    default_active_color: string,
+    default_selection_color: string,
+    is_toplevel: boolean,
+    is_darkbg: boolean,
+}
+
+export interface StylesheetRendererBare {
+    name: string,
+}
+
+export interface StylesheetRenderer extends StylesheetRendererBare {
+    render: (options: RenderOptions) => string,
+}
+
+export interface MethodMetadataBare {
     label: string,
     number: MethodIndex,
     affects_iframes: boolean,
-    stylesheets: string[],
+    stylesheets: StylesheetRendererBare[],
+}
+
+export interface MethodMetadataWithExecutors extends MethodMetadataBare {
     executor: MethodExecutorStatic|null,
+}
+
+export interface MethodMetadataWithStylesheets extends MethodMetadataBare {
+    stylesheets: StylesheetRenderer[],
+}
+
+export type MethodsMetadataBare = {
+    [key: string /* MethodIndex */]: MethodMetadataBare
+}
+export type MethodsMetadataWithStylesheets = {
+    [key: string /* MethodIndex */]: MethodMetadataWithStylesheets
+}
+export type MethodsMetadataWithExecutors = {
+    [key: string /* MethodIndex */]: MethodMetadataWithExecutors
 }
 
 export interface DefaultColors {

@@ -1,6 +1,7 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
 import { ConfiguredPages } from '../common/types';
-import { preferences, prefs_keys_with_defaults, methods, get_prefs, set_pref } from '../common/shared';
+import { preferences, prefs_keys_with_defaults, get_prefs, set_pref } from '../common/shared';
+import { methods } from '../methods/methods';
 import { query_style } from '../common/ui-style';
 
 function createElement(tagName: string, classList?: string[], id?: string, textContent?: string, attrs?: {[key: string]: string}, children?: HTMLElement[], properties?: {[key: string]: any}): HTMLElement {

@@ -1,15 +1,16 @@
-import { ConfiguredPages, ConfiguredTabs, RGB } from '../common/types';
+import { ConfiguredPages, ConfiguredTabs, RGB, StylesheetRenderer } from '../common/types';
 import type { Runtime, ContentScripts, Manifest, ExtensionTypes, Storage } from 'webextension-polyfill-ts';
 declare var { browser }: typeof import('webextension-polyfill-ts');
 import {
     get_prefs,
     set_pref,
     on_prefs_change,
-    methods,
 } from '../common/shared';
+import { methods } from '../methods/methods-with-stylesheets';
 import { parseCSSColor } from 'csscolorparser';
 import { relative_luminance } from '../common/color_utils';
 import { get_merged_configured_common } from '../common/shared';
+import * as base_style from '../methods/stylesheets/base';
 
 let platform_info: Promise<Runtime.PlatformInfo> = ('getPlatformInfo' in browser.runtime) ?
     browser.runtime.getPlatformInfo() :
@@ -40,37 +41,19 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
     } catch (e) {console.error(e);}
 });
 
-async function process_stylesheet(sheet: string, is_top_level_frame: boolean) {
+async function process_stylesheet(sheet: StylesheetRenderer, is_toplevel: boolean) {
     let options = await get_prefs();
-    let is_dark_background = relative_luminance(parseCSSColor(options.default_background_color as string)!.slice(0, 3) as RGB) < relative_luminance(parseCSSColor(options.default_foreground_color as string)!.slice(0, 3) as RGB);
-    let if_toplevel_start = is_top_level_frame ? '' : '/*';
-    let if_toplevel_end = is_top_level_frame ? '' : '*/';
-    let if_dark_background_start = is_dark_background ? '' : '/*';
-    let if_dark_background_end = is_dark_background ? '' : '*/';
-    let if_light_background_start = is_dark_background ? '/*' : '';
-    let if_light_background_end = is_dark_background ? '*/' : '';
-
-    let render_params = Object.assign(
-        {},
-        options,
-        {
-            if_dark_background_start,
-            if_dark_background_end,
-            if_light_background_start,
-            if_light_background_end,
-            if_toplevel_start,
-            if_toplevel_end,
-        }
-    );
-    let sheet_text = await (await fetch(browser.extension.getURL(sheet))).text();
-    for (let key in render_params) {
-        if (typeof render_params[key] === 'string')
-            sheet_text = sheet_text.replace(
-                new RegExp(`{${key}}`, 'g'),
-                (render_params[key] as string).indexOf('#') === 0 ? (render_params[key] as string).slice(1) : render_params[key] as string
-            );
-    }
-    return sheet_text;
+    let is_darkbg = relative_luminance(parseCSSColor(options.default_background_color as string)!.slice(0, 3) as RGB) < relative_luminance(parseCSSColor(options.default_foreground_color as string)!.slice(0, 3) as RGB);
+    return sheet.render({
+        default_foreground_color: options.default_foreground_color as string,
+        default_background_color: options.default_background_color as string,
+        default_link_color: options.default_link_color as string,
+        default_visited_color: options.default_visited_color as string,
+        default_active_color: options.default_active_color as string,
+        default_selection_color: options.default_selection_color as string,
+        is_toplevel,
+        is_darkbg,
+    });
 }
 
 browser.runtime.onMessage.addListener(async (message, sender) => {
@@ -83,7 +66,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
             case 'query_tabId':
                 return sender.tab?.id;
             case 'query_base_style':
-                return await process_stylesheet('methods/base.css', true);
+                return await process_stylesheet(base_style, true);
             case 'get_configured_private':
                 return configured_private;
             case 'set_configured_private':
@@ -143,9 +126,9 @@ async function send_prefs(changes: {[s: string]: Storage.StorageChange}) {
     let from_manifest = (browser.runtime.getManifest() as Manifest.WebExtensionManifest).content_scripts![0];
     let new_data: ContentScripts.RegisteredContentScriptOptions = {matches: ["<all_urls>"]};
     let rendered_stylesheets: {[key: string]: string} = {};
-    for (let css_path of Array.from(new Set(Object.values(methods).map(m => m.stylesheets).flat()))) {
-        rendered_stylesheets[`${css_path}_iframe`] = await process_stylesheet(css_path, false);
-        rendered_stylesheets[`${css_path}_toplevel`] = await process_stylesheet(css_path, true);
+    for (let css_renderer of Array.from(new Set(Object.values(methods).map(m => m.stylesheets).flat()))) {
+        rendered_stylesheets[`${css_renderer.name}_iframe`] = await process_stylesheet(css_renderer, false);
+        rendered_stylesheets[`${css_renderer.name}_toplevel`] = await process_stylesheet(css_renderer, true);
     }
     let code = `
         if (typeof content_script_state === 'undefined') { /* #226 part 1 workaround */

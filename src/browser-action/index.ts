@@ -1,5 +1,6 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
-import { get_merged_configured_common, get_prefs, set_pref, methods } from '../common/shared';
+import { get_merged_configured_common, get_prefs, set_pref } from '../common/shared';
+import { methods } from '../methods/methods';
 import { generate_urls, hint_marker } from '../common/generate-urls';
 import { ConfiguredPages } from '../common/types';
 import '../common/ui-style';
