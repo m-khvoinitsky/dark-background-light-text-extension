@@ -85,6 +85,7 @@ const do_not_remove_background_image: string[] = [
     'thumbnail',
     'tooltip', // ytp-tooltip-bg class
     'avatar',
+    'browserref', // https://www.w3schools.com/
 ];
 
 const system_colors: string[] = [
