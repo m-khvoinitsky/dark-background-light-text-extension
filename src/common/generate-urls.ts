@@ -1,8 +1,60 @@
-import { parse } from 'tldts';
-
 export const hint_marker = '<next_is_preferred>';
 
-export function generate_urls(url_str: string, hint: boolean = false): string[] {
+export function is_IPv4(maybe_ip: string): boolean {
+    if (maybe_ip.length < 7 || maybe_ip.length > 15) {
+        return false
+    }
+    let number_of_octets = 0;
+    let first: number|null = null;
+    let second: number|null = null;
+    let third: number|null = null;
+    for (let i = 0; i <= maybe_ip.length; i++) {
+        const code = maybe_ip.charCodeAt(i);
+        if (code === 46 /* . */ || i === maybe_ip.length /* last special iteration */) {
+            number_of_octets++;
+            if (number_of_octets > 4 || (number_of_octets < 4 && i === maybe_ip.length)) {
+                return false
+            }
+            if (first === null) {
+                return false
+            }
+            if (third !== null && (first * 100 + second! * 10 + third) > 255) {
+                return false
+            }
+            first = null;
+            second = null;
+            third = null;
+            continue
+        } else if (code < 48 /* 0 */ || code > 57 /* 9 */) {
+            return false;
+        }
+        const digit = code - 48;
+        if (first === null) {
+            first = digit;
+            continue
+        } else if (second === null) {
+            second = digit;
+            continue
+        } else if (third === null) {
+            third = digit;
+            continue
+        } else {
+            return false
+        }
+    }
+    return true
+}
+
+function split_domain_dumb(hostname: string): [string, string[]] {
+    const splitted = hostname.split('.');
+    return [splitted.pop()!, splitted];
+}
+
+export function generate_urls(
+    url_str: string,
+    hint: boolean = false,
+    split_domain_func = split_domain_dumb,
+): string[] {
     // This whole function is one of the most fragile pieces of code I've ever written,
     // touch it with great caution. Likely, there are unittests.
     try {
@@ -49,15 +101,14 @@ export function generate_urls(url_str: string, hint: boolean = false): string[] 
             }
         }
 
-        let tldts_obj = parse(url_str);
-        if (!tldts_obj.isIp && tldts_obj.domain) {
-            if (tldts_obj.subdomain) {
-                let subdomain_parts = tldts_obj.subdomain.split('.');
+        if (!is_IPv4(url_obj.hostname) && url_obj.hostname.indexOf('.') >= 0) {
+            let [domain, subdomain_parts] = split_domain_func(url_obj.hostname);
+            if (subdomain_parts) {
                 for (let i = 0; i < subdomain_parts.length; i++) {
-                    result_list.push(`${subdomain_parts.slice(i, subdomain_parts.length).join('.')}.${tldts_obj.domain}`);
+                    result_list.push(`${subdomain_parts.slice(i, subdomain_parts.length).join('.')}.${domain}`);
                 }
             }
-            result_list.push(tldts_obj.domain);
+            result_list.push(is_http ? domain : `${protocol_real}${domain}`);
         } else if (url_obj.hostname) {
             result_list.push(is_http ? url_obj.hostname : `${protocol_real}${url_obj.hostname}`);
         }

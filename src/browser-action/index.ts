@@ -1,7 +1,8 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
 import { get_merged_configured_common, get_prefs, set_pref } from '../common/shared';
 import { methods } from '../methods/methods';
-import { generate_urls, hint_marker } from '../common/generate-urls';
+import { hint_marker } from '../common/generate-urls';
+import { smart_generate_urls } from '../common/smart-generate-urls';
 import { ConfiguredPages } from '../common/types';
 import '../common/ui-style';
 
@@ -12,7 +13,7 @@ import '../common/ui-style';
         );
     }
     async function generate_urls_with_preselect_from_configured(url_str: string): Promise<{list: string[], preselect?: string}> {
-        let result_list = generate_urls(url_str, true);
+        let result_list = smart_generate_urls(url_str, true);
         let preselect: string | undefined;
 
         let merged = await get_merged_configured();
