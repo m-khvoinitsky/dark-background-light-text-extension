@@ -4,8 +4,6 @@ import { RenderOptions } from '../src/common/types';
 import { methods } from '../src/methods/methods-with-stylesheets';
 import { lint, LintResult, SyntaxType } from 'stylelint';
 
-//const util = require('util');
-
 function format_error(results: LintResult[], source: string): string {
     let result_lines: string[] = [];
     for (let result of results) {
@@ -71,8 +69,6 @@ describe('Test if valid CSS are rendered', () => {
                                 },
                             ],
                             'rule-empty-line-before': null,
-                            // TMP! Untix XUL will be removed
-                            'selector-type-no-unknown': null,
                             'indentation': 2,
                             // forbid comments in rendered stylesheet
                             'comment-pattern': '(?!)',

@@ -11,8 +11,6 @@ export function render({
     is_darkbg,
 }: RenderOptions) {
     return `
-@namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
-
 :root {
   --dark-background-light-text-add-on-foreground-color: ${default_foreground_color} !important;
   --dark-background-light-text-add-on-background-color: ${default_background_color} !important;
@@ -22,9 +20,7 @@ export function render({
   --dark-background-light-text-add-on-selection-color: ${default_selection_color} !important;
 }
 
-html,
-page,
-window {
+html {
 ${is_toplevel ? `\
   background-color: ${default_background_color};
 ` : ''}\
@@ -116,39 +112,6 @@ select {
     ${default_background_color} 0 0 5pt !important;
 }
 
-xul|*.checkbox-check[checked] {
-${''/* modified version of chrome://global/skin/in-content/check.svg */}\
-  list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"><path fill="${encodeURIComponent(default_foreground_color)}" d="M 9.39,16.5 16.28,6 14.77,4.5 9.37,12.7 6.28,9.2 4.7,10.7 z"/></svg>') !important;
-}
-xul|*.radio-check[selected] {
-${''/* chrome://global/skin/in-content/radio.svg */}\
-  list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="21" height="21"><circle xmlns="http://www.w3.org/2000/svg" fill="${encodeURIComponent(default_foreground_color)}" cx="10.5" cy="10.5" r="6"/></svg>') !important;
-}
-xul|menulist:not([editable="true"]) > xul|*.menulist-dropmarker {
-${''/* chrome://global/skin/in-content/dropdown.svg */}\
-  list-style-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path xmlns="http://www.w3.org/2000/svg" fill="${encodeURIComponent(default_foreground_color)}" d="M12,6l-4.016,4L4,6H12z"/></svg>') !important;
-}
-
-${''/* https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Styling_a_Tree */}\
-${''/* #27 */}\
-treechildren {
-  background-color: ${default_background_color} !important;
-}
-treechildren::-moz-tree-cell,
-treechildren::-moz-tree-row,
-treechildren::-moz-tree-row(odd) {
-  background-color: transparent !important;
-}
-treechildren::-moz-tree-cell-text {
-  color: ${default_foreground_color} !important;
-}
-treechildren::-moz-tree-row(even) {
-  background: rgba(127, 127, 127, 0.3) !important;
-}
-treechildren::-moz-tree-row(selected) {
-  background: ${default_selection_color} !important;
-}
-
 ${''/* TODO: "black on transparent" mark */}\
 ${is_darkbg ? `\
 img[alt="inline_formula"],
@@ -158,11 +121,6 @@ ${''/* charts, for example on https://addons.mozilla.org/en-US/firefox/addon/bla
   filter: invert(100%) hue-rotate(180deg) !important;
 }
 ` : ''}\
-
-${''/* about:preferences dialogs */}\
-groupbox#dialogBox {
-  box-shadow: 0 0 4px 3px ${default_foreground_color} !important;
-}
 
 ${''/* Google Hangouts fixes */}\
 @-moz-document url-prefix("https://talkgadget.google.com/") {
