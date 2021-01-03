@@ -98,6 +98,20 @@ const test_urls = {
         hint_marker,
         "jfgeh",
     ],
+    'https://example.com/test1234/hello': [
+        'example.com/test1234/hello',
+        'example.com/test1234',
+        hint_marker,
+        'example.com',
+        `${DUMB_DOMAIN_DETECTION}com`,
+    ],
+    'https://home.cern/science/physics/': [
+        'home.cern/science/physics',
+        'home.cern/science',
+        hint_marker,
+        'home.cern',
+        `${DUMB_DOMAIN_DETECTION}cern`,
+    ],
     'https://support.mozilla.org/en-US/products/firefox?as=u&utm_source=inproduct#asdfasdf=qwer': [
         "support.mozilla.org/en-US/products/firefox",
         "support.mozilla.org/en-US/products",
@@ -221,6 +235,13 @@ const test_urls = {
         hint_marker,
         '[fdfe:5b0f:4148::1]:8080',
         '[fdfe:5b0f:4148::1]',
+    ],
+    'https://xn--e1aybc.xn--p1acf/%D1%84%D1%8B%D0%B2%D0%B0/%D0%B9%D1%86%D1%83%D0%BA': [
+        'xn--e1aybc.xn--p1acf/%D1%84%D1%8B%D0%B2%D0%B0/%D0%B9%D1%86%D1%83%D0%BA',
+        'xn--e1aybc.xn--p1acf/%D1%84%D1%8B%D0%B2%D0%B0',
+        hint_marker,
+        'xn--e1aybc.xn--p1acf',
+        `${DUMB_DOMAIN_DETECTION}xn--p1acf`,
     ],
 };
 

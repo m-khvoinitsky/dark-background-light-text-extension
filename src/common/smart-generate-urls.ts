@@ -13,7 +13,10 @@ export function smart_generate_urls(
                 detectIp: false,
                 extractHostname: false,
             });
-            return [tldts_obj.domain!, tldts_obj.subdomain!.split('.')];
+            return [
+                tldts_obj.domain!,
+                tldts_obj.subdomain ? tldts_obj.subdomain.split('.') : [],
+            ];
         }
     );
 }
