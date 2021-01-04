@@ -130,7 +130,7 @@ ${is_darkbg ? `\
 ` : ''}\
 
 ${''/* #8 google scholar bars on right sidebar */}\
-#gs_bdy #gsc_g_bars .gsc_g_a[style*="height"] {
+#gs_bdy .gsc_g_a[style*="height"] {
   background-color: rgb(119, 119, 119) !important;
 }
 
