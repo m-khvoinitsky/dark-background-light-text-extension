@@ -2,7 +2,7 @@ import { RenderOptions } from '../../common/types';
 export const name = 'invert';
 export function render({}: RenderOptions) {
     return `
-@supports (backdrop-filter: invert(100%)) {
+@supports (backdrop-filter: invert(1)) {
   #mybpwaycfxccmnp-dblt-backdrop-filter {
     display: block !important;
     position: fixed !important;
@@ -13,21 +13,21 @@ export function render({}: RenderOptions) {
     margin: 0 !important;
     pointer-events: none !important;
     z-index: 2147483647 !important;
-    backdrop-filter: invert(100%) hue-rotate(180deg) !important;
+    backdrop-filter: invert(1) hue-rotate(180deg) !important;
   }
   img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),
   video {
-    filter: invert(100%) hue-rotate(180deg) !important;
+    filter: invert(1) hue-rotate(180deg) !important;
   }
 }
 
-@supports not (backdrop-filter: invert(100%)) {
+@supports not (backdrop-filter: invert(1)) {
   html,
 ${''/* TODO: "black on transparent" mark */}\
   img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),
   video,
   div#viewer.pdfViewer div.page {
-    filter: invert(100%) hue-rotate(180deg) !important;
+    filter: invert(1) hue-rotate(180deg) !important;
   }
 ${''/* #28 */}\
   :fullscreen video,

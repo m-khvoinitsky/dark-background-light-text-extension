@@ -118,7 +118,7 @@ img[alt="inline_formula"],
 .mwe-math-fallback-image-inline,
 ${''/* charts, for example on https://addons.mozilla.org/en-US/firefox/addon/black-background-white-text/statistics/ */}\
 .highcharts-container {
-  filter: invert(100%) hue-rotate(180deg) !important;
+  filter: invert(1) hue-rotate(180deg) !important;
 }
 ` : ''}\
 
@@ -142,7 +142,7 @@ ${''/* https://github.com/qooob/authentic-theme radio buttons. unfortunately, th
 ${''/* buttons on many google services (Books, Translate, etc) */}\
 ${is_darkbg ? `\
 .jfk-button-img {
-  filter: invert(100%);
+  filter: invert(1);
 }
 ` : ''}\
 `;
