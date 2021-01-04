@@ -122,95 +122,21 @@ ${''/* charts, for example on https://addons.mozilla.org/en-US/firefox/addon/bla
 }
 ` : ''}\
 
-${''/* Google Hangouts fixes */}\
-@-moz-document url-prefix("https://talkgadget.google.com/") {
-  div.PD.IF,
-  img.Yf {
-    border: 1pt solid ${default_foreground_color} !important;
-  }
-  div.ci {
-    visibility: hidden !important;
-  }
-}
-
+${''/* https://catalog.onliner.by/ */}\
 ${is_darkbg ? `\
-@-moz-document url-prefix("http://catalog.onliner.by/") {
-  .i-checkbox__faux::before {
-    filter: invert(100%);
-  }
+.catalog-content .i-checkbox__faux::before {
+  filter: invert(1);
 }
 ` : ''}\
 
-${''/* google scholar bars on right sidebar fix #8 */}\
-@-moz-document url-prefix("https://scholar.google.") {
-  #gsc_g_bars .gsc_g_a[style*="height"] {
-    background-color: rgb(119, 119, 119) !important;
-  }
-}
-
-${''/* youtube annotations backgrounds #32 */}\
-@-moz-document domain('youtube.com') {
-${''/* document.querySelectorAll('.annotation-shape svg path').forEach(node => { let color = node.getAttribute('fill'); console.log(`.video-annotations .annotation-shape svg path[fill="${color}"] { fill: ${color} !important; }`)}) */}\
-${''/* TODO: proportional color change */}\
-${''/* TODO: less hardcode */}\
-${is_darkbg ? `\
-  .video-annotations .annotation-shape svg path[fill="#fdda36"] { fill: #664627 !important; }
-  .video-annotations .annotation-shape svg path[fill="#fcc228"] { fill: #664b14 !important; }
-  .video-annotations .annotation-shape svg path[fill="#ffe673"] { fill: #685b2e !important; }
-  .video-annotations .annotation-shape svg path[fill="#ffffff"] { fill: #000000 !important; }
-  .video-annotations .annotation-shape svg path[fill="#000000"] { fill: #000000 !important; }
-  .video-annotations .annotation-shape svg path[fill="#e28751"] { fill: #9b5240 !important; }
-  .video-annotations .annotation-shape svg path[fill="#d65b3f"] { fill: #d65b3f !important; }
-  .video-annotations .annotation-shape svg path[fill="#333333"] { fill: #333333 !important; }
-  .video-annotations .annotation-shape svg path[fill="#971919"] { fill: #971919 !important; }
-  .video-annotations .annotation-shape svg path[fill="#999999"] { fill: #666666 !important; }
-  .video-annotations .annotation-shape svg path[fill="#c068d3"] { fill: #884f9a !important; }
-  .video-annotations .annotation-shape svg path[fill="#de3434"] { fill: #de3434 !important; }
-  .video-annotations .annotation-shape svg path[fill="#de60ad"] { fill: #994974 !important; }
-  .video-annotations .annotation-shape svg path[fill="#eaeaea"] { fill: #171717 !important; }
-  .video-annotations .annotation-shape svg path[fill="#cb3e3e"] { fill: #cb3e3e !important; }
-  .video-annotations .annotation-shape svg path[fill="#666666"] { fill: #666666 !important; }
-  .video-annotations .annotation-shape svg path[fill="#4fa0d3"] { fill: #3e7199 !important; }
-  .video-annotations .annotation-shape svg path[fill="#64c9d8"] { fill: #417281 !important; }
-  .video-annotations .annotation-shape svg path[fill="#5fa0d3"] { fill: #405e80 !important; }
-  .video-annotations .annotation-shape svg path[fill="#a173d1"] { fill: #74549a !important; }
-  .video-annotations .annotation-shape svg path[fill="#5687d1"] { fill: #436099 !important; }
-  .video-annotations .annotation-shape svg path[fill="#9cd2da"] { fill: #436067 !important; }
-  .video-annotations .annotation-shape svg path[fill="#c0e6e4"] { fill: #526664 !important; }
-  .video-annotations .annotation-shape svg path[fill="#636fa9"] { fill: #636fa9 !important; }
-  .video-annotations .annotation-shape svg path[fill="#83e2ab"] { fill: #34684c !important; }
-  .video-annotations .annotation-shape svg path[fill="#615abb"] { fill: #615abb !important; }
-  .video-annotations .annotation-shape svg path[fill="#d1fe83"] { fill: #516834 !important; }
-  .video-annotations .annotation-shape svg path[fill="#9eed5e"] { fill: #3d6630 !important; }
-  .video-annotations .annotation-shape svg path[fill="#6ab975"] { fill: #37663e !important; }
-  .video-annotations .annotation-shape svg path[fill="#7ddf75"] { fill: #336633 !important; }
-  .video-annotations .annotation-shape svg path[fill="#7c54ae"] { fill: #7c54ae !important; }
-  .video-annotations .annotation-shape svg path[fill="#afecd1"] { fill: #4d6758 !important; }
-  .video-annotations .annotation-shape svg path[fill="#403e9a"] { fill: #403e9a !important; }
-` : ''}\
+${''/* #8 google scholar bars on right sidebar */}\
+#gs_bdy #gsc_g_bars .gsc_g_a[style*="height"] {
+  background-color: rgb(119, 119, 119) !important;
 }
 
 ${''/* https://github.com/qooob/authentic-theme radio buttons. unfortunately, there is no public available demo */}\
 .awradio label::after {
   background-color: ${default_foreground_color} !important;
-}
-
-${''/* #39 */}\
-@-moz-document domain('blog.torproject.org') {
-  div#header,
-  div#container {
-    background-color: ${default_background_color} !important;
-    position: relative;
-  }
-}
-
-@-moz-document domain('addons.mozilla.org') {
-${is_darkbg ? `\
-  .stars label[data-stars] {
-    background-repeat: no-repeat;
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmElEQVQY03XQXWoCQRAE4M8fNO+CQfzBI+QKPoQcWXKLBLyBiIIXcBekfemFdRwLhqKL6pqZEhEqZ1fTh16xwkfyE2rmNSbJTxgnT3varMd9vRlExHchwgj3QmsGEQE/+aSJOm747czwhUWx0OKMf0T/g6c3qVdE2cYyU++Z2Oa8qVX3mYYL9nl9i3lZXbd4xCHnPzTYdoYHwrRCbdd8fYkAAAAASUVORK5CYII=') !important;
-  }
-` : ''}\
 }
 
 ${''/* buttons on many google services (Books, Translate, etc) */}\

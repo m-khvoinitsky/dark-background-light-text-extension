@@ -42,12 +42,5 @@ ${''/*Bittorrent sync webui fix*/}\
 .qrCode > canvas {
   border: 10px white solid;
 }
-
-@-moz-document url-prefix("https://davdroid.bitfire.at/") {
-${''/* fix for huge white peace due to "border-left: 68px solid #EDEDED;" */}\
-  article {
-    border-left-color: #000000 !important;
-  }
-}
 `;
 }

@@ -28,8 +28,6 @@ const intersect = (set1: string[], set2: string[]): boolean => set1.some(
 );
 
 const preserve_background_color: string[] = [
-    '.colorpickertile',
-    '.colorpicker-button-colorbox',
     // Youtube
     '.ytp-menuitem-toggle-checkbox',
     '.ytp-volume-slider',

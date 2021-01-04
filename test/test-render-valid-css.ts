@@ -68,6 +68,9 @@ describe('Test if valid CSS are rendered', () => {
                                     ],
                                 },
                             ],
+                            'at-rule-disallowed-list': [
+                                'document', // obsolete
+                            ],
                             'rule-empty-line-before': null,
                             'indentation': 2,
                             // forbid comments in rendered stylesheet
