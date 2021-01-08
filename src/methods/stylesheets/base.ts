@@ -121,14 +121,14 @@ ${''/* charts, for example on https://addons.mozilla.org/en-US/firefox/addon/bla
   filter: invert(1) hue-rotate(180deg) !important;
 }
 ` : ''}\
-
+\
 ${''/* https://catalog.onliner.by/ */}\
 ${is_darkbg ? `\
 .catalog-content .i-checkbox__faux::before {
   filter: invert(1);
 }
 ` : ''}\
-
+\
 ${''/* #8 google scholar bars on right sidebar */}\
 #gs_bdy .gsc_g_a[style*="height"] {
   background-color: rgb(119, 119, 119) !important;
@@ -138,7 +138,7 @@ ${''/* https://github.com/qooob/authentic-theme radio buttons. unfortunately, th
 .awradio label::after {
   background-color: ${default_foreground_color} !important;
 }
-
+\
 ${''/* buttons on many google services (Books, Translate, etc) */}\
 ${is_darkbg ? `\
 .jfk-button-img {

@@ -46,10 +46,11 @@ describe('Test if valid CSS are rendered', () => {
             [true, false],
             [false, true],
         ]) {
-            options.is_toplevel = is_toplevel
-            options.is_darkbg = is_darkbg
+            options.is_toplevel = is_toplevel;
+            options.is_darkbg = is_darkbg;
+            let options_copy = Object.assign({}, options);
             it(`${renderer.name} ${JSON.stringify({is_toplevel, is_darkbg})}`, async () => {
-                let rendered = renderer.render(options);
+                let rendered = renderer.render(options_copy);
                 let result_object = await lint({
                     config: {
                         extends: 'stylelint-config-standard',
