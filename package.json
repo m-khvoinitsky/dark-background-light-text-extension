@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build": "webpack",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc mocha"
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --reporter='../../coverage-relative-json-summary' --reporter=html --reporter=text mocha"
   },
   "devDependencies": {
     "@types/mocha": "^8.2.0",
