@@ -25,6 +25,7 @@ for (let key in methods_bare) {
             case 'stylesheet-processor':
                 methods_bare[key].stylesheets[i] = stylesheet_processor;
                 break;
+            /* istanbul ignore next */
             default:
                 throw Error(`Unknown stylesheet name: ${methods_bare[key].stylesheets[i].name}`)
         }

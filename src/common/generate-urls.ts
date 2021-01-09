@@ -10,7 +10,10 @@ export function is_IPv4(maybe_ip: string): boolean {
     let third: number|null = null;
     for (let i = 0; i <= maybe_ip.length; i++) {
         const code = maybe_ip.charCodeAt(i);
-        if (code === 46 /* . */ || i === maybe_ip.length /* last special iteration */) {
+        if (
+            code === 46 /* . */
+            || i === maybe_ip.length /* last special iteration */
+        ) {
             number_of_octets++;
             if (number_of_octets > 4 || (number_of_octets < 4 && i === maybe_ip.length)) {
                 return false
@@ -117,6 +120,7 @@ export function generate_urls(
             result_list.push(protocol_real);
         }
 
+        /* istanbul ignore if: no idea how to reproduce it - it was added to tolerate unlikely failure */
         if (result_list.length == 0) {
             console.error(`generate_urls: no urls has been generated, returning original: ${url_str}`)
             return hint ? [hint_marker, url_str] : [url_str];
