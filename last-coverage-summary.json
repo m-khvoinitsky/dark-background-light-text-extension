@@ -2,9 +2,9 @@
     "src/background/lib.ts": {
         "lines": {
             "total": 25,
-            "covered": 24,
+            "covered": 25,
             "skipped": 0,
-            "pct": 96
+            "pct": 100
         },
         "functions": {
             "total": 7,
@@ -14,15 +14,15 @@
         },
         "statements": {
             "total": 30,
-            "covered": 29,
+            "covered": 30,
             "skipped": 0,
-            "pct": 96.67
+            "pct": 100
         },
         "branches": {
             "total": 18,
-            "covered": 17,
+            "covered": 18,
             "skipped": 0,
-            "pct": 94.44
+            "pct": 100
         }
     },
     "src/common/generate-urls.ts": {
