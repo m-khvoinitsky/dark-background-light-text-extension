@@ -39,6 +39,7 @@ const preserve_background_color: string[] = [
 ];
 
 const remove_background_image: string[] = [
+    'media.mongodb.org/code-block-bg.png',
     /*'static/cm-bkg.jpg',  //http://review.cyanogenmod.org/
      'images/homepagetop.gif',  //http://trv-science.ru/
      'images/homepagetoptop.gif',
