@@ -145,5 +145,10 @@ ${is_darkbg ? `\
   filter: invert(1);
 }
 ` : ''}\
+
+${''/* Google Docs cursor (#220) */}\
+#kix-current-user-cursor-caret[style*="border-color: rgb(0, 0, 0)"] {
+  border-color: ${default_foreground_color} !important;
+}
 `;
 }
