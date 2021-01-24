@@ -72,17 +72,16 @@ export function generate_urls(
             hint_added = true;
         }
 
-        if (url_obj.pathname) {
-            let pathname_parts = url_obj.pathname.split('/').filter(p => p.length > 0);
-            let prepend_protocol_and_or_host = (
-                (url_obj.host) ?
-                    `${is_http ? '' : protocol_real}${url_obj.host}/` :
-                    protocol_real.endsWith('//') ? `${protocol_real}/` : protocol_real
-            );
-            for (let i = pathname_parts.length - 1; i >= 0; i--) {
-                result_list.push(`${prepend_protocol_and_or_host}${pathname_parts.slice(0, i + 1).join('/')}`)
-            }
+        let pathname_parts = url_obj.pathname.split('/').filter(p => p.length > 0);
+        let prepend_protocol_and_or_host = (
+            (url_obj.host) ?
+                `${is_http ? '' : protocol_real}${url_obj.host}/` :
+                protocol_real.endsWith('//') ? `${protocol_real}/` : protocol_real
+        );
+        for (let i = pathname_parts.length - 1; i >= 0; i--) {
+            result_list.push(`${prepend_protocol_and_or_host}${pathname_parts.slice(0, i + 1).join('/')}`)
         }
+
         if (hint && !hint_added) {
             if (protocol_real === 'file://' && result_list.length > 0) {
                 result_list.splice(result_list.length - 1, 0, hint_marker);
