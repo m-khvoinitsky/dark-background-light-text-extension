@@ -13,20 +13,20 @@ export function modify_csp(
             }
 
             if (directives.hasOwnProperty('style-src')) {
-                if (directives['style-src'].includes('data:'))
+                if (directives['style-src'].includes("'unsafe-inline'"))
                     return value;
                 else if (directives['style-src'].length === 1 && directives['style-src'][0] === "'none'")
-                    directives['style-src'] = ['data:'];
+                    directives['style-src'] = ["'unsafe-inline'"];
                 else
-                    directives['style-src'].push('data:');
+                    directives['style-src'].push("'unsafe-inline'");
             } else if (directives.hasOwnProperty('default-src')) {
-                if (directives['default-src'].includes('data:'))
+                if (directives['default-src'].includes("'unsafe-inline'"))
                     return value;
                 else if (directives['default-src'].length === 1 && directives['default-src'][0] === "'none'")
-                    directives['style-src'] = [ 'data:' ];
+                    directives['style-src'] = [ "'unsafe-inline'" ];
                 else {
                     directives['style-src'] = directives['default-src'].slice();
-                    directives['style-src'].push('data:');
+                    directives['style-src'].push("'unsafe-inline'");
                 }
             } else
                 return value;
@@ -40,3 +40,28 @@ export function modify_csp(
     } else
         return header;
 };
+
+
+export function modify_cors(
+    headers: WebRequest.HttpHeaders,
+    details: WebRequest.OnHeadersReceivedDetailsType,
+) {
+    // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1393022
+    if (details.documentUrl) {
+        let url_obj = new URL(details.documentUrl);
+        let done = false;
+        for (let header of headers) {
+            if (header.name.toLowerCase() === 'access-control-allow-origin') {
+                header.value = url_obj.origin;
+                done = true;
+            }
+        }
+        if (!done) {
+            headers.push({
+                name: 'Access-Control-Allow-Origin',
+                value: url_obj.origin,
+            })
+        }
+    }
+    return headers;
+}

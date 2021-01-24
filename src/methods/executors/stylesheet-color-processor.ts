@@ -355,6 +355,7 @@ export class StylesheetColorProcessor extends StylesheetProcessorAbstract implem
             url = url.trim();
             if (url.indexOf('"') === 0 && url.lastIndexOf('"') === (url.length - 1))
                 url = url.slice(1, url.length - 1);
+            // after rewriting workaround_stylesheet to use crossorigin="anonymous" it's no more strictly required
             url = new URL(url, base_url).href;
             if (selector === inline_fake_selector) {
                 return [`url("${url}")`, true];
@@ -375,26 +376,7 @@ export class StylesheetColorProcessor extends StylesheetProcessorAbstract implem
                 return ['url("' + url + '")', true];
             } else {
                 return ['none', false];
-            } /*
-             if (url.indexOf('data:') != 0) {
-             if (intersect(remove_background_image, [url, selector])) {
-             return ['none'];
-             } else if (intersect(do_not_remove_background_image, [url, selector])) {
-             if (bg_repeat == 'repeat' || bg_repeat == 'repeat repeat')
-             return ['url("' + url + '")', true];
-             else
-             return ['url("' + url + '")', true]
-             } else if (bg_repeat == 'no-repeat' || bg_repeat == 'no-repeat no-repeat')
-             return ['none']; // ['url("' + url + '")', true];
-             else
-             return ['none'];
-             } else { // data:
-             if (bg_repeat == 'no-repeat' || bg_repeat == 'no-repeat no-repeat') {
-             return ['url("' + url + '")', true];
-             } else {
-             return ['none'];
-             }
-             }  */
+            }
         } else if (bg_image.indexOf('gradient') < bg_image.indexOf('(')) {
             let open_bracket_i = bg_image.indexOf('(');
             let close_bracket_i = bg_image.lastIndexOf(')');

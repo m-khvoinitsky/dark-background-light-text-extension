@@ -67,7 +67,7 @@ IPs.forEach((bind_to) => {
           'Content-Type': contentType,
         }
         if (request.url.endsWith('.woff2')) {
-          headers['Access-Control-Allow-Origin'] = 'http://[::1]:8080';
+          headers['Access-Control-Allow-Origin'] = '*';
         }
 
         response.writeHead(code, headers);

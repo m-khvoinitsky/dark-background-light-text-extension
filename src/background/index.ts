@@ -16,7 +16,10 @@ import {
 import { methods } from '../methods/methods-with-stylesheets';
 import { parseCSSColor } from 'csscolorparser';
 import { relative_luminance } from '../common/color_utils';
-import { modify_csp } from './lib';
+import {
+    modify_cors,
+    modify_csp,
+} from './lib';
 import * as base_style from '../methods/stylesheets/base';
 
 let platform_info: Promise<Runtime.PlatformInfo> = ('getPlatformInfo' in browser.runtime) ?
@@ -245,6 +248,27 @@ browser.webRequest.onHeadersReceived.addListener(
     {
         urls: ['<all_urls>'],
         types: ['main_frame'],
+    },
+    [
+        'blocking',
+        'responseHeaders',
+    ],
+);
+
+browser.webRequest.onHeadersReceived.addListener(
+    details => {
+        try {
+            return {
+                responseHeaders: modify_cors(details.responseHeaders!, details),
+            };
+        } catch (e) {
+            console.error(e);
+            return {};
+        }
+    },
+    {
+        urls: ['<all_urls>'],
+        types: ['stylesheet'],
     },
     [
         'blocking',
