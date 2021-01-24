@@ -1,6 +1,6 @@
 import { AddonOptions, MethodExecutor, RGBA, RGB, DefaultColors } from '../../common/types';
 import { relative_luminance, lighten_or_darken_color } from '../../common/color_utils';
-import { StylesheetProcessorAbstract, brackets_aware_split } from './stylesheet-processor-abstract';
+import { StylesheetProcessorAbstract, brackets_aware_split, inline_fake_selector } from './stylesheet-processor-abstract';
 import { parseCSSColor } from 'csscolorparser';
 
 function parse_text_shadow(value: string): [null, null] | [Array<string | RGBA>, number] {
@@ -21,8 +21,8 @@ function parse_text_shadow(value: string): [null, null] | [Array<string | RGBA>,
 const intersect = (set1: string[], set2: string[]): boolean => set1.some(
         set1_cur => set2.some(
             set2_cur => (  //TODO: remove redundant .toLowerCase()
-                set2_cur.toLowerCase().indexOf(set1_cur.toLowerCase()) >= 0 ||
-                set1_cur.toLowerCase().indexOf(set2_cur.toLowerCase()) >= 0
+                (set1_cur && set2_cur.toLowerCase().indexOf(set1_cur.toLowerCase()) >= 0)
+                || (set2_cur && set1_cur.toLowerCase().indexOf(set2_cur.toLowerCase()) >= 0)
             )
         )
 );
@@ -356,6 +356,9 @@ export class StylesheetColorProcessor extends StylesheetProcessorAbstract implem
             if (url.indexOf('"') === 0 && url.lastIndexOf('"') === (url.length - 1))
                 url = url.slice(1, url.length - 1);
             url = new URL(url, base_url).href;
+            if (selector === inline_fake_selector) {
+                return [`url("${url}")`, true];
+            }
             if (intersect(remove_background_image, [url, selector])) {
                 return ['none', false];
             // yep, facebook-only fix (/rsrc.php/), it's too risky to apply it everywhere

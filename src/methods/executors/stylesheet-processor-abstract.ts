@@ -8,6 +8,7 @@ const count_char_in_string = (char: string, str: string) => {
         count += (str[index] == char) ? 1 : 0
     return count
 };
+export const inline_fake_selector = '_inline_ykwfjtjiab';
 export function brackets_aware_split(value: string, separator: string = ','): string[] {
     // TODO: handle more complex cases
     let result: string[] = [];
@@ -394,7 +395,7 @@ export abstract class StylesheetProcessorAbstract {
         this.process_CSSStyleDeclaration(
             this.auxiliary_element.style,
             this.window.location.href,
-            '',
+            inline_fake_selector,
             [...HTMLElement_v.classList],
             HTMLElement_v.getAttribute('id'),
             HTMLElement_v.tagName,
