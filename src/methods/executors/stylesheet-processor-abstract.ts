@@ -1,3 +1,6 @@
+declare var { browser }: typeof import('webextension-polyfill-ts');
+import { CallbackID } from '../../common/types';
+import AwaitLock from 'await-lock';
 
 const count_char_in_string = (char: string, str: string) => {
     let count = 0;
@@ -23,65 +26,39 @@ export function brackets_aware_split(value: string, separator: string = ','): st
     return result;
 };
 
-const inline_override_stylesheet_id = 'dark-background-light-text-add-on-inline-style-override';
 const quote_re = new RegExp('"', 'g');
 const important_re = new RegExp('!important;', 'g');
 
-interface ProcessedHTMLElement {
-    last: string,
-    original: string,
-}
-interface OurWindow extends Window {
-    MutationObserver: typeof MutationObserver;
-}
-
 export abstract class StylesheetProcessorAbstract {
-    window: OurWindow
+    window: Window
     url: string
     processed_stylesheets: WeakMap<StyleSheet, number>
     self_stylesheets: WeakSet<StyleSheet>
     all_initial_sheets_have_been_processed: boolean
-    processed_htmlelements: WeakMap<Element, ProcessedHTMLElement>
     workaround_requested: WeakSet<StyleSheet>
     broken_stylesheets: WeakSet<StyleSheet>
     readonly style_selector: string
-    mutationObserver: MutationObserver
     stop: boolean
     handle_visibilitychange?: EventListener
-    inline_override?: CSSStyleSheet
-    inline_override_selectors?: string[]
+    overridden_inline_styles: Set<string>
+    inline_overrides_style: string[]
+    auxiliary_element: HTMLElement
+    schedule_inline_override_stylesheet_update_timerID: number = 0
+    prev_inline_override_stylesheet?: string
+    inline_override_lock: AwaitLock
     constructor(window: Window, style_selector: string = '[style]') {
-        this.window = window as OurWindow;
+        this.window = window;
         this.url = window.document.documentURI;
         this.processed_stylesheets = new WeakMap();
         this.self_stylesheets = new WeakSet();
         this.all_initial_sheets_have_been_processed = false;
-        this.processed_htmlelements = new WeakMap();
         this.workaround_requested = new WeakSet();
         this.broken_stylesheets = new WeakSet();
         this.style_selector = style_selector;
-        let process_MO_record = (record: MutationRecord, _index: number, _array: MutationRecord[]) => {
-            let element = record.target as HTMLElement;
-            if (
-                (record.type !== 'attributes') ||
-                (!record.attributeName || record.attributeName !== 'style') ||
-                (!element) ||
-                (element.getAttribute('id') === 'main-window') ||
-                (element.getAttribute('id') === 'content') ||
-                (element.getAttribute('id') === 'browser-bottombox') ||
-                (element.getAttribute('id') === 'identity-box')
-            ) return;
-            //console.log('processing mutated node');
-            //console.log(node);
-            //console.log(node.getAttribute('style'));
-            if (this.processed_htmlelements.get(element)?.last !== element.getAttribute('style')) {
-                //console.log('style has been changed. processing...');
-                this.process_HTMLElement(element);
-            } else {
-                //console.log('style not changed');
-            }
-        }
-        this.mutationObserver = new this.window.MutationObserver((records: MutationRecord[]) => records.forEach(process_MO_record));
+        this.overridden_inline_styles = new Set();
+        this.inline_overrides_style = [];
+        this.auxiliary_element = document.createElement('div');
+        this.inline_override_lock = new AwaitLock();
         this.stop = false;
     }
     load_into_window() {
@@ -103,10 +80,7 @@ export abstract class StylesheetProcessorAbstract {
         this.stop = true;
         if (this.handle_visibilitychange)
             this.window.document.removeEventListener('visibilitychange', this.handle_visibilitychange);
-        this.mutationObserver.disconnect();
         if (!light) { // "light unloading" (used in case when document is about to be destroyed)
-            let inline_override_stylesheet = this.window.document.getElementById(inline_override_stylesheet_id);
-            inline_override_stylesheet?.parentNode?.removeChild(inline_override_stylesheet);
             let ownerNodes = Array.prototype.map.call(this.window.document.styleSheets, (sheet: StyleSheet) => sheet.ownerNode) as Element[];
             ownerNodes.forEach((ownerNode: Element) => {
                 if (ownerNode.hasAttribute('data-is-imported')) {
@@ -125,15 +99,15 @@ export abstract class StylesheetProcessorAbstract {
                     parentNode?.insertBefore(ownerNode, insertBefore);
                 }
             });
-            Array.prototype.forEach.call(
-                this.window.document.querySelectorAll(this.style_selector),
-                    node => {
-                    if (this.processed_htmlelements.has(node)) {
-                        node.setAttribute('style', (this.processed_htmlelements.get(node) as ProcessedHTMLElement).original);
-                        this.processed_htmlelements.delete(node);
-                    }
-                }
-            )
+            if (this.prev_inline_override_stylesheet) {
+                browser.runtime.sendMessage({
+                    action: CallbackID.REMOVE_CSS,
+                    code: this.prev_inline_override_stylesheet,
+                });
+                this.prev_inline_override_stylesheet = undefined;
+                this.overridden_inline_styles.clear();
+                this.inline_overrides_style.length = 0;
+            }
         }
     }
     all_sheets_have_been_processed() {
@@ -171,7 +145,6 @@ export abstract class StylesheetProcessorAbstract {
                     // Checking its cssRules.length should help to detect the majority of such situations.
                     && this.processed_stylesheets.get(sheet) === sheet.cssRules.length
                 )
-                && sheet !== this.inline_override
                 && !this.broken_stylesheets.has(sheet)
                 && !this.self_stylesheets.has(sheet)
             ) {
@@ -188,7 +161,16 @@ export abstract class StylesheetProcessorAbstract {
         });
         if (!this.all_initial_sheets_have_been_processed) {
             if (this.window.document.readyState === 'complete') {
-                if (Array.prototype.filter.call(this.window.document.styleSheets, sheet => (!this.processed_stylesheets.has(sheet) && sheet !== this.inline_override && !this.broken_stylesheets.has(sheet) && !this.self_stylesheets.has(sheet))).length === 0) {
+                if (
+                    Array.prototype.filter.call(
+                        this.window.document.styleSheets,
+                        sheet => (
+                            !this.processed_stylesheets.has(sheet)
+                            && !this.broken_stylesheets.has(sheet)
+                            && !this.self_stylesheets.has(sheet)
+                        )
+                    ).length === 0
+                ) {
                     this.all_sheets_have_been_processed();
                 } else {
                     this.window.setTimeout(this.all_sheets_have_been_processed, 2000);
@@ -197,21 +179,20 @@ export abstract class StylesheetProcessorAbstract {
                 this.window.setTimeout(this.all_sheets_have_been_processed, 10000);
             }
         }
-        Array.prototype.forEach.call(
-            this.window.document.querySelectorAll(this.style_selector),
-            node => {
-                if (!this.processed_htmlelements.has(node)) {
-                    this.processed_htmlelements.set(node, {
-                            last: node.getAttribute('style'),
-                            original: node.getAttribute('style')
-                        });
-                    this.process_HTMLElement_init(node);
-                }
+        for (let node of this.window.document.querySelectorAll(this.style_selector)) {
+            this.process_HTMLElement(node as HTMLElement);
+        }
+        if (no_schedule !== true) {
+            if (
+                !(this.window.document.hidden)
+                || (this.window.document.readyState !== 'complete')
+            ) {
+                setTimeout(
+                    () => this.process(),
+                    this.window.document.readyState !== 'complete' ? 100 : 1000
+                );
             }
-        );
-        if (no_schedule !== true)
-            if (!(this.window.document.hidden) || (this.window.document.readyState !== 'complete'))
-                setTimeout(() => this.process(), this.window.document.readyState !== 'complete' ? 100 : 1000);
+        }
     }
     static find_ancestor_ownerNode(stylesheet: CSSStyleSheet): Node | undefined {
         let { ownerNode, ownerRule } = stylesheet;
@@ -377,48 +358,58 @@ export abstract class StylesheetProcessorAbstract {
             [], '', ''
         )
     }
-    process_HTMLElement_init(HTMLElement_v: HTMLElement) {
-        this.mutationObserver.observe(
-            HTMLElement_v,
-            {
-                attributes: true,
-                attributeFilter: ['style']
+    async inline_override_stylesheet_update() {
+        await this.inline_override_lock.acquireAsync();
+        try {
+            let css = this.inline_overrides_style.join('\n');
+            await browser.runtime.sendMessage({
+                action: CallbackID.INSERT_CSS,
+                code: css,
+            });
+            if (this.prev_inline_override_stylesheet) {
+                await browser.runtime.sendMessage({
+                    action: CallbackID.REMOVE_CSS,
+                    code: this.prev_inline_override_stylesheet,
+                });
             }
+            this.prev_inline_override_stylesheet = css;
+        } finally {
+            this.inline_override_lock.release();
+        }
+    }
+    schedule_inline_override_stylesheet_update(): void {
+        window.clearTimeout(this.schedule_inline_override_stylesheet_update_timerID)
+        this.schedule_inline_override_stylesheet_update_timerID = window.setTimeout(
+            () => this.inline_override_stylesheet_update(),
+            100,
         );
-        this.process_HTMLElement(HTMLElement_v);
     }
     process_HTMLElement(HTMLElement_v: HTMLElement): void {
-        let old_style = HTMLElement_v.getAttribute('style') ?? '';
+        let old_style = HTMLElement_v.getAttribute('style');
+        if (!old_style || this.overridden_inline_styles.has(old_style)) {
+            return;
+        }
+
+        this.auxiliary_element.setAttribute('style', old_style);
         this.process_CSSStyleDeclaration(
-            HTMLElement_v.style,
+            this.auxiliary_element.style,
             this.window.location.href,
             '',
             [...HTMLElement_v.classList],
             HTMLElement_v.getAttribute('id'),
             HTMLElement_v.tagName,
         );
-        let new_style = HTMLElement_v.getAttribute('style') ?? '';
-        this.processed_htmlelements.get(HTMLElement_v)!.last = new_style;
-
-        if (!this.inline_override_selectors) {
-            let style_node = this.window.document.createElement('style');
-            style_node.setAttribute('id', inline_override_stylesheet_id);
-            (this.window.document.querySelector('html > head') || this.window.document.documentElement || this.window.document.childNodes[0] || this.window.document).appendChild(style_node);
-            this.inline_override = style_node.sheet! as CSSStyleSheet;
-            this.inline_override_selectors = [];
+        let new_style = this.auxiliary_element.getAttribute('style')!;
+        if (new_style === old_style) {
+            this.overridden_inline_styles.add(old_style);
+            return
         }
-
+        let new_style_important = brackets_aware_split(new_style.replace(important_re, ';'), ';').join(' !important; ');
         let selector = `[style="${old_style.replace(quote_re, '\\"')}"]`;
-        if (this.inline_override_selectors.indexOf(selector) < 0) {
-            let css_properties = brackets_aware_split(new_style.replace(important_re, ';'), ';').join(' !important; ');
-            try {
-                this.inline_override!.insertRule(`${selector} { ${css_properties} }`, 0);
-            } catch (e) {
-                console.log(`failed to insert rule: ${selector} { ${css_properties} }\nold style: ${old_style}\nnew style: ${new_style}`);
-                console.error(e);
-            }
-            this.inline_override_selectors.push(selector);
-        }
+        let cssrule = `${selector} { ${new_style_important} }`;
+        this.overridden_inline_styles.add(old_style);
+        this.inline_overrides_style.push(cssrule);
+        this.schedule_inline_override_stylesheet_update();
     }
     abstract process_CSSStyleDeclaration(
         CSSStyleDeclaration_v: CSSStyleDeclaration,

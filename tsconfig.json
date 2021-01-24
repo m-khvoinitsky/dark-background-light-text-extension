@@ -3,6 +3,7 @@
     "target": "ES2019",
     "module": "amd",
     "moduleResolution": "node",
+    "isolatedModules": false,
     "sourceMap": true,
     "strict": true,
     "noUnusedLocals": true,

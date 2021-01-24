@@ -99,3 +99,8 @@ export interface MethodExecutor {
     load_into_window(): void;
     unload_from_window(): void;
 }
+
+export const enum CallbackID {
+    INSERT_CSS,
+    REMOVE_CSS,
+}

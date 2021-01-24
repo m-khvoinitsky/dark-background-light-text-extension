@@ -1,15 +1,21 @@
-import { ConfiguredPages, ConfiguredTabs, RGB, StylesheetRenderer } from '../common/types';
-import { Runtime, ContentScripts, Manifest, ExtensionTypes, Storage } from 'webextension-polyfill-ts';
 declare var { browser }: typeof import('webextension-polyfill-ts');
+import {
+    ConfiguredPages,
+    ConfiguredTabs,
+    RGB,
+    StylesheetRenderer,
+    CallbackID,
+} from '../common/types';
+import { Runtime, ContentScripts, Manifest, ExtensionTypes, Storage } from 'webextension-polyfill-ts';
 import {
     get_prefs,
     set_pref,
     on_prefs_change,
+    get_merged_configured_common,
 } from '../common/shared';
 import { methods } from '../methods/methods-with-stylesheets';
 import { parseCSSColor } from 'csscolorparser';
 import { relative_luminance } from '../common/color_utils';
-import { get_merged_configured_common } from '../common/shared';
 import { modify_csp } from './lib';
 import * as base_style from '../methods/stylesheets/base';
 
@@ -59,13 +65,33 @@ async function process_stylesheet(sheet: StylesheetRenderer, is_toplevel: boolea
 
 browser.runtime.onMessage.addListener(async (message, sender) => {
     try {
-        if (!message.action) {
+        if (!message.hasOwnProperty('action')) {
             console.error('bad message!', message);
             return;
         }
         switch (message.action) {
             case 'query_tabId':
                 return sender.tab?.id;
+            case CallbackID.INSERT_CSS:
+                return await browser.tabs.insertCSS(
+                    sender.tab?.id,
+                    {
+                        code: message.code,
+                        frameId: sender.frameId,
+                        cssOrigin: 'user',
+                        runAt: 'document_start',
+                    },
+                );
+            case CallbackID.REMOVE_CSS:
+                return await browser.tabs.removeCSS(
+                    sender.tab?.id,
+                    {
+                        code: message.code,
+                        frameId: sender.frameId,
+                        cssOrigin: 'user',
+                        runAt: 'document_start',
+                    },
+                );
             case 'query_base_style':
                 return await process_stylesheet(base_style, true);
             case 'get_configured_private':
