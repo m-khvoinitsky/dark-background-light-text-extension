@@ -1,4 +1,5 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
+declare var { exportFunction }: typeof import('../../types/exportFunction');
 import { CallbackID } from '../../common/types';
 import AwaitLock from 'await-lock';
 
@@ -48,6 +49,7 @@ export abstract class StylesheetProcessorAbstract {
     schedule_inline_override_stylesheet_update_timerID: number = 0
     prev_inline_override_stylesheet?: string
     inline_override_lock: AwaitLock
+    shadow_roots: Array<WeakRef<ShadowRoot>> = [];
     constructor(window: Window, style_selector: string = '[style]') {
         this.window = window;
         this.url = window.document.documentURI;
@@ -62,6 +64,21 @@ export abstract class StylesheetProcessorAbstract {
         this.auxiliary_element = document.createElement('div');
         this.inline_override_lock = new AwaitLock();
         this.stop = false;
+
+        const shadow_roots = this.shadow_roots;
+        const attachShadowReal = Element.prototype.attachShadow;
+        function attachShadow(this: Element, init: ShadowRootInit) {
+            let root = attachShadowReal.call(this, init);
+            shadow_roots.push(new WeakRef(root));
+            return root;
+        }
+        exportFunction(
+            attachShadow,
+            Element.prototype,
+            {
+                defineAs: 'attachShadow',
+            },
+        );
     }
     load_into_window() {
         this.process();
@@ -140,23 +157,25 @@ export abstract class StylesheetProcessorAbstract {
             return;
         }*/
 
-        for (let sheet of this.window.document.styleSheets) {
-            if (
-                !(
-                    this.processed_stylesheets.has(sheet)
-                    // Some stylesheets may have already been processed but changed since then.
-                    // Checking its cssRules.length should help to detect the majority of such situations.
-                    && this.processed_stylesheets.get(sheet) === sheet.cssRules.length
-                )
-                && !(this.broken_stylesheets.has(sheet))
-                && !(this.self_stylesheets.has(sheet))
-            ) {
-                if (sheet.ownerNode && (sheet.ownerNode as HTMLElement).classList.contains('dblt-ykjmwcnxmi')) {
-                    this.self_stylesheets.add(sheet);
-                    continue;
-                }
+        for (let i = this.shadow_roots.length - 1; i >= 0; i--) {
+            /*
+              Using WeakRef for filtering out dead shadowRoots isn't super reliable - they are
+              garbage collected despite still being part of the DOM. Another approach would be
+              checking document.contains(shadow.host), however this would return false if host
+              hasn't yet been added to the DOM (which happens almost all the time on the first
+              iteration), so WeakRefs are much more reliable.
+             */
+            let shadow = this.shadow_roots[i].deref();
+            if (shadow === undefined) {
+                this.shadow_roots.splice(i, 1);
+                continue
+            }
+            for (let sheet of shadow.styleSheets) {
                 this.process_CSSStyleSheet(sheet);
             }
+        }
+        for (let sheet of this.window.document.styleSheets) {
+            this.process_CSSStyleSheet(sheet);
         }
         if (!this.all_initial_sheets_have_been_processed) {
             if (this.window.document.readyState === 'complete') {
@@ -289,38 +308,60 @@ export abstract class StylesheetProcessorAbstract {
             return
         }
     }
-    process_CSSStyleSheet(CSSStyleSheet_v: CSSStyleSheet, base_url?: string) {
+    process_CSSStyleSheet(sheet: CSSStyleSheet, base_url?: string) {
         if (this.stop)
             return 'stop';
+
+        if (
+            (
+                this.processed_stylesheets.has(sheet)
+                // Some stylesheets may have already been processed but changed since then.
+                // Checking its cssRules.length should help to detect the majority of such situations.
+                // Note: checking `...get(sheet) === sheet.cssRules.length` could be enough,
+                // however, sheet.cssRules may throw (handled below) so we have to check first
+                // if ...has(sheet) which means it has been processed and cssRules won't throw
+                && this.processed_stylesheets.get(sheet) === sheet.cssRules.length
+            )
+            || this.broken_stylesheets.has(sheet)
+            || this.self_stylesheets.has(sheet)
+        ) {
+            return;
+        }
+
+        if ((sheet.ownerNode as HTMLElement | null)?.classList.contains('dblt-ykjmwcnxmi')) {
+            this.self_stylesheets.add(sheet);
+            return;
+        }
+
         if (!base_url) {
-            if (CSSStyleSheet_v.href && CSSStyleSheet_v.href.indexOf('data:') !== 0) {
-                base_url = new URL(CSSStyleSheet_v.href, document.documentURI).href;
+            if (sheet.href && !sheet.href.startsWith('data:')) {
+                base_url = new URL(sheet.href, document.documentURI).href;
             } else {
                 base_url = document.documentURI;
             }
         }
         try {
-            if (CSSStyleSheet_v.cssRules === null) // access to .cssRules will throw in Firefox
+            if (sheet.cssRules === null) // access to .cssRules will throw in Firefox
                 throw {name: 'SecurityError'}; // for chrome
         } catch (e) {
             if (e.name === 'SecurityError') {
-                this.workaround_stylesheet(CSSStyleSheet_v, base_url);
+                this.workaround_stylesheet(sheet, base_url);
                 return 'bug 1393022';
             }
             else if (e.name === 'InvalidAccessError') {
                 // Chromium doesn't create stylesheet object for not loaded stylesheets
-                // console.error('stylesheet isn\'t loaded yet. TODO: add watcher?', CSSStyleSheet_v);
-                // if (CSSStyleSheet_v.ownerNode)
-                //     CSSStyleSheet_v.ownerNode.addEventListener('load', () => this.process(true), {once: true});
+                // console.error('stylesheet isn\'t loaded yet. TODO: add watcher?', sheet);
+                // if (sheet.ownerNode)
+                //     sheet.ownerNode.addEventListener('load', () => this.process(true), {once: true});
                 return 'not ready';
             } else
-                console.error('something really went wrong!', e, CSSStyleSheet_v);
+                console.error('something really went wrong!', e, sheet);
             return e;
         }
-        Array.prototype.forEach.call(CSSStyleSheet_v.cssRules, (rule) => {
+        Array.prototype.forEach.call(sheet.cssRules, (rule) => {
             this.process_CSSRule(rule, base_url!);
         });
-        this.processed_stylesheets.set(CSSStyleSheet_v, CSSStyleSheet_v.cssRules.length);
+        this.processed_stylesheets.set(sheet, sheet.cssRules.length);
         return true;
     }
     process_CSSGroupingRule(CSSGroupingRule_v: CSSGroupingRule, base_url: string) {
