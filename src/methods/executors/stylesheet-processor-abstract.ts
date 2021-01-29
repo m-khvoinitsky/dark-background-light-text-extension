@@ -193,15 +193,19 @@ export abstract class StylesheetProcessorAbstract {
             }
         }
     }
-    static find_ancestor_ownerNode(stylesheet: CSSStyleSheet): Node | undefined {
-        let { ownerNode, ownerRule } = stylesheet;
-        if (stylesheet.ownerNode)
-            return ownerNode!;
-        if (ownerRule)
-            if (ownerRule.parentStyleSheet) // #169
-                return this.find_ancestor_ownerNode(ownerRule.parentStyleSheet);
-            else
-                return this.find_ancestor_ownerNode(stylesheet.parentStyleSheet as CSSStyleSheet); // #169
+    static find_ancestor_ownerNode(stylesheet: CSSStyleSheet): Element | undefined {
+        let { ownerNode, ownerRule } = stylesheet as {
+            ownerNode: HTMLElement | null,
+            ownerRule: CSSImportRule | null,
+        };
+        if (ownerNode) {
+            return ownerNode;
+        }
+        if (ownerRule) {
+            return this.find_ancestor_ownerNode(
+                ownerRule.parentStyleSheet ?? stylesheet.parentStyleSheet!
+            ); // #169
+        }
         return
     }
     workaround_stylesheet(stylesheet: CSSStyleSheet, rel_to: string) {
@@ -220,6 +224,31 @@ export abstract class StylesheetProcessorAbstract {
         if (ownerNode) {
             if (!(ownerNode instanceof HTMLLinkElement)) {
                 console.error('ownerNode is not instanceof HTMLLinkElement', ownerNode);
+                this.broken_stylesheets.add(stylesheet);
+                return;
+            }
+            if (
+                ownerNode.hasAttribute('crossorigin')
+                && [
+                    'anonymous',
+                    'use-credentials',
+                    '',
+                ].indexOf(ownerNode.getAttribute('crossorigin')!) >= 0
+            ) {
+                console.error('ownerNode already has crossorigin attribute but the stylesheet is still unaccessable')
+                this.broken_stylesheets.add(stylesheet);
+                return;
+            }
+            let href = ownerNode.getAttribute('href');
+            if (!href) {
+                console.error('ownerNode does not have href');
+                this.broken_stylesheets.add(stylesheet);
+                return;
+            }
+            if (['https:', 'http:'].indexOf((new URL(href, window.document.documentURI)).protocol) < 0) {
+                // console.error('ownerNode href is not http(s), refusing to add crossorigin attribute');
+                // this is fine, usually happens in chrome pages where content scripts are still allowed, for example, plain image or video view
+                this.broken_stylesheets.add(stylesheet);
                 return;
             }
             let newNode = ownerNode.cloneNode() as HTMLLinkElement;
