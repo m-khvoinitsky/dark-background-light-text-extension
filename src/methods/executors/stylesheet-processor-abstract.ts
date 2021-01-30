@@ -181,16 +181,14 @@ export abstract class StylesheetProcessorAbstract {
         }
         if (!this.all_initial_sheets_have_been_processed) {
             if (this.window.document.readyState === 'complete') {
-                if (
-                    Array.prototype.filter.call(
-                        this.window.document.styleSheets,
-                        sheet => (
-                            !this.processed_stylesheets.has(sheet)
-                            && !this.broken_stylesheets.has(sheet)
-                            && !this.self_stylesheets.has(sheet)
-                        )
-                    ).length === 0
-                ) {
+                if (Array.prototype.every.call(
+                    this.window.document.styleSheets,
+                    sheet => (
+                        this.processed_stylesheets.has(sheet)
+                        || this.broken_stylesheets.has(sheet)
+                        || this.self_stylesheets.has(sheet)
+                    )
+                )) {
                     this.all_sheets_have_been_processed();
                 } else {
                     setTimeout(this.all_sheets_have_been_processed, 2000);
