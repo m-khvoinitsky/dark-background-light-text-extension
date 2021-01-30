@@ -1,5 +1,7 @@
 declare var { browser }: typeof import('webextension-polyfill-ts');
 declare var { exportFunction }: typeof import('../../types/exportFunction');
+// ensure browser version of setTimeout
+declare var setTimeout: typeof window.setTimeout;
 import { CallbackID } from '../../common/types';
 import AwaitLock from 'await-lock';
 
@@ -106,7 +108,7 @@ export abstract class StylesheetProcessorAbstract {
                     continue
                 }
                 if (ownerNode.hasAttribute(imported_flag_attribute)) {
-                    this.window.setTimeout(() => {
+                    setTimeout(() => {
                         ownerNode!.parentNode?.removeChild(ownerNode!);
                     }, 0);
                 } else {
@@ -191,10 +193,10 @@ export abstract class StylesheetProcessorAbstract {
                 ) {
                     this.all_sheets_have_been_processed();
                 } else {
-                    this.window.setTimeout(this.all_sheets_have_been_processed, 2000);
+                    setTimeout(this.all_sheets_have_been_processed, 2000);
                 }
             } else {
-                this.window.setTimeout(this.all_sheets_have_been_processed, 10000);
+                setTimeout(this.all_sheets_have_been_processed, 10000);
             }
         }
         for (let node of this.window.document.querySelectorAll(this.style_selector)) {
@@ -273,7 +275,7 @@ export abstract class StylesheetProcessorAbstract {
             let newNode = ownerNode.cloneNode() as HTMLLinkElement;
             newNode.setAttribute('crossorigin', 'anonymous');
             newNode.addEventListener('load', () => this.process(true), {once: true});
-            this.window.setTimeout(() => ownerNode!.parentNode?.removeChild(ownerNode!), 0);
+            setTimeout(() => ownerNode!.parentNode?.removeChild(ownerNode!), 0);
             ownerNode.parentNode?.insertBefore(newNode, ownerNode.nextSibling);
         } else if (ownerRule) {
             let url_obj = new URL(stylesheet.href || ownerRule.href, rel_to);
@@ -417,8 +419,8 @@ export abstract class StylesheetProcessorAbstract {
         }
     }
     schedule_inline_override_stylesheet_update(): void {
-        window.clearTimeout(this.schedule_inline_override_stylesheet_update_timerID)
-        this.schedule_inline_override_stylesheet_update_timerID = window.setTimeout(
+        clearTimeout(this.schedule_inline_override_stylesheet_update_timerID)
+        this.schedule_inline_override_stylesheet_update_timerID = setTimeout(
             () => this.inline_override_stylesheet_update(),
             100,
         );
