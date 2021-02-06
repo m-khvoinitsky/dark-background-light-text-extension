@@ -67,20 +67,24 @@ export abstract class StylesheetProcessorAbstract {
         this.inline_override_lock = new AwaitLock();
         this.stop = false;
 
-        const shadow_roots = this.shadow_roots;
-        const attachShadowReal = Element.prototype.attachShadow;
-        function attachShadow(this: Element, init: ShadowRootInit) {
-            let root = attachShadowReal.call(this, init);
-            shadow_roots.push(new WeakRef(root));
-            return root;
+        // WeakRef is not yet supported in ESR (<79) so Shadow DOM processing won't work there
+        if ('WeakRef' in window) {
+            const shadow_roots = this.shadow_roots;
+            const attachShadowReal = Element.prototype.attachShadow;
+
+            function attachShadow(this: Element, init: ShadowRootInit) {
+                let root = attachShadowReal.call(this, init);
+                shadow_roots.push(new WeakRef(root));
+                return root;
+            }
+            exportFunction(
+                attachShadow,
+                Element.prototype,
+                {
+                    defineAs: 'attachShadow',
+                },
+            );
         }
-        exportFunction(
-            attachShadow,
-            Element.prototype,
-            {
-                defineAs: 'attachShadow',
-            },
-        );
     }
     load_into_window() {
         this.process();
