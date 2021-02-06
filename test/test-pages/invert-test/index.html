@@ -20,10 +20,12 @@
             display: inline-block;
             width: 100%;
         }
-        .is_filtered #css_filtered, .is_filtered #css_filtered img:not(.no_filter) {
+        .is_filtered #css_filtered,
+        .is_filtered #css_filtered img:not(.no_filter) {
             filter: invert(1) hue-rotate(180deg) !important;
         }
-        .is_filtered #svg_filtered, .is_filtered #svg_filtered img:not(.no_filter) {
+        .is_filtered #svg_filtered,
+        .is_filtered #svg_filtered img:not(.no_filter) {
             filter: url(#myfilter);
         }
         img {
@@ -59,10 +61,10 @@
 </div>
 <svg height="0">
   <filter id="myfilter">
-    <feColorMatrix values="1 -1  -1  0 1
-                            -1 1 -1  0 1
-                            -1 -1 1 0 1
-                            0 0  0  1 0"  style="color-interpolation-filters:sRGB"/>
+    <feColorMatrix values=" 1 -1 -1  0  1
+                           -1  1 -1  0  1
+                           -1 -1  1  0  1
+                            0  0  0  1  0" style="color-interpolation-filters:sRGB"/>
   </filter>
 </svg>
 <script type="application/javascript">
