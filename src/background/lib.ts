@@ -65,3 +65,25 @@ export function modify_cors(
     }
     return headers;
 }
+
+function splitver(ver: string): number[] {
+    return ver.split('.').map((s) => parseInt(s, 10));
+}
+
+/** Very simple "less than" for version strings
+  * Does **not** handle alpha, beta, etc postfixes, only dot-separated numbers */
+export function version_lt(target: string, ref: string): boolean {
+    let t_a = splitver(target);
+    let r_a = splitver(ref);
+
+    let length = Math.max(t_a.length, r_a.length);
+    for (let i = 0; i < length; i++) {
+        let t = t_a[i] ?? 0;
+        let r = r_a[i] ?? 0;
+        if (t === r) {
+            continue
+        }
+        return t < r
+    }
+    return false
+}

@@ -3,8 +3,10 @@ import { describe } from 'mocha';
 import {
     modify_csp,
     modify_cors,
+    version_lt,
 } from '../src/background/lib';
 import { WebRequest } from 'webextension-polyfill-ts';
+import { readFileSync } from 'fs';
 
 const csp_test_data = [
     ["frame-src whatever", "frame-src whatever"],
@@ -125,3 +127,40 @@ describe('test modify Access-Control-Allow-Origin', () => {
         });
     })
 });
+
+
+const test_versions: Array<[string, string, boolean]> = [
+    ['1.0.0', '2.0.0', true],
+    ['1.0.0', '1.1.0', true],
+    ['1.1.0', '1.1.1', true],
+
+    ['1.2.3', '1.2.3', false],
+
+    ['1.0.0', '0.1.1', false],
+    ['1.1.0', '1.0.1', false],
+    ['1.1.2', '1.1.1', false],
+
+    ['1.0', '0.1.1', false],
+    ['1.0', '1.0.1', true],
+    ['1.0.1.1', '1.0.1', false],
+    ['1.0.1.0', '1.0.1', false],
+    ['1.0.0.1', '1.0.1', true],
+];
+
+describe('test version_lt', () => {
+    test_versions.forEach(([target, ref, expected_result]) => {
+        it(`${target} ${expected_result ? '<' : '>='} ${ref}`, () => {
+            assert.equal(version_lt(target, ref), expected_result);
+        });
+    });
+    let current_ver = JSON.parse(readFileSync('./manifest.json', 'utf-8'))['version'];
+    it(`0.1.0 < ${current_ver} (current version)`, () => {
+        assert.equal(version_lt('0.1.0', current_ver), true);
+    });
+    it('ensure that current version is parseable by version_lt', () => {
+        assert(
+            /^[0-9.]+$/.test(current_ver),
+            'version_lt() only handles simple versions (i. e. dot-separated numbers). If you want to use alpha, beta, etc versions, you better use semver library.',
+        );
+    });
+})

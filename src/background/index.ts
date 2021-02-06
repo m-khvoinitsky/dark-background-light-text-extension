@@ -1,4 +1,4 @@
-declare var { browser }: typeof import('webextension-polyfill-ts');
+declare const { browser }: typeof import('webextension-polyfill-ts');
 import {
     ConfiguredPages,
     ConfiguredTabs,
@@ -6,7 +6,14 @@ import {
     StylesheetRenderer,
     CallbackID,
 } from '../common/types';
-import { Runtime, ContentScripts, Manifest, ExtensionTypes, Storage } from 'webextension-polyfill-ts';
+import {
+    Runtime,
+    ContentScripts,
+    Manifest,
+    ExtensionTypes,
+    Storage,
+    WebRequest,
+} from 'webextension-polyfill-ts';
 import {
     get_prefs,
     set_pref,
@@ -19,6 +26,7 @@ import { relative_luminance } from '../common/color_utils';
 import {
     modify_cors,
     modify_csp,
+    version_lt,
 } from './lib';
 import * as base_style from '../methods/stylesheets/base';
 
@@ -234,6 +242,19 @@ get_prefs('do_not_set_overrideDocumentColors_to_never').then(val => {
     }
 });
 
+browser.runtime.onInstalled.addListener((details) => {
+    if (
+        details.reason === 'install'
+        || (
+            details.reason === 'update'
+            && details.previousVersion
+            && version_lt(details.previousVersion, '0.7.6')
+        )
+    ) {
+        browser.webRequest.handlerBehaviorChanged();
+    }
+});
+
 browser.webRequest.onHeadersReceived.addListener(
     details => {
         try {
@@ -255,20 +276,60 @@ browser.webRequest.onHeadersReceived.addListener(
     ],
 );
 
+
+function is_probably_service_worker(details: WebRequest.OnHeadersReceivedDetailsType): boolean {
+    if (!details.originUrl) {
+        return false;
+    }
+    let origin_url = new URL(details.originUrl);
+    // likely a request from Service Worker
+    if (
+        details.type === 'xmlhttprequest'
+        && details.tabId === -1
+        && (
+            origin_url.protocol === 'https:'
+            || origin_url.hostname === 'localhost'
+            || origin_url.hostname === '127.0.0.1'
+            || origin_url.hostname === '[::1]'
+        )
+    ) {
+        return true;
+    }
+    return false;
+}
+
+function get_content_type(headers?: WebRequest.HttpHeaders): string | undefined {
+    return headers?.find(
+        h => h.name.toLowerCase() === 'content-type'
+    )?.value;
+}
+
 browser.webRequest.onHeadersReceived.addListener(
     details => {
-        try {
-            return {
-                responseHeaders: modify_cors(details.responseHeaders!, details),
-            };
-        } catch (e) {
-            console.error(e);
-            return {};
+        if (
+            details.type === 'stylesheet'
+            || (
+                is_probably_service_worker(details)
+                && get_content_type(details.responseHeaders)?.startsWith('text/css')
+            )
+        ) {
+            try {
+                return {
+                    responseHeaders: modify_cors(details.responseHeaders!, details),
+                };
+            } catch (e) {
+                console.error(e);
+                return {};
+            }
         }
+        return {};
     },
     {
         urls: ['<all_urls>'],
-        types: ['stylesheet'],
+        types: [
+            'stylesheet',
+            'xmlhttprequest',
+        ],
     },
     [
         'blocking',
