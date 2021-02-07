@@ -1,0 +1,6 @@
+#same-origin .ok {
+    display: initial !important;
+}
+#same-origin .fail {
+    display: none !important;
+}
