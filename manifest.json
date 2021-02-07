@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Dark Background and Light Text",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "Makes every page to have light text on dark background (exact colors are customizable)",
   "icons": {
     "48": "icons/icon48.png"
