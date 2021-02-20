@@ -10,7 +10,7 @@ import * as simple_css from './stylesheets/simple-css';
 import * as stylesheet_processor from './stylesheets/stylesheet-processor';
 
 // TODO: less hardcode, use names from modules
-for (let key in methods_bare) {
+for (const key of Object.keys(methods_bare)) {
     for (let i = 0; i < methods_bare[key].stylesheets.length; i++) {
         switch (methods_bare[key].stylesheets[i].name) {
             case 'base':
@@ -27,10 +27,10 @@ for (let key in methods_bare) {
                 break;
             /* istanbul ignore next */
             default:
-                throw Error(`Unknown stylesheet name: ${methods_bare[key].stylesheets[i].name}`)
+                throw Error(`Unknown stylesheet name: ${methods_bare[key].stylesheets[i].name}`);
         }
     }
 }
-let methods = methods_bare as MethodsMetadataWithStylesheets;
+const methods = methods_bare as MethodsMetadataWithStylesheets;
 
 export { methods };

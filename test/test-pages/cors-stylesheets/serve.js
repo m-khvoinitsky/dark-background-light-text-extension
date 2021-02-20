@@ -4,16 +4,15 @@ const { serve } = require('../simple-node-server');
 
 const ports = [8080, 8081, 8082, 8083];
 
-ports.forEach((port) =>
-  serve({
+ports.forEach((port) => serve({
     port,
-    mutateHeaders: function ({ headers, request }) {
-      if (request.url.endsWith('.woff2')) {
-        headers['Access-Control-Allow-Origin'] = '*';
-      }
-      return headers;
+    mutateHeaders({ headers, request }) {
+        if (request.url.endsWith('.woff2')) {
+            // eslint-disable-next-line no-param-reassign
+            headers['Access-Control-Allow-Origin'] = '*';
+        }
+        return headers;
     },
-    mutateFilePath: ({ filePath, request, bind_address }) =>
-      `./${port}${filePath}`,
-  })
-);
+    // eslint-disable-next-line no-unused-vars
+    mutateFilePath: ({ filePath, request, bind_address }) => `./${port}${filePath}`,
+}));

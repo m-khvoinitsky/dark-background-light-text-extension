@@ -1,43 +1,45 @@
 #!/usr/bin/node
+'use strict';
+/* eslint-disable no-console */
 
 const fs = require('fs');
 const { execFileSync } = require('child_process');
 
-let coverage_file = process.argv[2];
-new_coverage = JSON.parse(fs.readFileSync(coverage_file, {encoding: 'utf8'}));
+const coverage_file = process.argv[2];
+const new_coverage = JSON.parse(fs.readFileSync(coverage_file, { encoding: 'utf8' }));
 
 let prev_coverage_ref;
-if (process.env.hasOwnProperty('PRE_COMMIT_FROM_REF')) {
-  prev_coverage_ref = process.env['PRE_COMMIT_FROM_REF'];
+if (Object.prototype.hasOwnProperty.call(process.env, 'PRE_COMMIT_FROM_REF')) {
+    prev_coverage_ref = process.env.PRE_COMMIT_FROM_REF;
 } else {
-  prev_coverage_ref = 'HEAD';
+    prev_coverage_ref = 'HEAD';
 }
 let prev_coverage_text;
 try {
-  prev_coverage_text = execFileSync('git', ['show', `${prev_coverage_ref}:${coverage_file}`], {encoding: 'utf8'});
+    prev_coverage_text = execFileSync('git', ['show', `${prev_coverage_ref}:${coverage_file}`], { encoding: 'utf8' });
 } catch (e) {
-  console.log('Previous coverage is not found')
-  prev_coverage_text = '{}';
+    console.log('Previous coverage is not found');
+    prev_coverage_text = '{}';
 }
-let prev_coverage = JSON.parse(prev_coverage_text);
+const prev_coverage = JSON.parse(prev_coverage_text);
 
 let decreased = false;
-for (let f in new_coverage) {
-  if (f === 'total') {
-    continue
-  }
-  Object.keys(new_coverage[f]).sort().forEach(what => {
-    let prev_val = 0;
-    if (f in prev_coverage) {
-      prev_val = parseFloat(prev_coverage[f][what]['pct']);
+Object.keys(new_coverage).forEach((f) => {
+    if (f === 'total') {
+        return;
     }
-    let new_val = parseFloat(new_coverage[f][what]['pct']);
-    if (new_val < prev_val) {
-      decreased = true;
-      console.log(`${f} ${what}: ${prev_val} -> ${new_val}`);
-    }
-  });
-}
+    Object.keys(new_coverage[f]).sort().forEach((what) => {
+        let prev_val = 0;
+        if (f in prev_coverage) {
+            prev_val = parseFloat(prev_coverage[f][what].pct);
+        }
+        const new_val = parseFloat(new_coverage[f][what].pct);
+        if (new_val < prev_val) {
+            decreased = true;
+            console.log(`${f} ${what}: ${prev_val} -> ${new_val}`);
+        }
+    });
+});
 if (decreased) {
-  process.exit(2);
+    process.exit(2);
 }

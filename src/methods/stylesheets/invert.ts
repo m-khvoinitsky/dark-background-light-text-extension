@@ -1,5 +1,7 @@
 import { RenderOptions } from '../../common/types';
+
 export const name = 'invert';
+// eslint-disable-next-line no-empty-pattern
 export function render({}: RenderOptions) {
     return `
 @supports (backdrop-filter: invert(1)) {

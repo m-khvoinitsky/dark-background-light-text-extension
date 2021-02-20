@@ -1,4 +1,5 @@
 import { RenderOptions } from '../../common/types';
+
 export const name = 'simple-css';
 export function render({
     default_foreground_color,

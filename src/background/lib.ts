@@ -4,42 +4,48 @@ export function modify_csp(
     header: WebRequest.HttpHeadersItemType,
 ): WebRequest.HttpHeadersItemType {
     if (header.name.toLowerCase() === 'content-security-policy') {
-        let new_values = header.value!.split(',').map(value => {
-            let directives: {[key: string]: string[]} = {};
-            for (let directive of value.split(';').map(d => d.trim()).filter(d => d.length > 0)) {
-                let parts = directive.split(' ').map(p => p.trim()).filter(p => p.length > 0);
-                let name = parts.shift()!;
+        const new_values = header.value!.split(',').map((value) => {
+            const directives: {[key: string]: string[]} = {};
+            for (const directive of value.split(';').map((d) => d.trim()).filter((d) => d.length > 0)) {
+                const parts = directive.split(' ').map((p) => p.trim()).filter((p) => p.length > 0);
+                const name = parts.shift()!;
                 directives[name] = parts;
             }
 
-            if (directives.hasOwnProperty('style-src')) {
-                if (directives['style-src'].includes("'unsafe-inline'"))
+            if (Object.prototype.hasOwnProperty.call(directives, 'style-src')) {
+                if (directives['style-src'].includes("'unsafe-inline'")) {
                     return value;
-                else if (directives['style-src'].length === 1 && directives['style-src'][0] === "'none'")
+                } else if (directives['style-src'].length === 1 && directives['style-src'][0] === "'none'") {
                     directives['style-src'] = ["'unsafe-inline'"];
-                else
+                } else {
                     directives['style-src'].push("'unsafe-inline'");
-            } else if (directives.hasOwnProperty('default-src')) {
-                if (directives['default-src'].includes("'unsafe-inline'"))
+                }
+            } else if (Object.prototype.hasOwnProperty.call(directives, 'default-src')) {
+                if (directives['default-src'].includes("'unsafe-inline'")) {
                     return value;
-                else if (directives['default-src'].length === 1 && directives['default-src'][0] === "'none'")
-                    directives['style-src'] = [ "'unsafe-inline'" ];
-                else {
+                } else if (
+                    directives['default-src'].length === 1
+                    && directives['default-src'][0] === "'none'"
+                ) {
+                    directives['style-src'] = ["'unsafe-inline'"];
+                } else {
                     directives['style-src'] = directives['default-src'].slice();
                     directives['style-src'].push("'unsafe-inline'");
                 }
-            } else
+            } else {
                 return value;
+            }
 
-            return Object.keys(directives).map(k => `${k} ${directives[k].join(' ')}`).join('; ');
+            return Object.keys(directives).map((k) => `${k} ${directives[k].join(' ')}`).join('; ');
         });
         return {
             name: header.name,
             value: new_values.join(' , '),
         };
-    } else
+    } else {
         return header;
-};
+    }
+}
 
 
 export function modify_cors(
@@ -48,9 +54,9 @@ export function modify_cors(
 ) {
     // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1393022
     if (details.documentUrl) {
-        let url_obj = new URL(details.documentUrl);
+        const url_obj = new URL(details.documentUrl);
         let done = false;
-        for (let header of headers) {
+        for (const header of headers) {
             if (header.name.toLowerCase() === 'access-control-allow-origin') {
                 header.value = url_obj.origin;
                 done = true;
@@ -60,7 +66,7 @@ export function modify_cors(
             headers.push({
                 name: 'Access-Control-Allow-Origin',
                 value: url_obj.origin,
-            })
+            });
         }
     }
     return headers;
@@ -73,17 +79,17 @@ function splitver(ver: string): number[] {
 /** Very simple "less than" for version strings
   * Does **not** handle alpha, beta, etc postfixes, only dot-separated numbers */
 export function version_lt(target: string, ref: string): boolean {
-    let t_a = splitver(target);
-    let r_a = splitver(ref);
+    const t_a = splitver(target);
+    const r_a = splitver(ref);
 
-    let length = Math.max(t_a.length, r_a.length);
+    const length = Math.max(t_a.length, r_a.length);
     for (let i = 0; i < length; i++) {
-        let t = t_a[i] ?? 0;
-        let r = r_a[i] ?? 0;
+        const t = t_a[i] ?? 0;
+        const r = r_a[i] ?? 0;
         if (t === r) {
-            continue
+            continue;
         }
-        return t < r
+        return t < r;
     }
-    return false
+    return false;
 }

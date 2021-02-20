@@ -2,7 +2,7 @@ export const hint_marker = '<next_is_preferred>';
 
 export function is_IPv4(maybe_ip: string): boolean {
     if (maybe_ip.length < 7 || maybe_ip.length > 15) {
-        return false
+        return false;
     }
     let number_of_octets = 0;
     let first: number|null = null;
@@ -16,36 +16,36 @@ export function is_IPv4(maybe_ip: string): boolean {
         ) {
             number_of_octets++;
             if (number_of_octets > 4 || (number_of_octets < 4 && i === maybe_ip.length)) {
-                return false
+                return false;
             }
             if (first === null) {
-                return false
+                return false;
             }
             if (third !== null && (first * 100 + second! * 10 + third) > 255) {
-                return false
+                return false;
             }
             first = null;
             second = null;
             third = null;
-            continue
+            continue;
         } else if (code < 48 /* 0 */ || code > 57 /* 9 */) {
             return false;
         }
         const digit = code - 48;
         if (first === null) {
             first = digit;
-            continue
+            continue;
         } else if (second === null) {
             second = digit;
-            continue
+            continue;
         } else if (third === null) {
             third = digit;
-            continue
+            continue;
         } else {
-            return false
+            return false;
         }
     }
-    return true
+    return true;
 }
 
 function split_domain_dumb(hostname: string): [string, string[]] {
@@ -63,8 +63,10 @@ export function generate_urls(
     try {
         const url_obj = new URL(url_str);
         const result_list: string[] = [];
-        const protocol_real = (url_obj.href.startsWith(`${url_obj.protocol}//`)) ?
-            `${url_obj.protocol}//` : url_obj.protocol;
+        const protocol_real = (url_obj.href.startsWith(`${url_obj.protocol}//`)
+            ? `${url_obj.protocol}//`
+            : url_obj.protocol
+        );
         const is_http = url_obj.protocol === 'http:' || url_obj.protocol === 'https:';
         let hint_added = false;
         if (hint && url_str.indexOf('/') < 0) {
@@ -72,14 +74,17 @@ export function generate_urls(
             hint_added = true;
         }
 
-        let pathname_parts = url_obj.pathname.split('/').filter(p => p.length > 0);
-        let prepend_protocol_and_or_host = (
-            (url_obj.host) ?
-                `${is_http ? '' : protocol_real}${url_obj.host}/` :
-                protocol_real.endsWith('//') ? `${protocol_real}/` : protocol_real
+        const pathname_parts = url_obj.pathname.split('/').filter((p) => p.length > 0);
+        const prepend_protocol_and_or_host = (
+            // eslint-disable-next-line no-nested-ternary
+            url_obj.host
+                ? `${is_http ? '' : protocol_real}${url_obj.host}/`
+                : protocol_real.endsWith('//')
+                    ? `${protocol_real}/`
+                    : protocol_real
         );
         for (let i = pathname_parts.length - 1; i >= 0; i--) {
-            result_list.push(`${prepend_protocol_and_or_host}${pathname_parts.slice(0, i + 1).join('/')}`)
+            result_list.push(`${prepend_protocol_and_or_host}${pathname_parts.slice(0, i + 1).join('/')}`);
         }
 
         if (hint && !hint_added) {
@@ -98,13 +103,13 @@ export function generate_urls(
                 // if there is no port, value will be added in the
                 // next block (from tldts_obj)
                 result_list.push(
-                    is_http ? url_obj.host : `${protocol_real}${url_obj.host}`
+                    is_http ? url_obj.host : `${protocol_real}${url_obj.host}`,
                 );
             }
         }
 
         if (!is_IPv4(url_obj.hostname) && url_obj.hostname.indexOf('.') >= 0) {
-            let [domain, subdomain_parts] = split_domain_func(url_obj.hostname);
+            const [domain, subdomain_parts] = split_domain_func(url_obj.hostname);
             if (subdomain_parts) {
                 for (let i = 0; i < subdomain_parts.length; i++) {
                     result_list.push(`${subdomain_parts.slice(i, subdomain_parts.length).join('.')}.${domain}`);
@@ -119,9 +124,10 @@ export function generate_urls(
             result_list.push(protocol_real);
         }
 
-        /* istanbul ignore if: no idea how to reproduce it - it was added to tolerate unlikely failure */
-        if (result_list.length == 0) {
-            console.error(`generate_urls: no urls has been generated, returning original: ${url_str}`)
+        /* istanbul ignore if: no idea how to reproduce it -
+           it was added to tolerate unlikely failure */
+        if (result_list.length === 0) {
+            console.error(`generate_urls: no urls has been generated, returning original: ${url_str}`);
             return hint ? [hint_marker, url_str] : [url_str];
         }
         return result_list;

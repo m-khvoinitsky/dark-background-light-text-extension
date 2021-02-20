@@ -8,15 +8,15 @@ repos:
   - id: check-json
   - id: check-added-large-files
 - repo: https://github.com/jumanjihouse/pre-commit-hooks.git
-  rev: 2.1.4
+  rev: 2.1.5
   hooks:
   - id: shellcheck
     args: ['--shell=bash', '--color=always', '--external-sources']
-    additional_dependencies: []  # https://github.com/jumanjihouse/pre-commit-hooks/issues/82#issuecomment-770077155
-# - repo: https://github.com/pre-commit/mirrors-eslint
-#   rev: v7.16.0
-#   hooks:
-#   - id: eslint
+    additional_dependencies: []
+- repo: https://github.com/pre-commit/mirrors-eslint
+  rev: v7.20.0
+  hooks:
+  - id: eslint
 - repo: local
   hooks:
     - id: tests

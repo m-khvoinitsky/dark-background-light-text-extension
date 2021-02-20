@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import { generate_urls, hint_marker, is_IPv4 } from '../src/common/generate-urls';
 import { smart_generate_urls } from '../src/common/smart-generate-urls';
 
-const DUMB_DOMAIN_DETECTION = '__DUMB__'
+const DUMB_DOMAIN_DETECTION = '__DUMB__';
 const test_urls = {
     'about:config': [
         hint_marker,
@@ -16,87 +16,87 @@ const test_urls = {
         'about:',
     ],
     'https://www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products/firefox?as=u&utm_source=inproduct#asdfasdf=qwer': [
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products/firefox",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US",
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products/firefox',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US',
         hint_marker,
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk",
-        "bla.www.co.uk.fgehsu.kokoko.website.co.uk",
-        "www.co.uk.fgehsu.kokoko.website.co.uk",
-        "co.uk.fgehsu.kokoko.website.co.uk",
-        "uk.fgehsu.kokoko.website.co.uk",
-        "fgehsu.kokoko.website.co.uk",
-        "kokoko.website.co.uk",
-        "website.co.uk",
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk',
+        'bla.www.co.uk.fgehsu.kokoko.website.co.uk',
+        'www.co.uk.fgehsu.kokoko.website.co.uk',
+        'co.uk.fgehsu.kokoko.website.co.uk',
+        'uk.fgehsu.kokoko.website.co.uk',
+        'fgehsu.kokoko.website.co.uk',
+        'kokoko.website.co.uk',
+        'website.co.uk',
         `${DUMB_DOMAIN_DETECTION}co.uk`,
         `${DUMB_DOMAIN_DETECTION}uk`,
     ],
     'https://user:pass@www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products/firefox?as=u&utm_source=inproduct#asdfasdf=qwer': [
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products/firefox",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US",
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products/firefox',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US/products',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk/en-US',
         hint_marker,
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk",
-        "bla.www.co.uk.fgehsu.kokoko.website.co.uk",
-        "www.co.uk.fgehsu.kokoko.website.co.uk",
-        "co.uk.fgehsu.kokoko.website.co.uk",
-        "uk.fgehsu.kokoko.website.co.uk",
-        "fgehsu.kokoko.website.co.uk",
-        "kokoko.website.co.uk",
-        "website.co.uk",
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk',
+        'bla.www.co.uk.fgehsu.kokoko.website.co.uk',
+        'www.co.uk.fgehsu.kokoko.website.co.uk',
+        'co.uk.fgehsu.kokoko.website.co.uk',
+        'uk.fgehsu.kokoko.website.co.uk',
+        'fgehsu.kokoko.website.co.uk',
+        'kokoko.website.co.uk',
+        'website.co.uk',
         `${DUMB_DOMAIN_DETECTION}co.uk`,
         `${DUMB_DOMAIN_DETECTION}uk`,
     ],
     'https://www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products/firefox?as=u&utm_source=inproduct#asdfasdf=qwer': [
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products/firefox",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US",
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products/firefox',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US',
         hint_marker,
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk",
-        "bla.www.co.uk.fgehsu.kokoko.website.co.uk",
-        "www.co.uk.fgehsu.kokoko.website.co.uk",
-        "co.uk.fgehsu.kokoko.website.co.uk",
-        "uk.fgehsu.kokoko.website.co.uk",
-        "fgehsu.kokoko.website.co.uk",
-        "kokoko.website.co.uk",
-        "website.co.uk",
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk',
+        'bla.www.co.uk.fgehsu.kokoko.website.co.uk',
+        'www.co.uk.fgehsu.kokoko.website.co.uk',
+        'co.uk.fgehsu.kokoko.website.co.uk',
+        'uk.fgehsu.kokoko.website.co.uk',
+        'fgehsu.kokoko.website.co.uk',
+        'kokoko.website.co.uk',
+        'website.co.uk',
         `${DUMB_DOMAIN_DETECTION}co.uk`,
         `${DUMB_DOMAIN_DETECTION}uk`,
     ],
     'https://user:pass@www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products/firefox?as=u&utm_source=inproduct#asdfasdf=qwer': [
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products/firefox",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US",
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products/firefox',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US/products',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080/en-US',
         hint_marker,
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080",
-        "www.bla.www.co.uk.fgehsu.kokoko.website.co.uk",
-        "bla.www.co.uk.fgehsu.kokoko.website.co.uk",
-        "www.co.uk.fgehsu.kokoko.website.co.uk",
-        "co.uk.fgehsu.kokoko.website.co.uk",
-        "uk.fgehsu.kokoko.website.co.uk",
-        "fgehsu.kokoko.website.co.uk",
-        "kokoko.website.co.uk",
-        "website.co.uk",
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk:8080',
+        'www.bla.www.co.uk.fgehsu.kokoko.website.co.uk',
+        'bla.www.co.uk.fgehsu.kokoko.website.co.uk',
+        'www.co.uk.fgehsu.kokoko.website.co.uk',
+        'co.uk.fgehsu.kokoko.website.co.uk',
+        'uk.fgehsu.kokoko.website.co.uk',
+        'fgehsu.kokoko.website.co.uk',
+        'kokoko.website.co.uk',
+        'website.co.uk',
         `${DUMB_DOMAIN_DETECTION}co.uk`,
         `${DUMB_DOMAIN_DETECTION}uk`,
     ],
     'https://jfgeh.corp.company.local/en-US/products/firefox?as=u&utm_source=inproduct#asdfasdf=qwer': [
-        "jfgeh.corp.company.local/en-US/products/firefox",
-        "jfgeh.corp.company.local/en-US/products",
-        "jfgeh.corp.company.local/en-US",
+        'jfgeh.corp.company.local/en-US/products/firefox',
+        'jfgeh.corp.company.local/en-US/products',
+        'jfgeh.corp.company.local/en-US',
         hint_marker,
-        "jfgeh.corp.company.local",
-        "corp.company.local",
-        "company.local",
+        'jfgeh.corp.company.local',
+        'corp.company.local',
+        'company.local',
         `${DUMB_DOMAIN_DETECTION}local`,
     ],
     'https://jfgeh/en-US/products/firefox?as=u&utm_source=inproduct#asdfasdf=qwer': [
-        "jfgeh/en-US/products/firefox",
-        "jfgeh/en-US/products",
-        "jfgeh/en-US",
+        'jfgeh/en-US/products/firefox',
+        'jfgeh/en-US/products',
+        'jfgeh/en-US',
         hint_marker,
-        "jfgeh",
+        'jfgeh',
     ],
     'https://example.com/test1234/hello': [
         'example.com/test1234/hello',
@@ -113,24 +113,24 @@ const test_urls = {
         `${DUMB_DOMAIN_DETECTION}cern`,
     ],
     'https://support.mozilla.org/en-US/products/firefox?as=u&utm_source=inproduct#asdfasdf=qwer': [
-        "support.mozilla.org/en-US/products/firefox",
-        "support.mozilla.org/en-US/products",
-        "support.mozilla.org/en-US",
+        'support.mozilla.org/en-US/products/firefox',
+        'support.mozilla.org/en-US/products',
+        'support.mozilla.org/en-US',
         hint_marker,
-        "support.mozilla.org",
-        "mozilla.org",
+        'support.mozilla.org',
+        'mozilla.org',
         `${DUMB_DOMAIN_DETECTION}org`,
     ],
     'https://support.mozilla.org/': [
         hint_marker,
-        "support.mozilla.org",
-        "mozilla.org",
+        'support.mozilla.org',
+        'mozilla.org',
         `${DUMB_DOMAIN_DETECTION}org`,
     ],
     'https://support.mozilla.org': [
         hint_marker,
-        "support.mozilla.org",
-        "mozilla.org",
+        'support.mozilla.org',
+        'mozilla.org',
         `${DUMB_DOMAIN_DETECTION}org`,
     ],
     'moz-extension://11256f55-552a-40ee-9c36-75a0be32137f/ui/preferences.html': [
@@ -148,28 +148,28 @@ const test_urls = {
         'chrome-extension://',
     ],
     'file:///home/user/dark-background-light-text/test/test-pages/target-blank/1st.html': [
-        "file:///home/user/dark-background-light-text/test/test-pages/target-blank/1st.html",
-        "file:///home/user/dark-background-light-text/test/test-pages/target-blank",
-        "file:///home/user/dark-background-light-text/test/test-pages",
-        "file:///home/user/dark-background-light-text/test",
-        "file:///home/user/dark-background-light-text",
-        "file:///home/user",
+        'file:///home/user/dark-background-light-text/test/test-pages/target-blank/1st.html',
+        'file:///home/user/dark-background-light-text/test/test-pages/target-blank',
+        'file:///home/user/dark-background-light-text/test/test-pages',
+        'file:///home/user/dark-background-light-text/test',
+        'file:///home/user/dark-background-light-text',
+        'file:///home/user',
         hint_marker,
-        "file:///home",
-        "file://",
+        'file:///home',
+        'file://',
     ],
     'file:///c:/Users/Public/Documents/dark-background-light-text/test/test-pages/target-blank/1st.html': [
-        "file:///c:/Users/Public/Documents/dark-background-light-text/test/test-pages/target-blank/1st.html",
-        "file:///c:/Users/Public/Documents/dark-background-light-text/test/test-pages/target-blank",
-        "file:///c:/Users/Public/Documents/dark-background-light-text/test/test-pages",
-        "file:///c:/Users/Public/Documents/dark-background-light-text/test",
-        "file:///c:/Users/Public/Documents/dark-background-light-text",
-        "file:///c:/Users/Public/Documents",
-        "file:///c:/Users/Public",
-        "file:///c:/Users",
+        'file:///c:/Users/Public/Documents/dark-background-light-text/test/test-pages/target-blank/1st.html',
+        'file:///c:/Users/Public/Documents/dark-background-light-text/test/test-pages/target-blank',
+        'file:///c:/Users/Public/Documents/dark-background-light-text/test/test-pages',
+        'file:///c:/Users/Public/Documents/dark-background-light-text/test',
+        'file:///c:/Users/Public/Documents/dark-background-light-text',
+        'file:///c:/Users/Public/Documents',
+        'file:///c:/Users/Public',
+        'file:///c:/Users',
         hint_marker,
-        "file:///c:",
-        "file://",
+        'file:///c:',
+        'file://',
     ],
     'http://172.123.10.1/test/kokoko': [
         '172.123.10.1/test/kokoko',
@@ -267,30 +267,30 @@ describe('generate_urls', () => {
         it(`${url} — dumb domain detection`, () => {
             deepStrictEqual(
                 generate_urls(url),
-                result.filter(s => s !== hint_marker).map(strip_dumb_marker)
+                result.filter((s) => s !== hint_marker).map(strip_dumb_marker),
             );
             deepStrictEqual(
                 generate_urls(url, true),
-                result.map(strip_dumb_marker)
+                result.map(strip_dumb_marker),
             );
-        })
+        });
         it(`${url} — smart domain detection`, () => {
             deepStrictEqual(
                 smart_generate_urls(url),
-                result.filter(s => s !== hint_marker && !s.startsWith(DUMB_DOMAIN_DETECTION))
+                result.filter((s) => s !== hint_marker && !s.startsWith(DUMB_DOMAIN_DETECTION)),
             );
             deepStrictEqual(
                 smart_generate_urls(url, true),
-                result.filter(s => !s.startsWith(DUMB_DOMAIN_DETECTION))
+                result.filter((s) => !s.startsWith(DUMB_DOMAIN_DETECTION)),
             );
-        })
-    })
+        });
+    });
     really_bad_urls.forEach((url) => {
         it(url, () => {
             // in case if URL is really bad, original URL itself is returned
             // TODO: use mocking library?
             let console_error_called_times = 0;
-            let orig = console.error;
+            const orig = console.error;
             console.error = () => { console_error_called_times++; };
             deepStrictEqual(generate_urls(url), [url]);
             assert(console_error_called_times === 1);
@@ -298,9 +298,9 @@ describe('generate_urls', () => {
             // TypeScript is not that smart
             assert(console_error_called_times as number === 2);
             console.error = orig;
-        })
-    })
-})
+        });
+    });
+});
 
 const good_IPs = [
     '1.1.1.1',
@@ -332,9 +332,9 @@ const bad_IPs = [
 
 describe('is_IPv4', () => {
     good_IPs.forEach((ip) => {
-        it(`${ip} is IPv4`, () => assert(is_IPv4(ip) === true))
+        it(`${ip} is IPv4`, () => assert(is_IPv4(ip) === true));
     });
     bad_IPs.forEach((ip) => {
-        it(`${ip} is not IPv4`, () => assert(is_IPv4(ip) === false))
+        it(`${ip} is not IPv4`, () => assert(is_IPv4(ip) === false));
     });
 });

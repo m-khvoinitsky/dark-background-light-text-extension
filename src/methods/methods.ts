@@ -23,10 +23,11 @@ export const methods: MethodsMetadataBare = {
         number: STYLESHEET_PROCESSOR_ID,
         label: 'Stylesheet processor',
         stylesheets: [
-            {name: 'base'},
-            /* simple-css will be removed as soon as StylesheetColorProcessor do its work — this prevents bright flickering */
-            {name: 'simple-css'},
-            {name: 'stylesheet-processor'},
+            { name: 'base' },
+            /* simple-css will be removed as soon as StylesheetColorProcessor do its work —
+               this prevents bright flickering */
+            { name: 'simple-css' },
+            { name: 'stylesheet-processor' },
         ],
         affects_iframes: false,
     },
@@ -34,8 +35,8 @@ export const methods: MethodsMetadataBare = {
         number: SIMPLE_CSS_ID,
         label: 'Simple CSS',
         stylesheets: [
-            {name: 'base'},
-            {name: 'simple-css'},
+            { name: 'base' },
+            { name: 'simple-css' },
         ],
         affects_iframes: false,
     },
@@ -43,8 +44,8 @@ export const methods: MethodsMetadataBare = {
         number: INVERT_ID,
         label: 'Invert',
         stylesheets: [
-            {name: 'invert'},
+            { name: 'invert' },
         ],
         affects_iframes: true,
     },
-}
+};

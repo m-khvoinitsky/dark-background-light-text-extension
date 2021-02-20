@@ -40,7 +40,6 @@ export interface Preference {
     value: PrefsType, // TODO: restrict types per value of 'type'
     options?: Array<{label: string, value: string}> // TODO: restrict to type=menulist
     title: string,
-    available?: Promise<boolean>,
 }
 
 export interface RenderOptions {
@@ -69,14 +68,19 @@ export interface MethodMetadataBare {
     stylesheets: StylesheetRendererBare[],
 }
 
-export interface MethodMetadataWithExecutors extends MethodMetadataBare {
-    executor: MethodExecutorStatic|null,
-}
-
 export interface MethodMetadataWithStylesheets extends MethodMetadataBare {
     stylesheets: StylesheetRenderer[],
 }
-
+export interface MethodExecutor {
+    load_into_window(): void;
+    unload_from_window(): void;
+}
+export interface MethodExecutorStatic {
+    new (window: Window, options: AddonOptions): MethodExecutor;
+}
+export interface MethodMetadataWithExecutors extends MethodMetadataBare {
+    executor: MethodExecutorStatic|null,
+}
 export type MethodsMetadataBare = {
     [key: string /* MethodIndex */]: MethodMetadataBare
 }
@@ -92,14 +96,8 @@ export interface DefaultColors {
     default_dark_color: RGBA,
 }
 
-export interface MethodExecutorStatic {
-    new (window: Window, options: AddonOptions): MethodExecutor;
-}
-export interface MethodExecutor {
-    load_into_window(): void;
-    unload_from_window(): void;
-}
-
+// eslint bug?
+// eslint-disable-next-line no-shadow
 export const enum CallbackID {
     INSERT_CSS,
     REMOVE_CSS,

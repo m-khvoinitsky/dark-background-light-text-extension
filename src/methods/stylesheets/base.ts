@@ -1,4 +1,5 @@
 import { RenderOptions } from '../../common/types';
+
 export const name = 'base';
 export function render({
     default_foreground_color,

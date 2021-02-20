@@ -1,4 +1,5 @@
 import { RenderOptions } from '../../common/types';
+
 export const name = 'stylesheet-processor';
 export function render({
     default_foreground_color,
@@ -18,7 +19,7 @@ ${''/* #29 */}\
   color: ${default_foreground_color} !important;
 }
 
-${''/*Legacy Attributes*/}\
+${''/* Legacy Attributes */}\
 [bgcolor] {
   background-color: ${default_background_color} !important;
 }
@@ -36,9 +37,9 @@ ${''/*Legacy Attributes*/}\
 [link]:link {
   color: ${default_link_color} !important;
 }
-${''/*Legacy Attributes*/}\
+${''/* Legacy Attributes */}\
 
-${''/*Bittorrent sync webui fix*/}\
+${''/* Bittorrent sync webui fix */}\
 .qrCode > canvas {
   border: 10px white solid;
 }

@@ -1,5 +1,5 @@
 import { parse as tldts_parse } from 'tldts';
-import { generate_urls } from '../common/generate-urls';
+import { generate_urls } from './generate-urls';
 
 export function smart_generate_urls(
     url_str: string,
@@ -9,7 +9,7 @@ export function smart_generate_urls(
         url_str,
         hint,
         (hostname) => {
-            let tldts_obj = tldts_parse(hostname, {
+            const tldts_obj = tldts_parse(hostname, {
                 detectIp: false,
                 extractHostname: false,
             });
@@ -17,6 +17,6 @@ export function smart_generate_urls(
                 tldts_obj.domain!,
                 tldts_obj.subdomain ? tldts_obj.subdomain.split('.') : [],
             ];
-        }
+        },
     );
 }

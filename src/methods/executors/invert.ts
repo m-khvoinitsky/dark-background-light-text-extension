@@ -1,11 +1,16 @@
-import { AddonOptions, MethodExecutor } from '../../common/types';
+import {
+    AddonOptions,
+    MethodExecutor,
+} from '../../common/types';
 
 export class InvertMethod implements MethodExecutor {
     window: Window;
+
     // @ts-ignore: TS6133
     constructor(window: Window, options: AddonOptions) {
         this.window = window;
     }
+
     load_into_window() {
         let el: HTMLElement|null = this.window.document.querySelector('#mybpwaycfxccmnp-dblt-backdrop-filter');
         if (!el) {
@@ -15,9 +20,11 @@ export class InvertMethod implements MethodExecutor {
             this.window.document.documentElement.appendChild(el);
         }
     }
+
     unload_from_window() {
-        let el = this.window.document.querySelector('#mybpwaycfxccmnp-dblt-backdrop-filter');
-        if (el !== null)
+        const el = this.window.document.querySelector('#mybpwaycfxccmnp-dblt-backdrop-filter');
+        if (el !== null) {
             el.parentElement!.removeChild(el);
+        }
     }
 }

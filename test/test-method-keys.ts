@@ -7,5 +7,5 @@ describe('Ensure method IDs are consistent', () => {
         it(val.label, () => {
             assert(key === val.number, `${val.label} key (${key}) does not match its number (${val.number})`);
         });
-    })
-})
+    });
+});
