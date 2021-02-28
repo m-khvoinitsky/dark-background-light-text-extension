@@ -5,6 +5,10 @@ import copy from 'rollup-plugin-copy';
 import clear from 'rollup-plugin-clear';
 import { terser } from 'rollup-plugin-terser';
 
+import svelte from 'rollup-plugin-svelte';
+import css from 'rollup-plugin-css-only';
+import sveltePreprocess from 'svelte-preprocess';
+
 export default (args) => {
     let output_opts = {};
     const common_plugins = [
@@ -55,8 +59,18 @@ export default (args) => {
             },
         },
         {
-            input: 'src/preferences/index.ts',
-            plugins: [...common_plugins],
+            input: 'src/preferences/main.ts',
+            plugins: [
+                svelte({
+                    preprocess: sveltePreprocess({ sourceMap: true }),
+                    compilerOptions: {
+                        // // enable run-time checks when not in production
+                        // dev: !production
+                    },
+                }),
+                css({ output: 'preferences.css' }),
+                ...common_plugins,
+            ],
             output: {
                 file: 'dist/preferences.js',
                 ...output_opts,

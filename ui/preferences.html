@@ -7,6 +7,7 @@
     <meta content="">
     <link rel="stylesheet" href="bootstrap.css" />
     <link rel="stylesheet" href="internal.css" />
+    <link rel="stylesheet" href="../preferences.css" />
     <link rel="icon" type="image/png" href="../icons/icon64.png" />
     <style>
         .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12 {
@@ -85,44 +86,9 @@
             list-style: none;
         }
     </style>
-    <script src="../preferences.js"></script>
-    <!--<script type="text/javascript">-->
-        <!--window.setTimeout(function(){-->
-            <!--var placeholder = document.getElementById('loading-or-error-placeholder');-->
-            <!--if (placeholder) {-->
-                <!--placeholder.textContent = 'Error. You should not see this';-->
-            <!--}-->
-        <!--}, 3000);-->
-    <!--</script>-->
+    <script defer src="../preferences.js"></script>
 </head>
 <body>
-<div class="hidden" id="grab-overlay">
-    <h1 id="grab-hotkey">Ctrl+Shift+D</h1>
-    <table class="note">
-        <tr>
-            <td>
-                <span class="i_sign">ⓘ</span>
-            </td>
-            <td>
-                <ul class="note_list">
-                    <li>
-                        When <strong>valid</strong> hotkey is pressed, this dialog will be closed and hotkey will be applied
-                    </li>
-                    <li>
-                        Refer to <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/manifest.json/commands#Shortcut_values">this page</a> to learn what is valid hotkey
-                    </li>
-                </ul>
-            </td>
-        </tr>
-    </table>
-    <button class="full-width" id="grab-stop">Cancel</button>
-</div>
-<div class="container-fluid" id="main">
-    <div class="row">
-        <div class="col-xs-12">
-            <h1 id="loading-or-error-placeholder">Loading...</h1>
-        </div>
-    </div>
-</div>
+
 </body>
 </html>
