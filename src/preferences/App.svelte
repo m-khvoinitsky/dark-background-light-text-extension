@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ColorInput from './ColorInput.svelte';
   import { query_style } from '../common/ui-style';
   import type {
     Preference,
@@ -20,9 +21,10 @@
   async function update_prefs() {
     const saved_prefs = await get_prefs();
     current_preferences = preferences.map((pref) => ({
-      ...pref,
-      value: saved_prefs[pref.name],
+        ...pref,
+        value: saved_prefs[pref.name],
     }));
+
     configured_pages = current_preferences.find((p) => p.name === 'configured_pages')!.value as ConfiguredPages;
   }
   update_prefs().catch((error) => console.error(error));
@@ -64,18 +66,7 @@
             </select>
           </div>
         {:else if pref.type === 'color' }
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <input
-              bind:value={pref.value}
-              on:change="{(e) => set_pref(pref.name, e.target.value)}"
-              class="input_color input_color_color pref_{pref.name} full-width form-control" id="labeled_pref_{pref.name}" data-pref-type="{pref.type}" type="color">
-          </div>
-          <div class="col-xs-6 col-sm-4 col-md-3">
-            <input
-              bind:value={pref.value}
-              on:change="{(e) => set_pref(pref.name, e.target.value)}"
-              class="input_color input_color_text pref_{pref.name} full-width form-control" data-pref-type="{pref.type}" type="text">
-          </div>
+          <ColorInput value={pref.value} default={pref.value} on:change="{(e) => set_pref(pref.name, e.detail.value)}" class="col-xs-12 col-sm-8 col-md-6" />
         {/if}
         <div class="col-xs-12 col-sm-4 col-md-2">
           <button on:click="{() => set_pref(pref.name, prefs_keys_with_defaults[pref.name])}" class="btn btn-default full-width">Reset</button>
