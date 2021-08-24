@@ -16,12 +16,13 @@ export default (args) => {
             sourceMap: args.watch === true,
             exclude: [
                 // this folder is handled by Svelte preprocessor
-                "src/preferences/**",
+                'src/preferences/**',
             ],
         }),
         node_resolve(),
         commonjs(),
     ];
+    const dest_dir = process.env.ADDON_DIST_DIR ?? 'dist';
     if (args.watch === true) {
         output_opts = {
             plugins: [],
@@ -40,19 +41,19 @@ export default (args) => {
             input: 'src/content/index.ts',
             plugins: [
                 clear({
-                    targets: ['dist'],
+                    targets: [dest_dir],
                 }),
                 copy({
                     targets: [
-                        { src: 'manifest.json', dest: 'dist/' },
-                        { src: 'icons/*', dest: 'dist/icons/' },
-                        { src: 'ui/*', dest: 'dist/ui/' },
+                        { src: 'manifest.json', dest: dest_dir },
+                        { src: 'icons/*', dest: `${dest_dir}/icons/` },
+                        { src: 'ui/*', dest: `${dest_dir}/ui/` },
                     ],
                 }),
                 ...common_plugins,
             ],
             output: {
-                file: 'dist/content.js',
+                file: `${dest_dir}/content.js`,
                 ...output_opts,
             },
         },
@@ -60,7 +61,7 @@ export default (args) => {
             input: 'src/background/index.ts',
             plugins: [...common_plugins],
             output: {
-                file: 'dist/background.js',
+                file: `${dest_dir}/background.js`,
                 ...output_opts,
             },
         },
@@ -78,7 +79,7 @@ export default (args) => {
                 ...common_plugins,
             ],
             output: {
-                file: 'dist/preferences.js',
+                file: `${dest_dir}/preferences.js`,
                 name: 'app',
                 ...output_opts,
             },
@@ -87,7 +88,7 @@ export default (args) => {
             input: 'src/browser-action/index.ts',
             plugins: [...common_plugins],
             output: {
-                file: 'dist/browser-action.js',
+                file: `${dest_dir}/browser-action.js`,
                 ...output_opts,
             },
         },
