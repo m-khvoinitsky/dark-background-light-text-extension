@@ -13,6 +13,7 @@
     set_pref,
   } from '../common/shared';
   import { methods } from '../methods/methods';
+  import { browser } from 'webextension-polyfill-ts';
 
   query_style().catch((error) => console.error(error));
 
@@ -75,10 +76,13 @@
     {/if}
   {/each}
 
-  <!-- TODO: do not show shortcuts info for Android -->
-  <div class="row"><div class="col-xs-12"><h2>Shortcuts</h2></div></div>
-  <div>In order to configure shortcuts, go to about:addons (Menu -&gt; Add-ons), press on the cogwheel icon, then choose "Manage Extension Shortcuts"</div>
-  <a href="https://support.mozilla.org/kb/manage-extension-shortcuts-firefox">See this support article for the detais</a>
+  {#await browser.runtime.getPlatformInfo() then platformInfo}
+	{#if platformInfo.os !== 'android'}
+	  <div class="row"><div class="col-xs-12"><h2>Shortcuts</h2></div></div>
+      <div>In order to configure shortcuts, go to about:addons (Menu -&gt; Add-ons), press on the cogwheel icon, then choose "Manage Extension Shortcuts"</div>
+      <a href="https://support.mozilla.org/kb/manage-extension-shortcuts-firefox">See this support article for the detais</a>
+    {/if}
+  {/await}
 
   <div class="row"><div class="col-xs-12"><h2>Configured pages</h2></div></div>
   {#each Object.entries(configured_pages) as [page, method_index] (page)}
