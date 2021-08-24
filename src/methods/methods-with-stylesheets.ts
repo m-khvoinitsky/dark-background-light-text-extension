@@ -1,7 +1,7 @@
 import {
     methods as methods_bare,
 } from './methods';
-import {
+import type {
     MethodsMetadataWithStylesheets,
 } from '../common/types';
 import * as base from './stylesheets/base';

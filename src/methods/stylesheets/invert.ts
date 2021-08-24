@@ -1,4 +1,4 @@
-import { RenderOptions } from '../../common/types';
+import type { RenderOptions } from '../../common/types';
 
 export const name = 'invert';
 // eslint-disable-next-line no-empty-pattern

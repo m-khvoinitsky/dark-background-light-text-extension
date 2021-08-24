@@ -1,4 +1,4 @@
-import { MethodsMetadataBare } from '../common/types';
+import type { MethodsMetadataBare } from '../common/types';
 
 export const DEFAULT_ID = '-1';
 export const DISABLED_ID = '0';

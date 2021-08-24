@@ -7,12 +7,18 @@ import { terser } from 'rollup-plugin-terser';
 
 import svelte from 'rollup-plugin-svelte';
 import css from 'rollup-plugin-css-only';
-import sveltePreprocess from 'svelte-preprocess';
+import autoPreprocess from 'svelte-preprocess';
 
 export default (args) => {
     let output_opts = {};
     const common_plugins = [
-        typescript(),
+        typescript({
+            sourceMap: args.watch === true,
+            exclude: [
+                // this folder is handled by Svelte preprocessor
+                "src/preferences/**",
+            ],
+        }),
         node_resolve(),
         commonjs(),
     ];
@@ -62,10 +68,10 @@ export default (args) => {
             input: 'src/preferences/main.ts',
             plugins: [
                 svelte({
-                    preprocess: sveltePreprocess({ sourceMap: true }),
+                    preprocess: autoPreprocess({ sourceMap: true }),
                     compilerOptions: {
-                        // // enable run-time checks when not in production
-                        // dev: !production
+                        // enable run-time checks when not in production
+                        dev: args.watch === true,
                     },
                 }),
                 css({ output: 'preferences.css' }),
@@ -73,6 +79,7 @@ export default (args) => {
             ],
             output: {
                 file: 'dist/preferences.js',
+                name: 'app',
                 ...output_opts,
             },
         },

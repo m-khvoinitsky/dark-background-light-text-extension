@@ -1,4 +1,4 @@
-import {
+import type {
     AddonOptions,
     MethodExecutor,
 } from '../../common/types';

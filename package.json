@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "webpack",
+    "build": "rollup -c --failAfterWarnings",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --reporter='../../coverage-relative-json-summary' --reporter=html --reporter=text mocha"
   },
   "devDependencies": {
@@ -12,8 +12,6 @@
     "@typescript-eslint/eslint-plugin": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",
     "assert": "^2.0.0",
-    "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "^9.0.1",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-import-resolver-typescript": "^2.4.0",
@@ -35,9 +33,7 @@
     "ts-loader": "^9.2.5",
     "ts-node": "^10.2.1",
     "typescript": "^4.3.5",
-    "webextension-polyfill-ts": "^0.22.0",
-    "webpack": "^5.51.1",
-    "webpack-cli": "^4.8.0"
+    "webextension-polyfill-ts": "^0.22.0"
   },
   "dependencies": {
     "await-lock": "^2.1.0",

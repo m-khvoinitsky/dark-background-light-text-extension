@@ -1,7 +1,7 @@
 import { strict as assert } from 'assert';
 import { describe } from 'mocha';
 import { lint, LintResult, SyntaxType } from 'stylelint';
-import { RenderOptions } from '../src/common/types';
+import type { RenderOptions } from '../src/common/types';
 import { methods } from '../src/methods/methods-with-stylesheets';
 
 function format_error(results: LintResult[], source: string): string {

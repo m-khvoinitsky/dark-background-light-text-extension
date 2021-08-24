@@ -1,6 +1,6 @@
 import { strict as assert } from 'assert';
 import { describe, it } from 'mocha';
-import { WebRequest } from 'webextension-polyfill-ts';
+import type { WebRequest } from 'webextension-polyfill-ts';
 import { readFileSync } from 'fs';
 import {
     modify_csp,

@@ -7,7 +7,7 @@ import {
 import { methods } from '../methods/methods';
 import { hint_marker } from '../common/generate-urls';
 import { smart_generate_urls } from '../common/smart-generate-urls';
-import { ConfiguredPages } from '../common/types';
+import type { ConfiguredPages } from '../common/types';
 import '../common/ui-style';
 
 declare const { browser }: typeof import('webextension-polyfill-ts');

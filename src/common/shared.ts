@@ -1,5 +1,5 @@
 import type { Storage } from 'webextension-polyfill-ts';
-import {
+import type {
     Preference,
     PrefsType,
     ConfiguredPages,

@@ -1,4 +1,4 @@
-import { RenderOptions } from '../../common/types';
+import type { RenderOptions } from '../../common/types';
 
 export const name = 'stylesheet-processor';
 export function render({

@@ -3,7 +3,7 @@ import {
     STYLESHEET_PROCESSOR_ID,
     INVERT_ID,
 } from './methods';
-import { MethodsMetadataWithExecutors } from '../common/types';
+import type { MethodsMetadataWithExecutors } from '../common/types';
 import { StylesheetColorProcessor } from './executors/stylesheet-color-processor';
 import { InvertMethod } from './executors/invert';
 

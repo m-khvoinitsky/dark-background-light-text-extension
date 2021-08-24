@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.4.0
+  rev: v4.0.1
   hooks:
   - id: trailing-whitespace
   - id: end-of-file-fixer
@@ -14,7 +14,7 @@ repos:
     args: ['--shell=bash', '--color=always', '--external-sources']
     additional_dependencies: []
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v7.20.0
+  rev: v8.0.0-beta.0
   hooks:
   - id: eslint
 - repo: local
@@ -37,10 +37,10 @@ repos:
       require_serial: true
 - repo: local
   hooks:
-    - id: webpack
-      name: Webpack dry run
+    - id: svelte-check
+      name: Svelte check
       language: system
-      entry: sh -c 'TMPDIR="$(mktemp -d)"; npx webpack --output-path "${TMPDIR}"; EXITCODE=$?; rm -r "${TMPDIR}"; exit "${EXITCODE}"'
+      entry: npx svelte-check --fail-on-warnings
       always_run: true
       pass_filenames: false
       require_serial: true

@@ -1,4 +1,4 @@
-import { RenderOptions } from '../../common/types';
+import type { RenderOptions } from '../../common/types';
 
 export const name = 'simple-css';
 export function render({

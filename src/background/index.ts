@@ -1,5 +1,5 @@
 import { parseCSSColor } from 'csscolorparser-ts';
-import {
+import type {
     Runtime,
     ContentScripts,
     Manifest,

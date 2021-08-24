@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
+    "importsNotUsedAsValues": "error",
     "isolatedModules": false,
     "sourceMap": true,
     "strict": true,
@@ -11,9 +12,6 @@
     "noImplicitReturns": true,
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "*" : ["./src/types/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   }
 }
