@@ -1,4 +1,4 @@
-import { parseCSSColor } from 'csscolorparser';
+import { parseCSSColor } from 'csscolorparser-ts';
 import {
     Runtime,
     ContentScripts,
