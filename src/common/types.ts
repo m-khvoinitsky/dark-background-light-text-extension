@@ -35,7 +35,7 @@ export interface AddonOptions {
 }
 export type PrefsType = string|number|boolean|ConfiguredPages
 export interface Preference {
-    type: 'bool'|'hotkey'|'menulist'|'color'|'configured_pages',
+    type: 'bool'|'menulist'|'color'|'configured_pages',
     name: string,
     value: PrefsType, // TODO: restrict types per value of 'type'
     options?: Array<{label: string, value: string}> // TODO: restrict to type=menulist

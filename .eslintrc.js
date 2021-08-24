@@ -244,6 +244,11 @@ module.exports = {
                 'no-useless-return': [
                     'off',
                 ],
+                'no-dupe-class-members': 'off',
+                '@typescript-eslint/no-dupe-class-members': ['error'],
+
+                'lines-between-class-members': 'off',
+                '@typescript-eslint/lines-between-class-members': ['error'],
             },
         },
         {

@@ -10,7 +10,7 @@ export function render({
     default_selection_color,
     is_toplevel,
     is_darkbg,
-}: RenderOptions) {
+}: RenderOptions): string {
     return `
 :root {
   --dark-background-light-text-add-on-foreground-color: ${default_foreground_color} !important;

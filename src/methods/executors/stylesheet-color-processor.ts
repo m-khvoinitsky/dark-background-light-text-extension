@@ -426,8 +426,20 @@ export class StylesheetColorProcessor
     process_color_property(
         color: string,
         is_foreground: boolean,
+        no_ret_if_fail: false,
+    ): string
+    process_color_property(
+        color: string,
+        is_foreground: boolean,
+        no_ret_if_fail: true,
+    ): string | undefined
+    process_color_property(
+        color: string,
+        is_foreground: boolean,
         no_ret_if_fail: boolean,
-    ): string | undefined { // TODO: let compiler know for sure return type
+    ): string | undefined {
+        // eslint-disable-next-line no-param-reassign
+        color = color.trim();
         const rgb_color_array = parseCSSColor(color);
         if (rgb_color_array) {
             return (
@@ -435,19 +447,19 @@ export class StylesheetColorProcessor
                     ? this.foregroundify_color(rgb_color_array)
                     : this.backgroundify_color(rgb_color_array)
             );
-        } else if (color.indexOf('-moz-') >= 0 || system_colors.indexOf(color.toLowerCase().trim()) >= 0) {
+        } else if (color.indexOf('-moz-') >= 0 || system_colors.indexOf(color.toLowerCase()) >= 0) {
             return (
                 is_foreground
                     ? this.options.default_foreground_color
                     : this.options.default_background_color
             );
-        } else if (StylesheetColorProcessor.is_css_var(color.trim())) {
+        } else if (StylesheetColorProcessor.is_css_var(color)) {
             return StylesheetColorProcessor.process_css_var_usage(
                 color,
                 is_foreground
                     ? this.rename_var_fg
                     : this.rename_var_bg,
-                (s) => this.process_color_property(s, is_foreground, false)!,
+                (s) => this.process_color_property(s, is_foreground, false),
             );
         }
         if (!no_ret_if_fail) {
