@@ -2,8 +2,8 @@
   import ColorInput from './ColorInput.svelte';
   import { query_style } from '../common/ui-style';
   import type {
-    Preference,
     ConfiguredPages,
+    Preferences,
   } from '../common/types';
   import {
     preferences,
@@ -16,14 +16,14 @@
 
   query_style().catch((error) => console.error(error));
 
-  let current_preferences: Preference[] = [];
+  let current_preferences: Preferences = [];
   let configured_pages: ConfiguredPages = {}
   async function update_prefs() {
     const saved_prefs = await get_prefs();
     current_preferences = preferences.map((pref) => ({
         ...pref,
         value: saved_prefs[pref.name],
-    }));
+    })) as Preferences;
 
     configured_pages = current_preferences.find((p) => p.name === 'configured_pages')!.value as ConfiguredPages;
   }
@@ -47,7 +47,7 @@
           <div class="col-xs-2 col-sm-4 col-md-6">
             <input
               bind:checked={pref.value}
-              on:change="{(e) => set_pref(pref.name, e.target.checked)}"
+              on:change="{(e) => set_pref(pref.name, e.currentTarget.checked)}"
               class="pref_{pref.name} full-width form-control"
               id="labeled_pref_{pref.name}"
               type="checkbox"
@@ -57,7 +57,7 @@
         {:else if pref.type === 'menulist'}
           <div class="col-xs-12 col-sm-8 col-md-6">
             <select
-              on:change="{(e) => set_pref(pref.name, e.target.selectedIndex)}"
+              on:change="{(e) => set_pref(pref.name, e.currentTarget.selectedIndex)}"
               class="pref_{pref.name} full-width form-control"
               id="labeled_pref_{pref.name}" data-pref-type={pref.type}>
               {#each pref.options as option (option.value)}

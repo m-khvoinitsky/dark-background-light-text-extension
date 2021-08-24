@@ -34,13 +34,45 @@ export interface AddonOptions {
     configured_pages: ConfiguredPages,
 }
 export type PrefsType = string|number|boolean|ConfiguredPages
-export interface Preference {
+interface Preference {
     type: 'bool'|'menulist'|'color'|'configured_pages',
     name: string,
-    value: PrefsType, // TODO: restrict types per value of 'type'
-    options?: Array<{label: string, value: string}> // TODO: restrict to type=menulist
+    value: PrefsType,
+    options?: Array<{label: string, value: string}>,
     title: string,
 }
+export interface BoolPreference extends Preference {
+    type: 'bool',
+    name: string,
+    value: boolean,
+    options: undefined,
+    title: string,
+}
+export interface MenuListPreference extends Preference {
+    type: 'menulist',
+    name: string,
+    value: number,
+    options: Array<{label: string, value: string}>,
+    title: string,
+}
+export interface ColorPreference extends Preference {
+    type: 'color',
+    name: string,
+    value: string,
+    options: undefined,
+    title: string,
+}
+export interface ConfiguredPagesPreference extends Preference {
+    type: 'configured_pages',
+    name: string,
+    value: ConfiguredPages,
+    options: undefined,
+    title: string,
+}
+export type Preferences = (
+  BoolPreference|MenuListPreference|ColorPreference|ConfiguredPagesPreference
+)[];
+
 
 export interface RenderOptions {
     default_foreground_color: string,

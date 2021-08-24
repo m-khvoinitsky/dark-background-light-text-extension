@@ -218,7 +218,7 @@ module.exports = {
             },
         ],
         'require-await': 'error',
-        // eslint does not detects modules properly
+        // ESLint does not detects modules properly
         // in particular, it treats check-coverage as a module
         strict: 'off',
         'lines-around-directive': 'off',
@@ -248,7 +248,6 @@ module.exports = {
                 '@typescript-eslint/no-dupe-class-members': ['error'],
 
                 'lines-between-class-members': 'off',
-                '@typescript-eslint/lines-between-class-members': ['error'],
             },
         },
         {

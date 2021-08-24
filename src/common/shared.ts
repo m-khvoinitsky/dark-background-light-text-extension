@@ -1,21 +1,25 @@
 import type { Storage } from 'webextension-polyfill-ts';
 import type {
-    Preference,
+    Preferences,
     PrefsType,
     ConfiguredPages,
     MethodIndex,
+    BoolPreference,
+    MenuListPreference,
+    ColorPreference,
+    ConfiguredPagesPreference,
 } from './types';
 import { methods } from '../methods/methods';
 
 declare const { browser }: typeof import('webextension-polyfill-ts');
 
-export const preferences: Preference[] = [
+export const preferences: Preferences = [
     {
         type: 'bool',
         name: 'enabled',
         value: true,
         title: 'Enabled',
-    },
+    } as BoolPreference,
     {
         title: 'Default method of changing page colors',
         value: 1,
@@ -25,55 +29,55 @@ export const preferences: Preference[] = [
             value: key,
         })),
         name: 'default_method',
-    },
+    } as MenuListPreference,
     {
         type: 'color',
         name: 'default_foreground_color',
         value: '#ffffff',
         title: 'Default foreground color',
-    },
+    } as ColorPreference,
     {
         type: 'color',
         name: 'default_background_color',
         value: '#000000',
         title: 'Default background color',
-    },
+    } as ColorPreference,
     {
         type: 'color',
         name: 'default_link_color',
         value: '#7fd7ff',
         title: 'Default link color',
-    },
+    } as ColorPreference,
     {
         type: 'color',
         name: 'default_visited_color',
         value: '#ffafff',
         title: 'Default visited link color',
-    },
+    } as ColorPreference,
     {
         type: 'color',
         name: 'default_active_color',
         value: '#ff0000',
         title: 'Default active link color',
-    },
+    } as ColorPreference,
     {
         type: 'color',
         name: 'default_selection_color',
         value: '#8080ff',
         title: 'Default selection color',
-    },
+    } as ColorPreference,
     {
         type: 'bool',
         name: 'do_not_set_overrideDocumentColors_to_never',
         value: false,
         title: 'Do not set "Override Document Colors" to "never" (not recommended)',
-    },
+    } as BoolPreference,
     {
         type: 'configured_pages',
         name: 'configured_pages',
         value: {},
         title: 'configured_pages',
-    },
+    } as ConfiguredPagesPreference,
 ];
 
 export interface PrefsWithValues {
