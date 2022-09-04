@@ -1,9 +1,3 @@
-<script lang="ts" context="module">
-  import type { Browser } from 'webextension-polyfill';
-  declare var browser: Browser;
-  var browser = browser; // hack for Svelte compiler
-</script>
-
 <script lang="ts">
   import ColorInput from './ColorInput.svelte';
   import { query_style } from '../common/ui-style';
@@ -19,6 +13,8 @@
     set_pref,
   } from '../common/shared';
   import { methods } from '../methods/methods';
+  import type { Browser } from 'webextension-polyfill';
+  export let browser: Browser;
 
   query_style().catch((error) => console.error(error));
 

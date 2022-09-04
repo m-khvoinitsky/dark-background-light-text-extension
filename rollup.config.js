@@ -14,10 +14,6 @@ export default (args) => {
     const common_plugins = [
         typescript({
             sourceMap: args.watch === true,
-            exclude: [
-                // this folder is handled by Svelte preprocessor
-                'src/preferences/**',
-            ],
         }),
         node_resolve(),
         commonjs(),
