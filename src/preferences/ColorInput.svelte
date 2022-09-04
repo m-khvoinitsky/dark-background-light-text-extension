@@ -19,9 +19,6 @@
   let default_: string;
   export { default_ as default };
 
-  let color: HTMLInputElement;
-  let text: HTMLInputElement;
-
   let common_value = writable('');
 
   let color_value: string;
@@ -84,8 +81,8 @@
 </script>
 
 <div class="{class_}">
-  <input bind:this={color} bind:value={color_value} type="color" on:change="{() => emit(false)}">
-  <input bind:this={text} bind:value={text_value} type="text" on:change="{() => emit(true)}"
+  <input bind:value={color_value} type="color" on:change="{() => emit(false)}">
+  <input bind:value={text_value} type="text" on:change="{() => emit(true)}"
          class="{text_class}" list="css-colors"
          on:animationend="{() => (shake_it = false)}">
   {#if local_i === 0 }

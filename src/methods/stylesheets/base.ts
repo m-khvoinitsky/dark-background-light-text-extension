@@ -132,7 +132,7 @@ ${is_darkbg ? `\
 \
 ${''/* #8 google scholar bars on right sidebar */}\
 #gs_bdy .gsc_g_a[style*="height"] {
-  background-color: rgb(119, 119, 119) !important;
+  background-color: rgb(119 119 119) !important;
 }
 
 ${''/* https://github.com/qooob/authentic-theme radio buttons. unfortunately, there is no public available demo */}\
@@ -148,7 +148,7 @@ ${is_darkbg ? `\
 ` : ''}\
 
 ${''/* Google Docs cursor (#220) */}\
-#kix-current-user-cursor-caret[style*="border-color: rgb(0, 0, 0)"] {
+#kix-current-user-cursor-caret[style*="border-color: rgb(0 0 0)"] {
   border-color: ${default_foreground_color} !important;
 }
 `;

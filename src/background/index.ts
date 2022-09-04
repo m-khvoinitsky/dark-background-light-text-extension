@@ -7,7 +7,8 @@ import type {
     Storage,
     WebRequest,
     Tabs,
-} from 'webextension-polyfill-ts';
+    Browser,
+} from 'webextension-polyfill';
 import {
     ConfiguredPages,
     ConfiguredTabs,
@@ -33,7 +34,9 @@ import {
 } from './lib';
 import * as base_style from '../methods/stylesheets/base';
 
-declare const { browser }: typeof import('webextension-polyfill-ts');
+
+declare const browser: Browser;
+
 
 const platform_info: Promise<Runtime.PlatformInfo> = ('getPlatformInfo' in browser.runtime)
     ? browser.runtime.getPlatformInfo()

@@ -1,4 +1,4 @@
-import type { Storage } from 'webextension-polyfill-ts';
+import type { Browser, Storage } from 'webextension-polyfill';
 import type {
     AddonOptions,
     ConfiguredPages,
@@ -10,7 +10,7 @@ import type {
 import { methods } from '../methods/methods-with-executors';
 import { generate_urls } from '../common/generate-urls';
 
-declare const { browser }: typeof import('webextension-polyfill-ts');
+declare const browser: Browser;
 
 
 const tabId_promise = browser.runtime.sendMessage({ action: 'query_tabId' });

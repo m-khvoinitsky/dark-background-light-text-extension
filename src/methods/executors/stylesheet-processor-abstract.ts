@@ -1,7 +1,8 @@
+import type { Browser } from 'webextension-polyfill';
 import AwaitLock from 'await-lock';
 import { CallbackID } from '../../common/types';
 
-declare const { browser }: typeof import('webextension-polyfill-ts');
+declare const browser: Browser;
 declare const { exportFunction }: typeof import('../../types/exportFunction');
 // ensure browser version of setTimeout
 declare const setTimeout: typeof window.setTimeout;
@@ -377,10 +378,10 @@ export abstract class StylesheetProcessorAbstract {
                 throw { name: 'SecurityError' }; // for chrome
             }
         } catch (e) {
-            if (e.name === 'SecurityError') {
+            if (e instanceof Error && e.name === 'SecurityError') {
                 this.workaround_stylesheet(sheet, base_url);
                 return 'bug 1393022';
-            } else if (e.name === 'InvalidAccessError') {
+            } else if (e instanceof Error && e.name === 'InvalidAccessError') {
                 // Chromium doesn't create stylesheet object for not loaded stylesheets
                 // console.error('stylesheet isn\'t loaded yet. TODO: add watcher?', sheet);
                 // if (sheet.ownerNode) {

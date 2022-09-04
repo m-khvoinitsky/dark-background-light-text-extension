@@ -1,4 +1,4 @@
-import type { WebRequest } from 'webextension-polyfill-ts';
+import type { WebRequest } from 'webextension-polyfill';
 
 export function modify_csp(
     header: WebRequest.HttpHeadersItemType,

@@ -1,6 +1,6 @@
 import { strict as assert } from 'assert';
 import { describe } from 'mocha';
-import { lint, LintResult, SyntaxType } from 'stylelint';
+import { lint, LintResult } from 'stylelint';
 import type { RenderOptions } from '../src/common/types';
 import { methods } from '../src/methods/methods-with-stylesheets';
 
@@ -76,10 +76,15 @@ describe('Test if valid CSS are rendered', () => {
                             indentation: 2,
                             // forbid comments in rendered stylesheet
                             'comment-pattern': '(?!)',
+                            'selector-not-notation': 'simple',
+                            'no-empty-first-line': null,
+                            'selector-class-pattern': null,
+                            'selector-id-pattern': null,
+                            'selector-no-vendor-prefix': null,
+                            'property-no-vendor-prefix': null,
                         },
                     },
                     code: rendered,
-                    syntax: 'css' as SyntaxType,
                     formatter: 'string',
                 });
                 assert(

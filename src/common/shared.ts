@@ -1,4 +1,4 @@
-import type { Storage } from 'webextension-polyfill-ts';
+import type { Browser, Storage } from 'webextension-polyfill';
 import type {
     Preferences,
     PrefsType,
@@ -11,7 +11,7 @@ import type {
 } from './types';
 import { methods } from '../methods/methods';
 
-declare const { browser }: typeof import('webextension-polyfill-ts');
+declare const browser: Browser;
 
 export const preferences: Preferences = [
     {

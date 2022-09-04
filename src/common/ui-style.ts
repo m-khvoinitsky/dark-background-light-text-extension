@@ -1,4 +1,6 @@
-declare const { browser }: typeof import('webextension-polyfill-ts');
+import type { Browser } from 'webextension-polyfill';
+
+declare const browser: Browser;
 
 export async function query_style() {
     const css_promise = await browser.runtime.sendMessage({ action: 'query_base_style' });

@@ -1,4 +1,5 @@
 /* eslint-disable no-shadow */
+import type { Browser } from 'webextension-polyfill';
 import {
     get_merged_configured_common,
     get_prefs,
@@ -10,7 +11,7 @@ import { smart_generate_urls } from '../common/smart-generate-urls';
 import type { ConfiguredPages } from '../common/types';
 import '../common/ui-style';
 
-declare const { browser }: typeof import('webextension-polyfill-ts');
+declare const browser: Browser;
 
 (async () => {
     function get_merged_configured(): Promise<ConfiguredPages> {
