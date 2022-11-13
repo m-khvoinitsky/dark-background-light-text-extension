@@ -44,9 +44,9 @@ async function get_method_for_url(url: string): Promise<MethodMetadataWithExecut
 
     if(window.prefs.night_enabled) {
         let now = new Date();
-        // this disables dark mode between 6:00 and 18:00.
+        // this disables dark mode between 6:00 and 17:59:59.
         // FIXME: make this range configurable or even derive it from sunrise and sunset data.
-        if(now.getHours() > 6 && now.getHours() < 18){
+        if(now.getHours() >= 6 && now.getHours() < 18){
             return methods[0];
         }
     }
