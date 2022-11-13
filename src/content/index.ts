@@ -38,39 +38,39 @@ if (typeof window.content_script_state === 'undefined') { /* #226 part 1 workaro
 }
 
 async function get_method_for_url(url: string): Promise<MethodMetadataWithExecutors> {
-    if (window.prefs.enabled) {
-        if (is_iframe) {
-            const parent_method_number = await browser.runtime.sendMessage({ action: 'query_parent_method_number' });
-            if (methods[parent_method_number].affects_iframes) {
-                return methods[0];
-            } else if (url === 'about:blank' || url === 'about:srcdoc') {
-                return methods[parent_method_number];
-            }
-        }
-        // TODO: get rid of await here, https://bugzilla.mozilla.org/show_bug.cgi?id=1574713
-        let tab_configuration: MethodIndex | boolean = false;
-        if (Object.keys(window.configured_tabs).length > 0) {
-            const tabId = await tabId_promise;
-            tab_configuration = (
-                Object.prototype.hasOwnProperty.call(window.configured_tabs, tabId)
-                    ? window.configured_tabs[tabId]
-                    : false
-            );
-        }
-        if (tab_configuration !== false) {
-            return methods[tab_configuration];
-        }
-
-        const configured_urls = Object.keys(window.merged_configured);
-        for (const gen_url of generate_urls(url)) {
-            if (configured_urls.indexOf(gen_url) >= 0) {
-                return methods[window.merged_configured[gen_url]];
-            }
-        }
-        return methods[window.prefs.default_method];
-    } else {
+    if(!window.prefs.enabled) {
         return methods[0];
     }
+
+    if (is_iframe) {
+        const parent_method_number = await browser.runtime.sendMessage({ action: 'query_parent_method_number' });
+        if (methods[parent_method_number].affects_iframes) {
+            return methods[0];
+        } else if (url === 'about:blank' || url === 'about:srcdoc') {
+            return methods[parent_method_number];
+        }
+    }
+    // TODO: get rid of await here, https://bugzilla.mozilla.org/show_bug.cgi?id=1574713
+    let tab_configuration: MethodIndex | boolean = false;
+    if (Object.keys(window.configured_tabs).length > 0) {
+        const tabId = await tabId_promise;
+        tab_configuration = (
+            Object.prototype.hasOwnProperty.call(window.configured_tabs, tabId)
+                ? window.configured_tabs[tabId]
+                : false
+        );
+    }
+    if (tab_configuration !== false) {
+        return methods[tab_configuration];
+    }
+
+    const configured_urls = Object.keys(window.merged_configured);
+    for (const gen_url of generate_urls(url)) {
+        if (configured_urls.indexOf(gen_url) >= 0) {
+            return methods[window.merged_configured[gen_url]];
+        }
+    }
+    return methods[window.prefs.default_method];
 }
 
 let current_method: MethodMetadataWithExecutors;
