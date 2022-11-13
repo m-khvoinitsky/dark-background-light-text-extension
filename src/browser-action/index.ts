@@ -98,6 +98,7 @@ declare const browser: Browser;
     }
     const isPrivate = current_tab.incognito;
     const enabled = await get_prefs('enabled');
+    const night_enabled = await get_prefs('night_enabled');
     const body = document.querySelector('body')!;
     if ((await browser.runtime.getPlatformInfo()).os === 'android') {
         body.setAttribute('class', 'touchscreen');
@@ -161,15 +162,28 @@ declare const browser: Browser;
         close();
     }
 
-    const checkbox_label = document.createElement('label');
-    checkbox_label.setAttribute('class', 'enabled_label');
-    checkbox_label.textContent = 'Enabled';
-    const checkbox = document.createElement('input');
-    checkbox.setAttribute('type', 'checkbox');
-    checkbox.checked = enabled;
-    checkbox.onchange = () => { set_pref('enabled', checkbox.checked).then(() => close()); };
-    checkbox_label.appendChild(checkbox);
-    body.appendChild(checkbox_label);
+    const enabled_checkbox_label = document.createElement('label');
+    enabled_checkbox_label.setAttribute('class', 'enabled_label');
+    enabled_checkbox_label.textContent = 'Enabled';
+    const enabled_checkbox = document.createElement('input');
+    enabled_checkbox.setAttribute('type', 'checkbox');
+    enabled_checkbox.checked = enabled;
+    enabled_checkbox.onchange = () => { set_pref('enabled', enabled_checkbox.checked).then(() => close()); };
+    enabled_checkbox_label.appendChild(enabled_checkbox);
+    body.appendChild(enabled_checkbox_label);
+
+    const night_checkbox_label = document.createElement('label');
+    night_checkbox_label.setAttribute('class', 'enabled_label');
+    night_checkbox_label.textContent = 'Night time only';
+    const night_checkbox = document.createElement('input');
+    night_checkbox.setAttribute('type', 'checkbox');
+    night_checkbox.checked = night_enabled;
+    if(!enabled) {
+        night_checkbox.disabled = true;
+    }
+    night_checkbox.onchange = () => { set_pref('night_enabled', night_checkbox.checked).then(() => close()); };
+    night_checkbox_label.appendChild(night_checkbox);
+    body.appendChild(night_checkbox_label);
 
     body.appendChild(document.createElement('hr'));
 

@@ -21,6 +21,12 @@ export const preferences: Preferences = [
         title: 'Enabled',
     } as BoolPreference,
     {
+        type: 'bool',
+        name: 'night_enabled',
+        value: false,
+        title: 'Night time enabled only',
+    } as BoolPreference,
+    {
         title: 'Default method of changing page colors',
         value: 1,
         type: 'menulist',
@@ -91,6 +97,7 @@ export const prefs_keys_with_defaults = ((): PrefsWithValues => {
 
 export function get_prefs(prefs?: string[]): Promise<PrefsWithValues>;
 export function get_prefs(prefs: 'enabled'): Promise<boolean>;
+export function get_prefs(prefs: 'night_enabled'): Promise<boolean>;
 export function get_prefs(prefs: 'configured_pages'): Promise<ConfiguredPages>;
 export function get_prefs(prefs: 'default_method'): Promise<MethodIndex>;
 export function get_prefs(prefs: 'do_not_set_overrideDocumentColors_to_never'): Promise<boolean>;

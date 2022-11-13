@@ -42,6 +42,15 @@ async function get_method_for_url(url: string): Promise<MethodMetadataWithExecut
         return methods[0];
     }
 
+    if(window.prefs.night_enabled) {
+        let now = new Date();
+        // this disables dark mode between 6:00 and 18:00.
+        // FIXME: make this range configurable or even derive it from sunrise and sunset data.
+        if(now.getHours() > 6 && now.getHours() < 18){
+            return methods[0];
+        }
+    }
+
     if (is_iframe) {
         const parent_method_number = await browser.runtime.sendMessage({ action: 'query_parent_method_number' });
         if (methods[parent_method_number].affects_iframes) {
