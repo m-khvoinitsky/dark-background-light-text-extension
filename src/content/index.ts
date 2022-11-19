@@ -1,11 +1,12 @@
 import type { Browser, Storage } from 'webextension-polyfill';
-import type {
+import {
     AddonOptions,
     ConfiguredPages,
     ConfiguredTabs,
     MethodIndex,
     MethodExecutor,
     MethodMetadataWithExecutors,
+    ActivationMode,
 } from '../common/types';
 import { methods } from '../methods/methods-with-executors';
 import { generate_urls } from '../common/generate-urls';
@@ -27,8 +28,8 @@ declare global {
         prefs: AddonOptions,
         merged_configured: ConfiguredPages,
         configured_tabs: ConfiguredTabs,
-        rendered_stylesheets: {[key: string]: string},
-        do_it: (changes: {[s: string]: Storage.StorageChange}) => Promise<void>,
+        rendered_stylesheets: { [key: string]: string },
+        do_it: (changes: { [s: string]: Storage.StorageChange }) => Promise<void>,
     }
 }
 
@@ -38,15 +39,22 @@ if (typeof window.content_script_state === 'undefined') { /* #226 part 1 workaro
 }
 
 async function get_method_for_url(url: string): Promise<MethodMetadataWithExecutors> {
-    if(!window.prefs.enabled) {
+    if (window.prefs.activation === ActivationMode.Off) {
         return methods[0];
     }
 
-    if(window.prefs.night_enabled) {
-        let now = new Date();
+    if (window.prefs.activation === ActivationMode['Time (6 to 6)']) {
+        const now = new Date();
         // this disables dark mode between 6:00 and 17:59:59.
         // FIXME: make this range configurable or even derive it from sunrise and sunset data.
-        if(now.getHours() >= 6 && now.getHours() < 18){
+        if (now.getHours() >= 6 && now.getHours() < 18) {
+            return methods[0];
+        }
+    }
+
+    if (window.prefs.activation === ActivationMode['System Theme']) {
+        // this disables dark mode when system is set to light theme
+        if (window.matchMedia('(prefers-color-scheme:light)')) {
             return methods[0];
         }
     }
@@ -90,7 +98,7 @@ let current_method_promise: Promise<MethodMetadataWithExecutors> = new Promise(
     },
 );
 let current_method_executor: MethodExecutor | undefined;
-window.do_it = async function do_it(changes: {[s: string]: Storage.StorageChange}) {
+window.do_it = async function do_it(changes: { [s: string]: Storage.StorageChange }) {
     try {
         const new_method = await get_method_for_url(window.document.documentURI);
         if (resolve_current_method_promise) {

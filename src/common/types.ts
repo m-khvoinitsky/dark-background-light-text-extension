@@ -12,16 +12,25 @@ export interface RGB_obj {
     B: number,
 }
 
-export type MethodIndex = '-1'|'0'|'1'|'2'|'3'
+export type MethodIndex = '-1' | '0' | '1' | '2' | '3'
 export interface ConfiguredPages {
     [key: string]: MethodIndex
 }
 export interface ConfiguredTabs {
     [key: number]: MethodIndex
 }
+
+export const ActivationMode = {
+    Off: 'off',
+    On: 'on',
+    'Time (6 to 6)': 'time',
+    'System Theme': 'system-theme',
+} as const;
+
+export type ActivationModeType = typeof ActivationMode[keyof (typeof ActivationMode)];
+
 export interface AddonOptions {
-    enabled: boolean,
-    night_enabled: boolean,
+    activation: ActivationModeType,
     global_toggle_hotkey: string,
     tab_toggle_hotkey: string,
     default_method: MethodIndex,
@@ -34,12 +43,12 @@ export interface AddonOptions {
     do_not_set_overrideDocumentColors_to_never: boolean,
     configured_pages: ConfiguredPages,
 }
-export type PrefsType = string|number|boolean|ConfiguredPages
+export type PrefsType = string | number | boolean | ConfiguredPages
 interface Preference {
-    type: 'bool'|'menulist'|'color'|'configured_pages',
+    type: 'bool' | 'menulist' | 'color' | 'configured_pages',
     name: string,
     value: PrefsType,
-    options?: Array<{label: string, value: string}>,
+    options?: Array<{ label: string, value: string }>,
     title: string,
 }
 export interface BoolPreference extends Preference {
@@ -52,8 +61,8 @@ export interface BoolPreference extends Preference {
 export interface MenuListPreference extends Preference {
     type: 'menulist',
     name: string,
-    value: number,
-    options: Array<{label: string, value: string}>,
+    value: string,
+    options: Array<{ label: string, value: string }>,
     title: string,
 }
 export interface ColorPreference extends Preference {
@@ -71,7 +80,7 @@ export interface ConfiguredPagesPreference extends Preference {
     title: string,
 }
 export type Preferences = (
-  BoolPreference|MenuListPreference|ColorPreference|ConfiguredPagesPreference
+    BoolPreference | MenuListPreference | ColorPreference | ConfiguredPagesPreference
 )[];
 
 
@@ -109,10 +118,10 @@ export interface MethodExecutor {
     unload_from_window(): void;
 }
 export interface MethodExecutorStatic {
-    new (window: Window, options: AddonOptions): MethodExecutor;
+    new(window: Window, options: AddonOptions): MethodExecutor;
 }
 export interface MethodMetadataWithExecutors extends MethodMetadataBare {
-    executor: MethodExecutorStatic|null,
+    executor: MethodExecutorStatic | null,
 }
 export type MethodsMetadataBare = {
     [key: string /* MethodIndex */]: MethodMetadataBare

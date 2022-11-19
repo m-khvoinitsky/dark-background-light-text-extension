@@ -8,7 +8,7 @@ import {
 import { methods } from '../methods/methods';
 import { hint_marker } from '../common/generate-urls';
 import { smart_generate_urls } from '../common/smart-generate-urls';
-import type { ConfiguredPages } from '../common/types';
+import { ActivationMode, ConfiguredPages } from '../common/types';
 import '../common/ui-style';
 
 declare const browser: Browser;
@@ -21,7 +21,7 @@ declare const browser: Browser;
     }
     async function generate_urls_with_preselect_from_configured(
         url_str: string,
-    ): Promise<{list: string[], preselect?: string}> {
+    ): Promise<{ list: string[], preselect?: string }> {
         let result_list = smart_generate_urls(url_str, true);
         let preselect: string | undefined;
 
@@ -97,8 +97,7 @@ declare const browser: Browser;
         preselect = CURRENT_TAB_LABEL;
     }
     const isPrivate = current_tab.incognito;
-    const enabled = await get_prefs('enabled');
-    const night_enabled = await get_prefs('night_enabled');
+    const activation = await get_prefs('activation');
     const body = document.querySelector('body')!;
     if ((await browser.runtime.getPlatformInfo()).os === 'android') {
         body.setAttribute('class', 'touchscreen');
@@ -162,28 +161,27 @@ declare const browser: Browser;
         close();
     }
 
-    const enabled_checkbox_label = document.createElement('label');
-    enabled_checkbox_label.setAttribute('class', 'enabled_label');
-    enabled_checkbox_label.textContent = 'Enabled';
-    const enabled_checkbox = document.createElement('input');
-    enabled_checkbox.setAttribute('type', 'checkbox');
-    enabled_checkbox.checked = enabled;
-    enabled_checkbox.onchange = () => { set_pref('enabled', enabled_checkbox.checked).then(() => close()); };
-    enabled_checkbox_label.appendChild(enabled_checkbox);
-    body.appendChild(enabled_checkbox_label);
+    const activation_select_label = document.createElement('label');
+    activation_select_label.setAttribute('class', 'activation_label');
+    activation_select_label.textContent = 'Mode';
+    const activation_select = document.createElement('select');
+    Object.entries(ActivationMode).forEach(([key, value]) => {
+        const mode_option = document.createElement('option');
+        mode_option.value = value;
+        mode_option.text = key;
+        mode_option.selected = value === activation;
+        activation_select.appendChild(mode_option);
+    });
+    activation_select.onchange = (e) => {
+        if (!e.target) { return; }
 
-    const night_checkbox_label = document.createElement('label');
-    night_checkbox_label.setAttribute('class', 'enabled_label');
-    night_checkbox_label.textContent = 'Night time only';
-    const night_checkbox = document.createElement('input');
-    night_checkbox.setAttribute('type', 'checkbox');
-    night_checkbox.checked = night_enabled;
-    if(!enabled) {
-        night_checkbox.disabled = true;
-    }
-    night_checkbox.onchange = () => { set_pref('night_enabled', night_checkbox.checked).then(() => close()); };
-    night_checkbox_label.appendChild(night_checkbox);
-    body.appendChild(night_checkbox_label);
+        const select_target = e.target as HTMLSelectElement;
+        if (!select_target) { return; }
+
+        set_pref('activation', select_target.value).then(() => close());
+    };
+    activation_select_label.appendChild(activation_select);
+    body.appendChild(activation_select_label);
 
     body.appendChild(document.createElement('hr'));
 
@@ -191,7 +189,7 @@ declare const browser: Browser;
     container.setAttribute('class', 'page_settings_container');
     container.style.position = 'relative';
 
-    if (!enabled) {
+    if (activation === ActivationMode.Off) {
         const overlay = document.createElement('div');
         overlay.setAttribute('class', 'disabled_overlay');
         container.appendChild(overlay);

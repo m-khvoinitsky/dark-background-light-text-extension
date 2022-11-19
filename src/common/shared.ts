@@ -8,27 +8,27 @@ import type {
     MenuListPreference,
     ColorPreference,
     ConfiguredPagesPreference,
+    ActivationModeType,
 } from './types';
-import { methods } from '../methods/methods';
+import { ActivationMode } from './types';
+import { methods, STYLESHEET_PROCESSOR_ID } from '../methods/methods';
 
 declare const browser: Browser;
 
 export const preferences: Preferences = [
     {
-        type: 'bool',
-        name: 'enabled',
-        value: true,
-        title: 'Enabled',
-    } as BoolPreference,
-    {
-        type: 'bool',
-        name: 'night_enabled',
-        value: false,
-        title: 'Night time enabled only',
-    } as BoolPreference,
+        title: 'Enable, disable extension or switch off based on time or system theme',
+        value: ActivationMode.On,
+        type: 'menulist',
+        options: Object.entries(ActivationMode).map(([key, value]) => ({
+            label: key,
+            value,
+        })),
+        name: 'activation',
+    } as MenuListPreference,
     {
         title: 'Default method of changing page colors',
-        value: 1,
+        value: STYLESHEET_PROCESSOR_ID,
         type: 'menulist',
         options: Object.keys(methods).filter((key) => (parseInt(key, 10) >= 0)).map((key) => ({
             label: methods[key].label,
@@ -95,9 +95,8 @@ export const prefs_keys_with_defaults = ((): PrefsWithValues => {
     return result;
 })();
 
+export function get_prefs(prefs: 'activation'): Promise<ActivationModeType>;
 export function get_prefs(prefs?: string[]): Promise<PrefsWithValues>;
-export function get_prefs(prefs: 'enabled'): Promise<boolean>;
-export function get_prefs(prefs: 'night_enabled'): Promise<boolean>;
 export function get_prefs(prefs: 'configured_pages'): Promise<ConfiguredPages>;
 export function get_prefs(prefs: 'default_method'): Promise<MethodIndex>;
 export function get_prefs(prefs: 'do_not_set_overrideDocumentColors_to_never'): Promise<boolean>;
@@ -130,7 +129,8 @@ export function set_pref(pref: string, value: PrefsType): Promise<void> {
     }
 }
 
-export function on_prefs_change(callback: (changes: {[s: string]: Storage.StorageChange}) => void) {
+export function on_prefs_change(callback:
+    (changes: { [s: string]: Storage.StorageChange }) => void) {
     browser.storage.onChanged.addListener((changes, areaName) => {
         if (areaName !== 'local') {
             throw new Error('unsupported');
