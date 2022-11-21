@@ -43,15 +43,6 @@ async function get_method_for_url(url: string): Promise<MethodMetadataWithExecut
         return methods[0];
     }
 
-    if (window.prefs.activation === ActivationMode['Time (6 to 6)']) {
-        const now = new Date();
-        // this disables dark mode between 6:00 and 17:59:59.
-        // FIXME: make this range configurable or even derive it from sunrise and sunset data.
-        if (now.getHours() >= 6 && now.getHours() < 18) {
-            return methods[0];
-        }
-    }
-
     if (window.prefs.activation === ActivationMode['System Theme']) {
         // this disables dark mode when system is set to light theme
         if (window.matchMedia('(prefers-color-scheme:light)')) {

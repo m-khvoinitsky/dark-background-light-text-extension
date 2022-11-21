@@ -23,7 +23,6 @@ export interface ConfiguredTabs {
 export const ActivationMode = {
     Off: 'off',
     On: 'on',
-    'Time (6 to 6)': 'time',
     'System Theme': 'system-theme',
 } as const;
 
