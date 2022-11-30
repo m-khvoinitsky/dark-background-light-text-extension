@@ -20,16 +20,16 @@ export interface ConfiguredTabs {
     [key: number]: MethodIndex
 }
 
-export const ActivationMode = {
+export const EnablePolicy = {
     Off: 'off',
     On: 'on',
     'System Theme': 'system-theme',
 } as const;
 
-export type ActivationModeType = typeof ActivationMode[keyof (typeof ActivationMode)];
+export type EnablePolicyType = typeof EnablePolicy[keyof (typeof EnablePolicy)];
 
 export interface AddonOptions {
-    activation: ActivationModeType,
+    enable_policy: EnablePolicyType,
     global_toggle_hotkey: string,
     tab_toggle_hotkey: string,
     default_method: MethodIndex,

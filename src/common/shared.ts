@@ -8,9 +8,9 @@ import type {
     MenuListPreference,
     ColorPreference,
     ConfiguredPagesPreference,
-    ActivationModeType,
+    EnablePolicyType,
 } from './types';
-import { ActivationMode } from './types';
+import { EnablePolicy } from './types';
 import { methods, STYLESHEET_PROCESSOR_ID } from '../methods/methods';
 
 declare const browser: Browser;
@@ -18,13 +18,13 @@ declare const browser: Browser;
 export const preferences: Preferences = [
     {
         title: 'Enable, disable extension or switch off based on time or system theme',
-        value: ActivationMode.On,
+        value: EnablePolicy.On,
         type: 'menulist',
-        options: Object.entries(ActivationMode).map(([key, value]) => ({
+        options: Object.entries(EnablePolicy).map(([key, value]) => ({
             label: key,
             value,
         })),
-        name: 'activation',
+        name: 'enable_policy',
     } as MenuListPreference,
     {
         title: 'Default method of changing page colors',
@@ -95,7 +95,7 @@ export const prefs_keys_with_defaults = ((): PrefsWithValues => {
     return result;
 })();
 
-export function get_prefs(prefs: 'activation'): Promise<ActivationModeType>;
+export function get_prefs(prefs: 'enable_policy'): Promise<EnablePolicyType>;
 export function get_prefs(prefs?: string[]): Promise<PrefsWithValues>;
 export function get_prefs(prefs: 'configured_pages'): Promise<ConfiguredPages>;
 export function get_prefs(prefs: 'default_method'): Promise<MethodIndex>;

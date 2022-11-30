@@ -8,7 +8,7 @@ import {
 import { methods } from '../methods/methods';
 import { hint_marker } from '../common/generate-urls';
 import { smart_generate_urls } from '../common/smart-generate-urls';
-import { ActivationMode, ConfiguredPages } from '../common/types';
+import { EnablePolicy, ConfiguredPages } from '../common/types';
 import '../common/ui-style';
 
 declare const browser: Browser;
@@ -97,7 +97,7 @@ declare const browser: Browser;
         preselect = CURRENT_TAB_LABEL;
     }
     const isPrivate = current_tab.incognito;
-    const activation = await get_prefs('activation');
+    const enable_policy = await get_prefs('enable_policy');
     const body = document.querySelector('body')!;
     if ((await browser.runtime.getPlatformInfo()).os === 'android') {
         body.setAttribute('class', 'touchscreen');
@@ -161,27 +161,27 @@ declare const browser: Browser;
         close();
     }
 
-    const activation_select_label = document.createElement('label');
-    activation_select_label.setAttribute('class', 'activation_label');
-    activation_select_label.textContent = 'Mode';
-    const activation_select = document.createElement('select');
-    Object.entries(ActivationMode).forEach(([key, value]) => {
+    const enable_policy_select_label = document.createElement('label');
+    enable_policy_select_label.setAttribute('class', 'enable_policy_label');
+    enable_policy_select_label.textContent = 'Mode';
+    const enable_policy_select = document.createElement('select');
+    Object.entries(EnablePolicy).forEach(([key, value]) => {
         const mode_option = document.createElement('option');
         mode_option.value = value;
         mode_option.text = key;
-        mode_option.selected = value === activation;
-        activation_select.appendChild(mode_option);
+        mode_option.selected = value === enable_policy;
+        enable_policy_select.appendChild(mode_option);
     });
-    activation_select.onchange = (e) => {
+    enable_policy_select.onchange = (e) => {
         if (!e.target) { return; }
 
         const select_target = e.target as HTMLSelectElement;
         if (!select_target) { return; }
 
-        set_pref('activation', select_target.value).then(() => close());
+        set_pref('enable_policy', select_target.value).then(() => close());
     };
-    activation_select_label.appendChild(activation_select);
-    body.appendChild(activation_select_label);
+    enable_policy_select_label.appendChild(enable_policy_select);
+    body.appendChild(enable_policy_select_label);
 
     body.appendChild(document.createElement('hr'));
 
@@ -189,7 +189,7 @@ declare const browser: Browser;
     container.setAttribute('class', 'page_settings_container');
     container.style.position = 'relative';
 
-    if (activation === ActivationMode.Off) {
+    if (enable_policy === EnablePolicy.Off) {
         const overlay = document.createElement('div');
         overlay.setAttribute('class', 'disabled_overlay');
         container.appendChild(overlay);

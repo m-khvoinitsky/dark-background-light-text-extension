@@ -6,7 +6,7 @@ import {
     MethodIndex,
     MethodExecutor,
     MethodMetadataWithExecutors,
-    ActivationMode,
+    EnablePolicy,
 } from '../common/types';
 import { methods } from '../methods/methods-with-executors';
 import { generate_urls } from '../common/generate-urls';
@@ -39,11 +39,11 @@ if (typeof window.content_script_state === 'undefined') { /* #226 part 1 workaro
 }
 
 async function get_method_for_url(url: string): Promise<MethodMetadataWithExecutors> {
-    if (window.prefs.activation === ActivationMode.Off) {
+    if (window.prefs.enable_policy === EnablePolicy.Off) {
         return methods[0];
     }
 
-    if (window.prefs.activation === ActivationMode['System Theme']) {
+    if (window.prefs.enable_policy === EnablePolicy['System Theme']) {
         // this disables dark mode when system is set to light theme
         if (window.matchMedia('(prefers-color-scheme:light)')) {
             return methods[0];
