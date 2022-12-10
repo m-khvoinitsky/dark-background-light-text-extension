@@ -64,7 +64,6 @@ declare const browser: Browser;
     const url = current_tab.url!;
 
     function close() {
-        window.close(); // works for pop-up on desktop
         if (!current_tab.active) { // this is the case for Fennec where pop-up is actually a tab
             // activating any tab other than our fake pop-up will close pop-up
             browser.tabs.update(current_tab.id, { active: true });
