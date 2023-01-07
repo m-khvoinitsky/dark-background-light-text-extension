@@ -1,53 +1,68 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
+  <head lang="en">
+    <meta charset="UTF-8" />
     <title>CORS stylesheets</title>
     <style>
-        body > div {
-            height: 3em;
-            border: 3px red solid;
-            margin: 1px;
-            padding: 3px;
-            background-size: auto 100%;
-            text-shadow: 0px 0px 1px #A0A0FF,
-                         0px 0px 2px #A0A0FF,
-                         0px 0px 3px #A0A0FF,
-                         0px 0px 4px #A0A0FF,
-                         0px 0px 5px #A0A0FF,
-                         0px 0px 6px #A0A0FF,
-                         0px 0px 7px #A0A0FF,
-                         0px 0px 8px #A0A0FF,
-                         0px 0px 9px #A0A0FF,
-                         0px 0px 10px #A0A0FF;
-        }
-        #pure-inline-style {
-            color: #007000;
-            background-color: #A0A0FF;
-            background-image: url("icon.svg");
-        }
+      body > div {
+        height: 3em;
+        border: 3px red solid;
+        margin: 1px;
+        padding: 3px;
+        background-size: auto 100%;
+        text-shadow: 0px 0px 1px #a0a0ff, 0px 0px 2px #a0a0ff,
+          0px 0px 3px #a0a0ff, 0px 0px 4px #a0a0ff, 0px 0px 5px #a0a0ff,
+          0px 0px 6px #a0a0ff, 0px 0px 7px #a0a0ff, 0px 0px 8px #a0a0ff,
+          0px 0px 9px #a0a0ff, 0px 0px 10px #a0a0ff;
+      }
+      #pure-inline-style {
+        color: #007000;
+        background-color: #a0a0ff;
+        background-image: url('icon.svg');
+      }
     </style>
     <style>
-        @import "http://[::1]:8081/imported-from-inline.css" (min-width: 600px);
+      @import 'http://[::1]:8081/imported-from-inline.css' (min-width: 600px);
 
-        #inline-with-import {
-            color: #007000;
-            background-color: #A0A0FF;
-            background-image: url("icon.svg");
-        }
+      #inline-with-import {
+        color: #007000;
+        background-color: #a0a0ff;
+        background-image: url('icon.svg');
+      }
     </style>
-    <link rel="stylesheet" href="http://[::1]:8082/cross-origin-stylesheet.css">
-    <link rel="stylesheet" href="http://[::1]:8081/cross-origin-stylesheet-with-cross-origin-import.css">
-    <link rel="stylesheet" href="/linked-same-origin.css">
-</head>
-<body>
-<div id="pure-inline-style">pure-inline-style (icon: headphones jack)</div>
-<div id="inline-with-import">inline-with-import (icon: headphones jack)</div>
-<div id="imported-from-inline">imported-from-inline (icon: graphic tablet, font: Indie Flower, media: min-width: 600px)</div>
-<div id="linked-same-origin">linked-same-origin (icon: headphones jack)</div>
-<div id="cross-origin-import-from-same-origin-linked">cross-origin-import-from-same-origin-linked (icon: graphic tablet)</div>
-<div id="cross-origin-stylesheet">cross-origin-stylesheet (icon: wired network)</div>
-<div id="cross-origin-stylesheet-with-cross-origin-import">cross-origin-stylesheet-with-cross-origin-import (icon: graphic tablet)</div>
-<div id="imported-from-cross-origin">imported-from-cross-origin (icon: sdcard, media: min-width: 600px)</div>
-</body>
+    <link
+      rel="stylesheet"
+      href="http://[::1]:8082/cross-origin-stylesheet.css"
+    />
+    <link
+      rel="stylesheet"
+      href="http://[::1]:8081/cross-origin-stylesheet-with-cross-origin-import.css"
+    />
+    <link rel="stylesheet" href="/linked-same-origin.css" />
+  </head>
+  <body>
+    <div id="pure-inline-style">pure-inline-style (icon: headphones jack)</div>
+    <div id="inline-with-import">
+      inline-with-import (icon: headphones jack)
+    </div>
+    <div id="imported-from-inline">
+      imported-from-inline (icon: graphic tablet, font: Indie Flower, media:
+      min-width: 600px)
+    </div>
+    <div id="linked-same-origin">
+      linked-same-origin (icon: headphones jack)
+    </div>
+    <div id="cross-origin-import-from-same-origin-linked">
+      cross-origin-import-from-same-origin-linked (icon: graphic tablet)
+    </div>
+    <div id="cross-origin-stylesheet">
+      cross-origin-stylesheet (icon: wired network)
+    </div>
+    <div id="cross-origin-stylesheet-with-cross-origin-import">
+      cross-origin-stylesheet-with-cross-origin-import (icon: graphic tablet)
+    </div>
+    <div id="imported-from-cross-origin">
+      imported-from-cross-origin (icon: sdcard, media: min-width: 600px)
+    </div>
+  </body>
 </html>

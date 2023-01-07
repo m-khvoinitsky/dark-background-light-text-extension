@@ -4,27 +4,23 @@ const { writeFileSync } = require('fs');
 const { relative } = require('path');
 
 class RelativeJsonSummaryReport extends ReportBase {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.data = {};
-    }
+    this.data = {};
+  }
 
-    onDetail(node) {
-        this.data[
-            relative(
-                process.cwd(),
-                node.getFileCoverage().path,
-            )
-        ] = node.getCoverageSummary();
-    }
+  onDetail(node) {
+    this.data[relative(process.cwd(), node.getFileCoverage().path)] =
+      node.getCoverageSummary();
+  }
 
-    onEnd() {
-        writeFileSync(
-            'last-coverage-summary.json',
-            `${JSON.stringify(this.data, null, 4)}\n`,
-            { encoding: 'utf8' },
-        );
-    }
+  onEnd() {
+    writeFileSync(
+      'last-coverage-summary.json',
+      `${JSON.stringify(this.data, null, 2)}\n`,
+      { encoding: 'utf8' },
+    );
+  }
 }
 module.exports = RelativeJsonSummaryReport;

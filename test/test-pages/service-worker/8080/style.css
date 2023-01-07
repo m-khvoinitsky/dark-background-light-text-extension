@@ -1,6 +1,6 @@
 #same-origin .ok {
-    display: initial !important;
+  display: initial !important;
 }
 #same-origin .fail {
-    display: none !important;
+  display: none !important;
 }

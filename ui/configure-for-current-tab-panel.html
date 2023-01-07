@@ -1,143 +1,129 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Dark bg & Light text settings</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta content="" />
     <link rel="icon" type="image/png" href="../icons/icon64.png" />
     <link rel="stylesheet" href="internal.css" />
     <style>
-        html, body
-        {
-            width: 100%;
-            overflow-x: hidden;
-            box-sizing: border-box; /* on Fennec it's content-box by default */
-            margin: 0px;
-        }
+      html,
+      body {
+        width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box; /* on Fennec it's content-box by default */
+        margin: 0px;
+      }
 
-        html {
-            padding: 10px;
-        }
+      html {
+        padding: 10px;
+      }
 
-        hr
-        {
-            margin: 0;
-        }
+      hr {
+        margin: 0;
+      }
 
-        select
-        {
-            max-width: 100%;
-            padding: 0.1em 1em 0.1em 0.1em;
-            margin: 1px;
-        }
-        button
-        {
-            max-width: 100%;
-            display: inline-block;
-            padding: 0.1em;
-            margin: 1px;
-        }
-        @media (max-width: 543px) {
-            button, select {
-                width: calc(100% - 2px);
-            }
-        }
-
-        select,
+      select {
+        max-width: 100%;
+        padding: 0.1em 1em 0.1em 0.1em;
+        margin: 1px;
+      }
+      button {
+        max-width: 100%;
+        display: inline-block;
+        padding: 0.1em;
+        margin: 1px;
+      }
+      @media (max-width: 543px) {
         button,
-        .options_for,
-        .enabled_label,
-        .error_msg
-        {
-            font-size: 1.2em;
+        select {
+          width: calc(100% - 2px);
         }
+      }
 
-        .enabled_label
-        {
-            box-sizing: border-box;
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
-        .touchscreen .enabled_label
-        {
-            padding-left: 0.75em;
-            padding-right: 0.75em;
-        }
+      select,
+      button,
+      .options_for,
+      .enabled_label,
+      .error_msg {
+        font-size: 1.2em;
+      }
 
-        .page_settings_container
-        {
-            position: relative;
-        }
+      .enabled_label {
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .touchscreen .enabled_label {
+        padding-left: 0.75em;
+        padding-right: 0.75em;
+      }
 
-        .disabled_overlay
-        {
-            background-color: rgba(255, 255, 255, 0.5);
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 9999;
-        }
+      .page_settings_container {
+        position: relative;
+      }
 
-        li *
-        {
-            display: inline-block;
-            position: relative;
-        }
+      .disabled_overlay {
+        background-color: rgba(255, 255, 255, 0.5);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+      }
 
-        li
-        {
-            position: relative;
-        }
+      li * {
+        display: inline-block;
+        position: relative;
+      }
 
-        li .label_click_workaround
-        {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
+      li {
+        position: relative;
+      }
 
-        li .label_no_click
-        {
-            pointer-events: none;
-        }
+      li .label_click_workaround {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
 
-        ul
-        {
-            padding: 0;
-            list-style-type: none;
-        }
+      li .label_no_click {
+        pointer-events: none;
+      }
 
-        .touchscreen li > input,
-        .touchscreen li > span
-        {
-            margin-left: 0.5em;
-        }
+      ul {
+        padding: 0;
+        list-style-type: none;
+      }
 
-        .touchscreen li,
-        .touchscreen .enabled_label
-        {
-            line-height: 250%;
-            border-style: solid;
-            border-width: 1px;
-            border-color: white;
-            border-radius: 0.6em;
-            margin-bottom: 3pt;
-        }
+      .touchscreen li > input,
+      .touchscreen li > span {
+        margin-left: 0.5em;
+      }
+
+      .touchscreen li,
+      .touchscreen .enabled_label {
+        line-height: 250%;
+        border-style: solid;
+        border-width: 1px;
+        border-color: white;
+        border-radius: 0.6em;
+        margin-bottom: 3pt;
+      }
     </style>
     <!--<script type="text/javascript">-->
-        <!--//WETODO: fix this-->
-        <!--window.setTimeout(function(){-->
-            <!--var placeholder = document.getElementById('loading-or-error-placeholder');-->
-            <!--if (placeholder) {-->
-                <!--placeholder.textContent = 'Error. You should not see this';-->
-            <!--}-->
-        <!--}, 3000);-->
+    <!--//WETODO: fix this-->
+    <!--window.setTimeout(function(){-->
+    <!--var placeholder = document.getElementById('loading-or-error-placeholder');-->
+    <!--if (placeholder) {-->
+    <!--placeholder.textContent = 'Error. You should not see this';-->
+    <!--}-->
+    <!--}, 3000);-->
     <!--</script>-->
     <script src="../browser-action.js"></script>
-</head>
-<body>
-<h2 id="loading-or-error-placeholder">Loading...</h2>
-</body>
+  </head>
+  <body>
+    <h2 id="loading-or-error-placeholder">Loading...</h2>
+  </body>
 </html>
