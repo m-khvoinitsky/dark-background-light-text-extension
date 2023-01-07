@@ -23,10 +23,14 @@ repos:
         types: [text]
         args: []
         require_serial: false
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.0.0-beta.0
-    hooks:
       - id: eslint
+        name: eslint
+        entry: npx eslint
+        language: system
+        pass_filenames: true
+        types_or: [ts, javascript]
+        args: []
+        require_serial: false
   - repo: local
     hooks:
       - id: tests

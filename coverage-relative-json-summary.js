@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 const { ReportBase } = require('istanbul-lib-report');
 const { writeFileSync } = require('fs');
 const { relative } = require('path');

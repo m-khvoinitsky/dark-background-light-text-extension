@@ -5,7 +5,7 @@ module.exports = {
     node: true,
     webextensions: true,
   },
-  extends: ['airbnb-base'],
+  extends: ['eslint:recommended', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
@@ -20,75 +20,7 @@ module.exports = {
   rules: {
     // most overrides are based on airbnb rule with some change
     camelcase: ['off'],
-    curly: ['error', 'all'],
-    'import/extensions': [
-      'error',
-      'ignorePackages',
-      {
-        js: 'never',
-        jsx: 'never',
-        mjs: 'never',
-        ts: 'never',
-      },
-    ],
-    'import/no-extraneous-dependencies': [
-      'error',
-      {
-        devDependencies: true,
-        optionalDependencies: false,
-      },
-    ],
     'import/prefer-default-export': ['off'],
-    indent: [
-      'error',
-      4,
-      {
-        ArrayExpression: 1,
-        CallExpression: {
-          arguments: 1,
-        },
-        FunctionDeclaration: {
-          body: 1,
-          parameters: 1,
-        },
-        FunctionExpression: {
-          body: 1,
-          parameters: 1,
-        },
-        ImportDeclaration: 1,
-        ObjectExpression: 1,
-        SwitchCase: 1,
-        VariableDeclarator: 1,
-        flatTernaryExpressions: false,
-        ignoreComments: false,
-        ignoredNodes: [
-          'JSXElement',
-          'JSXElement > *',
-          'JSXAttribute',
-          'JSXIdentifier',
-          'JSXNamespacedName',
-          'JSXMemberExpression',
-          'JSXSpreadAttribute',
-          'JSXExpressionContainer',
-          'JSXOpeningElement',
-          'JSXClosingElement',
-          'JSXFragment',
-          'JSXOpeningFragment',
-          'JSXClosingFragment',
-          'JSXText',
-          'JSXEmptyExpression',
-          'JSXSpreadChild',
-        ],
-        outerIIFEBody: 1,
-      },
-    ],
-    'lines-between-class-members': [
-      'error',
-      'always',
-      {
-        exceptAfterSingleLine: true,
-      },
-    ],
     'no-console': [
       'error',
       {
