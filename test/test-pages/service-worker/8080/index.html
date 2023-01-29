@@ -1,36 +1,44 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
+  <head lang="en">
+    <meta charset="UTF-8" />
     <title>Service worker</title>
-    <style>
-    </style>
+    <style></style>
     <style>
       #inline .ok {
-          display: initial !important;
+        display: initial !important;
       }
       #inline .fail {
-          display: none !important;
+        display: none !important;
       }
     </style>
-    <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="//127.0.0.1:8081/style.css">
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="//127.0.0.1:8081/style.css" />
     <script src="index.js"></script>
-</head>
-<body>
-  <table>
-    <tr id="inline">
-      <th>inline</th>
-      <td><span class="ok" style="display:none">✓</span><span class="fail">✗</span></td>
-    </tr>
-    <tr id="same-origin">
-      <th>same-origin</th>
-      <td><span class="ok" style="display:none">✓</span><span class="fail">✗</span></td>
-    </tr>
-    <tr id="cross-origin">
-      <th>cross-origin</th>
-      <td><span class="ok" style="display:none">✓</span><span class="fail">✗</span></td>
-    </tr>
-  </table>
-</body>
+  </head>
+  <body>
+    <table>
+      <tr id="inline">
+        <th>inline</th>
+        <td>
+          <span class="ok" style="display: none">✓</span
+          ><span class="fail">✗</span>
+        </td>
+      </tr>
+      <tr id="same-origin">
+        <th>same-origin</th>
+        <td>
+          <span class="ok" style="display: none">✓</span
+          ><span class="fail">✗</span>
+        </td>
+      </tr>
+      <tr id="cross-origin">
+        <th>cross-origin</th>
+        <td>
+          <span class="ok" style="display: none">✓</span
+          ><span class="fail">✗</span>
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>

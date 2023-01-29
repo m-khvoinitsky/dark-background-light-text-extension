@@ -1,39 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Inline style test</title>
     <style>
-        [style*="color: #005000;"] {
-            border: 5px red solid;
-        }
-        /*[style*="background-color: #FFA0A0;"] {
+      [style*='color: #005000;'] {
+        border: 5px red solid;
+      }
+      /*[style*="background-color: #FFA0A0;"] {
             box-shadow: 10px 10px green;
         }*/
-        [style="color: rgb(175, 255, 175); background-color: rgb(95, 0, 0); background-image: url(\"https://addons.cdn.mozilla.net/static/img/icons/firefox.png\"), url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmElEQVQY03XQXWoCQRAE4M8fNO+CQfzBI+QKPoQcWXKLBLyBiIIXcBekfemFdRwLhqKL6pqZEhEqZ1fTh16xwkfyE2rmNSbJTxgnT3varMd9vRlExHchwgj3QmsGEQE/+aSJOm747czwhUWx0OKMf0T/g6c3qVdE2cYyU++Z2Oa8qVX3mYYL9nl9i3lZXbd4xCHnPzTYdoYHwrRCbdd8fYkAAAAASUVORK5CYII=\"); text-shadow: 0px 0px 1px rgb(0, 0, 0), 0px 0px 2px rgb(0, 0, 0), 0px 0px 3px rgb(0, 0, 0), 0px 0px 4px rgb(0, 0, 0), 0px 0px 5px rgb(0, 0, 0) !important;"] {
-            box-shadow: 10px 10px #FFFF00;
-        }
+      [style="color: rgb(175, 255, 175); background-color: rgb(95, 0, 0); background-image: url(\"https://addons.cdn.mozilla.net/static/img/icons/firefox.png\"), url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmElEQVQY03XQXWoCQRAE4M8fNO+CQfzBI+QKPoQcWXKLBLyBiIIXcBekfemFdRwLhqKL6pqZEhEqZ1fTh16xwkfyE2rmNSbJTxgnT3varMd9vRlExHchwgj3QmsGEQE/+aSJOm747czwhUWx0OKMf0T/g6c3qVdE2cYyU++Z2Oa8qVX3mYYL9nl9i3lZXbd4xCHnPzTYdoYHwrRCbdd8fYkAAAAASUVORK5CYII=\"); text-shadow: 0px 0px 1px rgb(0, 0, 0), 0px 0px 2px rgb(0, 0, 0), 0px 0px 3px rgb(0, 0, 0), 0px 0px 4px rgb(0, 0, 0), 0px 0px 5px rgb(0, 0, 0) !important;"]
+      {
+        box-shadow: 10px 10px #ffff00;
+      }
     </style>
-</head>
-<body>
-<button id="recreate">recreate element</button>
-<button id="refill_style">refill style</button>
-<div id="container"></div>
-<script type="text/html" id="template">
-<div id="test1" style="color: #005000; background-color: #FFA0A0; background-image: url(&quot;https://addons.cdn.mozilla.net/static/img/icons/firefox.png&quot;), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmElEQVQY03XQXWoCQRAE4M8fNO+CQfzBI+QKPoQcWXKLBLyBiIIXcBekfemFdRwLhqKL6pqZEhEqZ1fTh16xwkfyE2rmNSbJTxgnT3varMd9vRlExHchwgj3QmsGEQE/+aSJOm747czwhUWx0OKMf0T/g6c3qVdE2cYyU++Z2Oa8qVX3mYYL9nl9i3lZXbd4xCHnPzTYdoYHwrRCbdd8fYkAAAAASUVORK5CYII=')">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-</div>
-</script>
-<script type="application/javascript">
-    document.querySelector('#recreate').addEventListener('click', () => {
+  </head>
+  <body>
+    <button id="recreate">recreate element</button>
+    <button id="refill_style">refill style</button>
+    <div id="container"></div>
+    <script type="text/html" id="template">
+      <div
+        id="test1"
+        style="color: #005000; background-color: #FFA0A0; background-image: url(&quot;https://addons.cdn.mozilla.net/static/img/icons/firefox.png&quot;), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmElEQVQY03XQXWoCQRAE4M8fNO+CQfzBI+QKPoQcWXKLBLyBiIIXcBekfemFdRwLhqKL6pqZEhEqZ1fTh16xwkfyE2rmNSbJTxgnT3varMd9vRlExHchwgj3QmsGEQE/+aSJOm747czwhUWx0OKMf0T/g6c3qVdE2cYyU++Z2Oa8qVX3mYYL9nl9i3lZXbd4xCHnPzTYdoYHwrRCbdd8fYkAAAAASUVORK5CYII=')"
+      >
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+        mollit anim id est laborum.
+      </div>
+    </script>
+    <script type="application/javascript">
+      document.querySelector('#recreate').addEventListener('click', () => {
         let container = document.querySelector('#container');
         container.innerHTML = document.querySelector('#template').innerHTML;
-    });
-    document.querySelector('#refill_style').addEventListener('click', () => {
+      });
+      document.querySelector('#refill_style').addEventListener('click', () => {
         console.log(document.querySelector('#test1').getAttribute('style'));
-        document.querySelector('#test1').setAttribute('style', 'color: #005000; background-color: #FFA0A0;');
+        document
+          .querySelector('#test1')
+          .setAttribute('style', 'color: #005000; background-color: #FFA0A0;');
         console.log(document.querySelector('#test1').getAttribute('style'));
-    });
-</script>
-</body>
+      });
+    </script>
+  </body>
 </html>

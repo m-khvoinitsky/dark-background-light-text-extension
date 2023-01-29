@@ -4,10 +4,10 @@ import type { Browser } from 'webextension-polyfill';
 declare const browser: Browser;
 
 const app = new App({
-    target: document.body,
-    props: {
-        browser: browser,
-    },
+  target: document.body,
+  props: {
+    browser: browser,
+  },
 });
 
 export default app;

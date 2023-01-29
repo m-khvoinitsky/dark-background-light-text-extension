@@ -1,81 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Invert test</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-        button {
-            position: fixed;
-            z-index: 999999;
-        }
-        html, body {
-            background-color: black;
-        }
-        .samples {
-            background-color: white;
-            display: inline-block;
-            width: 100%;
-        }
-        .is_filtered #css_filtered,
-        .is_filtered #css_filtered img:not(.no_filter) {
-            filter: invert(1) hue-rotate(180deg) !important;
-        }
-        .is_filtered #svg_filtered,
-        .is_filtered #svg_filtered img:not(.no_filter) {
-            filter: url(#myfilter);
-        }
-        img {
-            width: 24%;
-        }
-        img.single_color {
-            width: 15%;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      button {
+        position: fixed;
+        z-index: 999999;
+      }
+      html,
+      body {
+        background-color: black;
+      }
+      .samples {
+        background-color: white;
+        display: inline-block;
+        width: 100%;
+      }
+      .is_filtered #css_filtered,
+      .is_filtered #css_filtered img:not(.no_filter) {
+        filter: invert(1) hue-rotate(180deg) !important;
+      }
+      .is_filtered #svg_filtered,
+      .is_filtered #svg_filtered img:not(.no_filter) {
+        filter: url(#myfilter);
+      }
+      img {
+        width: 24%;
+      }
+      img.single_color {
+        width: 15%;
+      }
     </style>
-</head>
-<body>
-<button>Toggle filter</button>
-<div id="original" class="samples">
-    <div style="background: white; color: black"> test black text</div>
-    <div style="background: white; color: red"> test red text</div>
-    <img src="gradient.png">
-    <img src="gradient.png" class="no_filter">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Colouring_pencils.jpg">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Colouring_pencils.jpg" class="no_filter">
+  </head>
+  <body>
+    <button>Toggle filter</button>
+    <div id="original" class="samples">
+      <div style="background: white; color: black">test black text</div>
+      <div style="background: white; color: red">test red text</div>
+      <img src="gradient.png" />
+      <img src="gradient.png" class="no_filter" />
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Colouring_pencils.jpg"
+      />
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Colouring_pencils.jpg"
+        class="no_filter"
+      />
 
-    <img src="R.png" class="single_color">
-    <img src="G.png" class="single_color">
-    <img src="B.png" class="single_color">
-    <img src="C.png" class="single_color">
-    <img src="M.png" class="single_color">
-    <img src="Y.png" class="single_color">
-    <img src="R.png" class="single_color no_filter">
-    <img src="G.png" class="single_color no_filter">
-    <img src="B.png" class="single_color no_filter">
-    <img src="C.png" class="single_color no_filter">
-    <img src="M.png" class="single_color no_filter">
-    <img src="Y.png" class="single_color no_filter">
-</div>
-<svg height="0">
-  <filter id="myfilter">
-    <feColorMatrix values=" 1 -1 -1  0  1
+      <img src="R.png" class="single_color" />
+      <img src="G.png" class="single_color" />
+      <img src="B.png" class="single_color" />
+      <img src="C.png" class="single_color" />
+      <img src="M.png" class="single_color" />
+      <img src="Y.png" class="single_color" />
+      <img src="R.png" class="single_color no_filter" />
+      <img src="G.png" class="single_color no_filter" />
+      <img src="B.png" class="single_color no_filter" />
+      <img src="C.png" class="single_color no_filter" />
+      <img src="M.png" class="single_color no_filter" />
+      <img src="Y.png" class="single_color no_filter" />
+    </div>
+    <svg height="0">
+      <filter id="myfilter">
+        <feColorMatrix
+          values=" 1 -1 -1  0  1
                            -1  1 -1  0  1
                            -1 -1  1  0  1
-                            0  0  0  1  0" style="color-interpolation-filters:sRGB"/>
-  </filter>
-</svg>
-<script type="application/javascript">
-    let orig = document.querySelector('#original');
-    let css_filtered = orig.cloneNode(true);
-    css_filtered.setAttribute('id', 'css_filtered');
-    document.querySelector('body').appendChild(css_filtered);
-    let svg_filtered = orig.cloneNode(true);
-    svg_filtered.setAttribute('id', 'svg_filtered');
-    document.querySelector('body').appendChild(svg_filtered);
-    document.querySelector('button').addEventListener('click', () => document.body.classList.toggle('is_filtered'));
-</script>
-</body>
+                            0  0  0  1  0"
+          style="color-interpolation-filters: sRGB"
+        />
+      </filter>
+    </svg>
+    <script type="application/javascript">
+      let orig = document.querySelector('#original');
+      let css_filtered = orig.cloneNode(true);
+      css_filtered.setAttribute('id', 'css_filtered');
+      document.querySelector('body').appendChild(css_filtered);
+      let svg_filtered = orig.cloneNode(true);
+      svg_filtered.setAttribute('id', 'svg_filtered');
+      document.querySelector('body').appendChild(svg_filtered);
+      document
+        .querySelector('button')
+        .addEventListener('click', () =>
+          document.body.classList.toggle('is_filtered'),
+        );
+    </script>
+  </body>
 </html>

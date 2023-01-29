@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>test bg-repeat</title>
-    <meta content="">
+    <meta content="" />
     <style>
-        html, body, #bg-test {
-            width: 95%;
-            height: 95%;
-            background-color: #000000;
-        }
-        #bg-test {
-            background-color: #004000;
-            border: red solid;
-            background-image: url(https://addons.cdn.mozilla.net/static/img/app-icons/med/firefox.png),
-            url("https://addons.cdn.mozilla.net/static/img/app-icons/med/seamonkey.png"),
-            none,
-            url('https://www.mozilla.org/thunderbird/img/tb5/title.png');
-            background-repeat: repeat-y, repeat-x;
-        }
+      html,
+      body,
+      #bg-test {
+        width: 95%;
+        height: 95%;
+        background-color: #000000;
+      }
+      #bg-test {
+        background-color: #004000;
+        border: red solid;
+        background-image: url(https://addons.cdn.mozilla.net/static/img/app-icons/med/firefox.png),
+          url('https://addons.cdn.mozilla.net/static/img/app-icons/med/seamonkey.png'),
+          none, url('https://www.mozilla.org/thunderbird/img/tb5/title.png');
+        background-repeat: repeat-y, repeat-x;
+      }
     </style>
-</head>
-<body>
-<div id="bg-test"></div>
-</body>
+  </head>
+  <body>
+    <div id="bg-test"></div>
+  </body>
 </html>

@@ -1,6 +1,6 @@
 #cross-origin .ok {
-    display: initial !important;
+  display: initial !important;
 }
 #cross-origin .fail {
-    display: none !important;
+  display: none !important;
 }
