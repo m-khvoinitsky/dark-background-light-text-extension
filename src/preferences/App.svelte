@@ -101,7 +101,7 @@
       </div>
       <a
         href="https://support.mozilla.org/kb/manage-extension-shortcuts-firefox"
-        >See this support article for the detais</a
+        >See this support article for the details</a
       >
     {/if}
   {/await}
