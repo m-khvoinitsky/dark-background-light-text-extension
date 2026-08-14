@@ -27,7 +27,12 @@ export default (args) => {
     typescript({
       sourceMap: args.watch === true,
     }),
-    node_resolve(),
+    // without the browser condition svelte's exports map resolves to its
+    // server build, whose mount() throws lifecycle_function_unavailable
+    node_resolve({
+      browser: true,
+      exportConditions: ['browser'],
+    }),
     commonjs(),
   ];
   const dest_dir = process.env.ADDON_DIST_DIR ?? 'dist';
@@ -87,10 +92,21 @@ export default (args) => {
       },
     },
     {
-      input: 'src/browser-action/index.ts',
-      plugins: [...common_plugins],
+      input: 'src/browser-action/main.ts',
+      plugins: [
+        svelte({
+          preprocess: autoPreprocess({ sourceMap: true }),
+          compilerOptions: {
+            // enable run-time checks when not in production
+            dev: args.watch === true,
+          },
+        }),
+        css({ output: 'browser-action.css' }),
+        ...common_plugins,
+      ],
       output: {
         file: `${dest_dir}/browser-action.js`,
+        name: 'app',
         ...output_opts,
       },
     },
