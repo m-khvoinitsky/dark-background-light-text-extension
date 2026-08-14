@@ -1,7 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 import node_resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import copy from 'rollup-plugin-copy';
+import { cp, mkdir } from 'node:fs/promises';
 import clear from 'rollup-plugin-clear';
 import terser from '@rollup/plugin-terser';
 
@@ -9,8 +9,20 @@ import svelte from 'rollup-plugin-svelte';
 import css from 'rollup-plugin-css-only';
 import autoPreprocess from 'svelte-preprocess';
 
+function copy_static(dest_dir) {
+  return {
+    name: 'copy-static',
+    async writeBundle() {
+      await mkdir(dest_dir, { recursive: true });
+      await cp('manifest.json', `${dest_dir}/manifest.json`);
+      await cp('icons', `${dest_dir}/icons`, { recursive: true });
+      await cp('ui', `${dest_dir}/ui`, { recursive: true });
+    },
+  };
+}
+
 export default (args) => {
-  let output_opts = {};
+  let output_opts;
   const common_plugins = [
     typescript({
       sourceMap: args.watch === true,
@@ -39,13 +51,7 @@ export default (args) => {
         clear({
           targets: [dest_dir],
         }),
-        copy({
-          targets: [
-            { src: 'manifest.json', dest: dest_dir },
-            { src: 'icons/*', dest: `${dest_dir}/icons/` },
-            { src: 'ui/*', dest: `${dest_dir}/ui/` },
-          ],
-        }),
+        copy_static(dest_dir),
         ...common_plugins,
       ],
       output: {
