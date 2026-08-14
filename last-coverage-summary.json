@@ -53,8 +53,8 @@
   },
   "src/common/smart-generate-urls.ts": {
     "lines": {
-      "total": 18,
-      "covered": 18,
+      "total": 24,
+      "covered": 24,
       "skipped": 0,
       "pct": 100
     },
@@ -65,16 +65,16 @@
       "pct": 100
     },
     "statements": {
-      "total": 18,
-      "covered": 18,
+      "total": 24,
+      "covered": 24,
       "skipped": 0,
       "pct": 100
     },
     "branches": {
-      "total": 12,
+      "total": 13,
       "covered": 10,
       "skipped": 0,
-      "pct": 83.33
+      "pct": 76.92
     }
   },
   "src/methods/methods-with-stylesheets.ts": {

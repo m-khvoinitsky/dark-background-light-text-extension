@@ -34,6 +34,7 @@
     "svelte": "^5.56.9",
     "svelte-check": "^4.7.6",
     "svelte-preprocess": "^6.0.5",
+    "tldts": "^7.4.10",
     "tslib": "^2.8.1",
     "tsx": "^4.23.12",
     "typescript": "^5.9.3",
@@ -41,7 +42,6 @@
   },
   "dependencies": {
     "await-lock": "^3.0.0",
-    "csscolorparser-ts": "^1.1.1",
-    "tldts": "^7.4.10"
+    "csscolorparser-ts": "^1.1.1"
   }
 }

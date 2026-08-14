@@ -6,9 +6,10 @@
   "icons": {
     "48": "icons/icon48.png"
   },
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
-      "id": "jid1-QoFqdK4qzUfGWQ@jetpack"
+      "id": "jid1-QoFqdK4qzUfGWQ@jetpack",
+      "strict_min_version": "153.0"
     }
   },
   "content_scripts": [
@@ -59,6 +60,7 @@
     "tabs",
     "storage",
     "browserSettings",
+    "publicSuffix",
     "webRequest",
     "webRequestBlocking"
   ]

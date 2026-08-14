@@ -5,6 +5,23 @@ import {
   hint_marker,
   is_IPv4,
 } from '../src/common/generate-urls';
+import { parse as tldts_parse } from 'tldts';
+
+// Firefox supplies browser.publicSuffix; under mocha it is backed by tldts so
+// the URL generation is still exercised against a real public suffix list
+(globalThis as unknown as Record<string, unknown>).browser = {
+  publicSuffix: {
+    getDomain: (hostname: string): string | null =>
+      tldts_parse(hostname, {
+        detectIp: false,
+        extractHostname: false,
+        // firefox's list includes the private section, so blogspot.com and
+        // github.io are suffixes rather than registrable domains
+        allowPrivateDomains: true,
+      }).domain,
+  },
+};
+
 import { smart_generate_urls } from '../src/common/smart-generate-urls';
 
 const DUMB_DOMAIN_DETECTION = '__DUMB__';
@@ -259,6 +276,22 @@ const test_urls = {
   //     `${DUMB_DOMAIN_DETECTION}xn--j1aef.xn--p1acf`,
   //     `${DUMB_DOMAIN_DETECTION}xn--p1acf`,
   // ],
+  'https://someblog.blogspot.com/2024/post': [
+    'someblog.blogspot.com/2024/post',
+    'someblog.blogspot.com/2024',
+    hint_marker,
+    'someblog.blogspot.com',
+    `${DUMB_DOMAIN_DETECTION}blogspot.com`,
+    `${DUMB_DOMAIN_DETECTION}com`,
+  ],
+  'https://user.github.io/project/page': [
+    'user.github.io/project/page',
+    'user.github.io/project',
+    hint_marker,
+    'user.github.io',
+    `${DUMB_DOMAIN_DETECTION}github.io`,
+    `${DUMB_DOMAIN_DETECTION}io`,
+  ],
 };
 
 const really_bad_urls = ['asdf'];
