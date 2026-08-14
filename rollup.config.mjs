@@ -73,26 +73,12 @@ export default (args) => {
       },
     },
     {
-      input: 'src/preferences/main.ts',
-      plugins: [
-        svelte({
-          preprocess: autoPreprocess({ sourceMap: true }),
-          compilerOptions: {
-            // enable run-time checks when not in production
-            dev: args.watch === true,
-          },
-        }),
-        css({ output: 'preferences.css' }),
-        ...common_plugins,
-      ],
-      output: {
-        file: `${dest_dir}/preferences.js`,
-        name: 'app',
-        ...output_opts,
+      // both UI pages in one build so rollup can hoist the svelte runtime
+      // they share into a single chunk instead of emitting it twice
+      input: {
+        preferences: 'src/preferences/main.ts',
+        'browser-action': 'src/browser-action/main.ts',
       },
-    },
-    {
-      input: 'src/browser-action/main.ts',
       plugins: [
         svelte({
           preprocess: autoPreprocess({ sourceMap: true }),
@@ -101,13 +87,18 @@ export default (args) => {
             dev: args.watch === true,
           },
         }),
-        css({ output: 'browser-action.css' }),
+        css({ output: 'ui.css' }),
         ...common_plugins,
       ],
       output: {
-        file: `${dest_dir}/browser-action.js`,
-        name: 'app',
-        ...output_opts,
+        dir: dest_dir,
+        // code splitting needs a module format; extension pages load these
+        // with <script type="module">, unlike the content script
+        format: 'es',
+        entryFileNames: '[name].js',
+        chunkFileNames: 'shared-[hash].js',
+        plugins: output_opts.plugins,
+        sourcemap: output_opts.sourcemap,
       },
     },
   ];
