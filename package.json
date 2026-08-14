@@ -1,6 +1,7 @@
 {
   "scripts": {
     "build": "rollup -c",
+    "dev": "rm -f ./dist_marker; concurrently --kill-others --teardown 'rm -f ./dist_marker' 'rollup -c --watch --watch.onEnd \"touch ./dist_marker\"' 'while ! test -f ./dist_marker; do sleep 1; done; cd ./dist; web-ext run'",
     "test": "c8 --reporter='../../coverage-relative-json-summary' --reporter=html --reporter=text mocha"
   },
   "devDependencies": {
