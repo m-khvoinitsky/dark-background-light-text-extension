@@ -9,6 +9,18 @@ import svelte from 'rollup-plugin-svelte';
 import css from 'rollup-plugin-css-only';
 import autoPreprocess from 'svelte-preprocess';
 
+function onwarn(warning, warn) {
+  // svelte's runtime is built out of deliberate cycles; there is nothing to
+  // fix on our side, and letting them through would defeat --failAfterWarnings
+  if (
+    warning.code === 'CIRCULAR_DEPENDENCY'
+    && (warning.ids ?? []).every((id) => id.includes('node_modules'))
+  ) {
+    return;
+  }
+  warn(warning);
+}
+
 function copy_static(dest_dir) {
   return {
     name: 'copy-static',
@@ -63,6 +75,7 @@ export default (args) => {
         file: `${dest_dir}/content.js`,
         ...output_opts,
       },
+      onwarn,
     },
     {
       input: 'src/background/index.ts',
@@ -71,6 +84,7 @@ export default (args) => {
         file: `${dest_dir}/background.js`,
         ...output_opts,
       },
+      onwarn,
     },
     {
       // both UI pages in one build so rollup can hoist the svelte runtime
@@ -100,6 +114,7 @@ export default (args) => {
         plugins: output_opts.plugins,
         sourcemap: output_opts.sourcemap,
       },
+      onwarn,
     },
   ];
 };
