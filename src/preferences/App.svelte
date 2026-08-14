@@ -96,8 +96,8 @@
       <div class="row"><div class="col-xs-12"><h2>Shortcuts</h2></div></div>
       <div>
         In order to configure shortcuts, go to about:addons (Menu -&gt;
-        Add-ons), press on the cogwheel icon, then choose "Manage Extension
-        Shortcuts"
+        Extensions and Themes), press on the cogwheel icon, then choose "Manage
+        Extension Shortcuts"
       </div>
       <a
         href="https://support.mozilla.org/kb/manage-extension-shortcuts-firefox"
