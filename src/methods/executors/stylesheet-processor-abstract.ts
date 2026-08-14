@@ -457,13 +457,16 @@ export abstract class StylesheetProcessorAbstract {
       case 1: // CSSRule.STYLE_RULE
         this.process_CSSStyleRule(CSSRule_v as CSSStyleRule, base_url);
         break;
-      case 3: // CSSRule.IMPORT_RULE
+      case 3: {
+        // CSSRule.IMPORT_RULE
         // this.process_CSSImportRule(CSSRule_v);
-        this.process_CSSStyleSheet(
-          (CSSRule_v as CSSImportRule).styleSheet,
-          base_url,
-        );
+        // null when the imported sheet failed to load or is still pending
+        const imported = (CSSRule_v as CSSImportRule).styleSheet;
+        if (imported) {
+          this.process_CSSStyleSheet(imported, base_url);
+        }
         break;
+      }
       case 4: // CSSRule.MEDIA_RULE
         this.process_CSSGroupingRule(CSSRule_v as CSSMediaRule, base_url);
         break;

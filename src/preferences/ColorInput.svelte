@@ -165,8 +165,7 @@
   let class_: string | undefined;
   export { class_ as class };
   export let value: string;
-  let default_: string;
-  export { default_ as default };
+  export let default_value: string;
 
   let common_value = writable('');
 
@@ -233,7 +232,7 @@
       if (parsed) {
         new_value = to_hex_color(parsed);
       } else {
-        new_value = default_;
+        new_value = default_value;
         text_value = new_value;
         shake_it = true;
       }

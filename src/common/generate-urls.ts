@@ -85,8 +85,8 @@ export function generate_urls(
       url_obj.host
         ? `${is_http ? '' : protocol_real}${url_obj.host}/`
         : protocol_real.endsWith('//')
-        ? `${protocol_real}/`
-        : protocol_real;
+          ? `${protocol_real}/`
+          : protocol_real;
     for (let i = pathname_parts.length - 1; i >= 0; i--) {
       result_list.push(
         `${prepend_protocol_and_or_host}${pathname_parts

@@ -84,8 +84,7 @@ async function get_method_for_url(
 
 let current_method: MethodMetadataWithExecutors;
 let resolve_current_method_promise:
-  | ((mmd: MethodMetadataWithExecutors) => void)
-  | null;
+  ((mmd: MethodMetadataWithExecutors) => void) | null;
 let current_method_promise: Promise<MethodMetadataWithExecutors> = new Promise(
   (resolve: (mmd: MethodMetadataWithExecutors) => void) => {
     resolve_current_method_promise = resolve;

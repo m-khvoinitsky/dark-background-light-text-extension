@@ -1,6 +1,9 @@
 import { strict as assert } from 'assert';
 import { describe } from 'mocha';
-import { lint, LintResult } from 'stylelint';
+import stylelint from 'stylelint';
+import type { LintResult } from 'stylelint';
+
+const { lint } = stylelint;
 import type { RenderOptions } from '../src/common/types';
 import { methods } from '../src/methods/methods-with-stylesheets';
 
@@ -86,11 +89,12 @@ describe('Test if valid CSS are rendered', () => {
                 'document', // obsolete
               ],
               'rule-empty-line-before': null,
-              indentation: 2,
+              // longhands are intentional: an unsupported shorthand would be
+              // dropped wholesale, silently breaking the rule it belongs to
+              'declaration-block-no-redundant-longhand-properties': null,
               // forbid comments in rendered stylesheet
               'comment-pattern': '(?!)',
               'selector-not-notation': 'simple',
-              'no-empty-first-line': null,
               'selector-class-pattern': null,
               'selector-id-pattern': null,
               'selector-no-vendor-prefix': null,

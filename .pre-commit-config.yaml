@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -8,7 +8,7 @@ repos:
       - id: check-json
       - id: check-added-large-files
   - repo: https://github.com/jumanjihouse/pre-commit-hooks.git
-    rev: 2.1.5
+    rev: 3.0.0
     hooks:
       - id: shellcheck
         args: ['--shell=bash', '--color=always', '--external-sources']

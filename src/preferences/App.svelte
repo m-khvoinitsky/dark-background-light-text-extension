@@ -75,7 +75,7 @@
         {:else if pref.type === 'color'}
           <ColorInput
             value={pref.value}
-            default={pref.value}
+            default_value={pref.value}
             on:change={(e) => set_pref(pref.name, e.detail.value)}
             class="col-xs-12 col-sm-8 col-md-6"
           />
