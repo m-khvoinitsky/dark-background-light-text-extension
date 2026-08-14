@@ -9,19 +9,19 @@ import type {
   Tabs,
   Browser,
 } from 'webextension-polyfill';
-import {
+import type {
   ConfiguredPages,
   ConfiguredTabs,
   StylesheetRenderer,
-  CallbackID,
 } from '../common/types';
+import { MessageAction, is_message } from '../common/types';
 import {
   get_prefs,
   set_pref,
   on_prefs_change,
   get_merged_configured_common,
-  PrefsWithValues,
 } from '../common/shared';
+import type { PrefsWithValues } from '../common/shared';
 import { methods } from '../methods/methods-with-stylesheets';
 import { relative_luminance, strip_alpha } from '../common/color_utils';
 import { modify_cors, modify_csp, version_lt } from './lib';
@@ -88,100 +88,107 @@ function process_stylesheet(
   });
 }
 
-browser.runtime.onMessage.addListener(async (message, sender) => {
-  try {
-    // TODO: statically typed runtime.onMessage
-    if (!Object.prototype.hasOwnProperty.call(message, 'action')) {
-      console.error('bad message!', message);
-      return;
-    }
-    switch (message.action) {
-      case 'query_tabId':
-        return sender.tab?.id;
-      case CallbackID.INSERT_CSS:
-        return await browser.tabs.insertCSS(sender.tab?.id, {
-          code: message.code,
-          frameId: sender.frameId,
-          cssOrigin: 'user',
-          runAt: 'document_start',
-        });
-      case CallbackID.REMOVE_CSS:
-        return await browser.tabs.removeCSS(sender.tab?.id, {
-          code: message.code,
-          frameId: sender.frameId,
-          cssOrigin: 'user',
-          runAt: 'document_start',
-        });
-      case 'query_base_style':
-        return process_stylesheet(base_style, true, await get_prefs());
-      case 'get_configured_private':
-        return configured_private;
-      case 'set_configured_private':
-        if (message.value === null) {
-          delete configured_private[message.key];
-        } else {
-          configured_private[message.key] = message.value;
-        }
-        send_prefs({});
-        break;
-      // @ts-ignore: 7029
-      case 'get_my_tab_configuration':
-        message.tab_id = sender.tab?.id; // eslint-disable-line no-param-reassign
-      // falls through
-      case 'get_tab_configuration':
-        if (
-          Object.prototype.hasOwnProperty.call(configured_tabs, message.tab_id)
-        ) {
-          return configured_tabs[message.tab_id];
-        }
-        return false;
-      case 'set_configured_tab':
-        if (message.value === null) {
-          if (
-            Object.prototype.hasOwnProperty.call(configured_tabs, message.key)
-          ) {
-            delete configured_tabs[message.key];
+browser.runtime.onMessage.addListener(
+  async (message: unknown, sender: Runtime.MessageSender): Promise<unknown> => {
+    try {
+      if (!is_message(message)) {
+        console.error('bad message!', message);
+        return;
+      }
+      switch (message.action) {
+        case MessageAction.QUERY_TAB_ID:
+          return sender.tab?.id;
+        case MessageAction.INSERT_CSS:
+          return await browser.tabs.insertCSS(sender.tab?.id, {
+            code: message.code,
+            frameId: sender.frameId,
+            cssOrigin: 'user',
+            runAt: 'document_start',
+          });
+        case MessageAction.REMOVE_CSS:
+          return await browser.tabs.removeCSS(sender.tab?.id, {
+            code: message.code,
+            frameId: sender.frameId,
+            cssOrigin: 'user',
+            runAt: 'document_start',
+          });
+        case MessageAction.QUERY_BASE_STYLE:
+          return process_stylesheet(base_style, true, await get_prefs());
+        case MessageAction.GET_CONFIGURED_PRIVATE:
+          return configured_private;
+        case MessageAction.SET_CONFIGURED_PRIVATE:
+          if (message.value === null) {
+            delete configured_private[message.key];
+          } else {
+            configured_private[message.key] = message.value;
           }
-        } else {
-          configured_tabs[message.key] = message.value;
+          send_prefs({});
+          break;
+        case MessageAction.GET_MY_TAB_CONFIGURATION:
+        case MessageAction.GET_TAB_CONFIGURATION: {
+          const tab_id =
+            message.action === MessageAction.GET_MY_TAB_CONFIGURATION
+              ? sender.tab?.id
+              : message.tab_id;
+          if (
+            tab_id !== undefined
+            && Object.prototype.hasOwnProperty.call(configured_tabs, tab_id)
+          ) {
+            return configured_tabs[tab_id];
+          }
+          return false;
         }
-        send_prefs({});
-        break;
-      case 'open_options_page':
-        // while runtime.openOptionsPage() works from browserAction page script,
-        // due to bug 1414917 it behaves unintuitive on Fennec so here is a workaround
-        if ((await platform_info).os === 'android') {
-          setTimeout(() => browser.runtime.openOptionsPage(), 500);
-        } else {
-          browser.runtime.openOptionsPage();
-        }
-        break;
-      case 'is_commands_update_available':
-        return (
-          Object.prototype.hasOwnProperty.call(browser, 'commands')
-          && Object.prototype.hasOwnProperty.call(browser.commands, 'update')
-        );
-      case 'query_parent_method_number':
-        if (sender.frameId === 0) {
-          console.error(
-            'Top-level frame requested some info about its parent. That should not happen. The sender is:',
-            sender,
+        case MessageAction.SET_CONFIGURED_TAB:
+          if (message.value === null) {
+            if (
+              Object.prototype.hasOwnProperty.call(configured_tabs, message.key)
+            ) {
+              delete configured_tabs[message.key];
+            }
+          } else {
+            configured_tabs[message.key] = message.value;
+          }
+          send_prefs({});
+          break;
+        case MessageAction.OPEN_OPTIONS_PAGE:
+          // while runtime.openOptionsPage() works from browserAction page script,
+          // due to bug 1414917 it behaves unintuitive on Fennec so here is a workaround
+          if ((await platform_info).os === 'android') {
+            setTimeout(() => browser.runtime.openOptionsPage(), 500);
+          } else {
+            browser.runtime.openOptionsPage();
+          }
+          break;
+        case MessageAction.IS_COMMANDS_UPDATE_AVAILABLE:
+          return (
+            Object.prototype.hasOwnProperty.call(browser, 'commands')
+            && Object.prototype.hasOwnProperty.call(browser.commands, 'update')
           );
-          return await get_prefs('default_method');
-        }
-        return await browser.tabs.sendMessage(
-          sender.tab!.id!,
-          { action: 'get_method_number' },
-          { frameId: 0 },
-        );
-      default:
-        console.error('bad message 2!', message);
-        break;
+        case MessageAction.QUERY_PARENT_METHOD_NUMBER:
+          if (sender.frameId === 0) {
+            console.error(
+              'Top-level frame requested some info about its parent. That should not happen. The sender is:',
+              sender,
+            );
+            return await get_prefs('default_method');
+          }
+          return await browser.tabs.sendMessage(
+            sender.tab!.id!,
+            { action: MessageAction.GET_METHOD_NUMBER },
+            { frameId: 0 },
+          );
+        default:
+          console.error('bad message 2!', message);
+          break;
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
     }
-  } catch (e) {
-    console.error(e);
-  }
-});
+    // actions handled with `break` above answer with no value
+    return undefined;
+  },
+);
 
 const prev_scripts: ContentScripts.RegisteredContentScript[] = [];
 async function send_prefs(changes: { [s: string]: Storage.StorageChange }) {

@@ -256,7 +256,7 @@
   {#if local_i === 0}
     <datalist id="css-colors">
       {#each css_keywords as kw}
-        <option value={kw} />{/each}
+        <option value={kw}></option>{/each}
     </datalist>
   {/if}
 </div>

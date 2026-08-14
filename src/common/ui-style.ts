@@ -1,10 +1,9 @@
-import type { Browser } from 'webextension-polyfill';
-
-declare const browser: Browser;
+import { MessageAction } from './types';
+import { send_message } from './shared';
 
 export async function query_style() {
-  const css_promise = await browser.runtime.sendMessage({
-    action: 'query_base_style',
+  const css_promise = await send_message({
+    action: MessageAction.QUERY_BASE_STYLE,
   });
 
   let ext_style = document.getElementById('base-extension-style');

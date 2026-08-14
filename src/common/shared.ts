@@ -8,6 +8,8 @@ import type {
   MenuListPreference,
   ColorPreference,
   ConfiguredPagesPreference,
+  Message,
+  MessageResponse,
 } from './types';
 import { methods } from '../methods/methods';
 
@@ -119,8 +121,14 @@ export async function get_prefs(
   } else {
     throw new Error('get_prefs parameter has unsupported type');
   }
-  const ret_data = await browser.storage.local.get(query);
+  const ret_data = (await browser.storage.local.get(query)) as PrefsWithValues;
   return is_single ? ret_data[prefs as string] : ret_data;
+}
+
+export function send_message<M extends Message>(
+  message: M,
+): Promise<MessageResponse<M>> {
+  return browser.runtime.sendMessage(message) as Promise<MessageResponse<M>>;
 }
 
 export function set_pref(pref: string, value: PrefsType): Promise<void> {
@@ -151,7 +159,9 @@ export function on_prefs_change(
 export async function get_merged_configured_common(
   get_configured_private: () => Promise<ConfiguredPages>,
 ): Promise<ConfiguredPages> {
-  const local_storage_p = browser.storage.local.get({ configured_pages: {} });
+  const local_storage_p = browser.storage.local.get({
+    configured_pages: {},
+  }) as Promise<{ configured_pages: ConfiguredPages }>;
   return {
     ...(await local_storage_p).configured_pages,
     ...(await get_configured_private()),

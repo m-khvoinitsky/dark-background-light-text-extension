@@ -1,6 +1,7 @@
 import type { Browser } from 'webextension-polyfill';
 import AwaitLock from 'await-lock';
-import { CallbackID } from '../../common/types';
+import { MessageAction } from '../../common/types';
+import { send_message } from '../../common/shared';
 
 declare const browser: Browser;
 declare const { exportFunction }: typeof import('../../types/exportFunction');
@@ -146,8 +147,8 @@ export abstract class StylesheetProcessorAbstract {
         }
       }
       if (this.prev_inline_override_stylesheet) {
-        browser.runtime.sendMessage({
-          action: CallbackID.REMOVE_CSS,
+        send_message({
+          action: MessageAction.REMOVE_CSS,
           code: this.prev_inline_override_stylesheet,
         });
         this.prev_inline_override_stylesheet = undefined;
@@ -489,13 +490,13 @@ export abstract class StylesheetProcessorAbstract {
     await this.inline_override_lock.acquireAsync();
     try {
       const css = this.inline_overrides_style.join('\n');
-      await browser.runtime.sendMessage({
-        action: CallbackID.INSERT_CSS,
+      await send_message({
+        action: MessageAction.INSERT_CSS,
         code: css,
       });
       if (this.prev_inline_override_stylesheet) {
-        await browser.runtime.sendMessage({
-          action: CallbackID.REMOVE_CSS,
+        await send_message({
+          action: MessageAction.REMOVE_CSS,
           code: this.prev_inline_override_stylesheet,
         });
       }

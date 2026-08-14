@@ -7,12 +7,14 @@ import type {
   MethodExecutor,
   MethodMetadataWithExecutors,
 } from '../common/types';
+import { MessageAction, is_message } from '../common/types';
+import { send_message } from '../common/shared';
 import { methods } from '../methods/methods-with-executors';
 import { generate_urls } from '../common/generate-urls';
 
 declare const browser: Browser;
 
-const tabId_promise = browser.runtime.sendMessage({ action: 'query_tabId' });
+const tabId_promise = send_message({ action: MessageAction.QUERY_TAB_ID });
 let is_iframe: boolean;
 try {
   is_iframe = window.self !== window.top;
@@ -46,8 +48,8 @@ async function get_method_for_url(
 ): Promise<MethodMetadataWithExecutors> {
   if (window.prefs.enabled) {
     if (is_iframe) {
-      const parent_method_number = await browser.runtime.sendMessage({
-        action: 'query_parent_method_number',
+      const parent_method_number = await send_message({
+        action: MessageAction.QUERY_PARENT_METHOD_NUMBER,
       });
       if (methods[parent_method_number].affects_iframes) {
         return methods[0];
@@ -56,15 +58,14 @@ async function get_method_for_url(
       }
     }
     // TODO: get rid of await here, https://bugzilla.mozilla.org/show_bug.cgi?id=1574713
-    let tab_configuration: MethodIndex | boolean = false;
+    let tab_configuration: MethodIndex | false = false;
     if (Object.keys(window.configured_tabs).length > 0) {
       const tabId = await tabId_promise;
-      tab_configuration = Object.prototype.hasOwnProperty.call(
-        window.configured_tabs,
-        tabId,
-      )
-        ? window.configured_tabs[tabId]
-        : false;
+      tab_configuration =
+        tabId !== undefined
+        && Object.prototype.hasOwnProperty.call(window.configured_tabs, tabId)
+          ? window.configured_tabs[tabId]
+          : false;
     }
     if (tab_configuration !== false) {
       return methods[tab_configuration];
@@ -144,19 +145,15 @@ window.do_it = async function do_it(changes: {
   }
 };
 
-interface GetMethodNumberMsg {
-  action: 'get_method_number';
-}
 browser.runtime.onMessage.addListener(
-  async (message: GetMethodNumberMsg, _sender) => {
+  async (message: unknown): Promise<unknown> => {
     try {
-      // TODO: statically typed runtime.onMessage
-      if (!message.action) {
+      if (!is_message(message)) {
         console.error('bad message!', message);
         return;
       }
       switch (message.action) {
-        case 'get_method_number':
+        case MessageAction.GET_METHOD_NUMBER:
           return (await current_method_promise).number;
         default:
           console.error('bad message 2!', message);

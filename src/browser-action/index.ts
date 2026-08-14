@@ -3,11 +3,13 @@ import {
   get_merged_configured_common,
   get_prefs,
   set_pref,
+  send_message,
 } from '../common/shared';
 import { methods } from '../methods/methods';
 import { hint_marker } from '../common/generate-urls';
 import { smart_generate_urls } from '../common/smart-generate-urls';
 import type { ConfiguredPages } from '../common/types';
+import { MessageAction } from '../common/types';
 import '../common/ui-style';
 
 declare const browser: Browser;
@@ -15,7 +17,7 @@ declare const browser: Browser;
 (async () => {
   function get_merged_configured(): Promise<ConfiguredPages> {
     return get_merged_configured_common(() =>
-      browser.runtime.sendMessage({ action: 'get_configured_private' }),
+      send_message({ action: MessageAction.GET_CONFIGURED_PRIVATE }),
     );
   }
   async function generate_urls_with_preselect_from_configured(
@@ -95,9 +97,9 @@ declare const browser: Browser;
 
   let { preselect, list: urls } =
     await generate_urls_with_preselect_from_configured(url);
-  const current_url_method = await browser.runtime.sendMessage({
-    action: 'get_tab_configuration',
-    tab_id: current_tab.id,
+  const current_url_method = await send_message({
+    action: MessageAction.GET_TAB_CONFIGURATION,
+    tab_id: current_tab.id!,
   });
   if (current_url_method) {
     preselect = CURRENT_TAB_LABEL;
@@ -118,9 +120,9 @@ declare const browser: Browser;
       .value;
     let current_url_method;
     if (url === CURRENT_TAB_LABEL) {
-      current_url_method = await browser.runtime.sendMessage({
-        action: 'get_tab_configuration',
-        tab_id: current_tab.id,
+      current_url_method = await send_message({
+        action: MessageAction.GET_TAB_CONFIGURATION,
+        tab_id: current_tab.id!,
       });
     } else {
       current_url_method =
@@ -156,14 +158,14 @@ declare const browser: Browser;
     ).value;
 
     if (url === CURRENT_TAB_LABEL) {
-      browser.runtime.sendMessage({
-        action: 'set_configured_tab',
-        key: current_tab.id,
+      send_message({
+        action: MessageAction.SET_CONFIGURED_TAB,
+        key: current_tab.id!,
         value: method_n >= 0 ? method_n : null,
       });
     } else if (isPrivate) {
-      browser.runtime.sendMessage({
-        action: 'set_configured_private',
+      send_message({
+        action: MessageAction.SET_CONFIGURED_PRIVATE,
         key: url,
         value: method_n >= 0 ? method_n : null,
       });
@@ -275,8 +277,8 @@ declare const browser: Browser;
   prefs_button.setAttribute('icon', 'properties');
   prefs_button.textContent = 'Global Preferences';
   prefs_button.onclick = () => {
-    /* see bug 1414917 */ browser.runtime.sendMessage({
-      action: 'open_options_page',
+    /* see bug 1414917 */ send_message({
+      action: MessageAction.OPEN_OPTIONS_PAGE,
     });
     close();
   };

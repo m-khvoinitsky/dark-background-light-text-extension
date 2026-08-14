@@ -130,9 +130,74 @@ export interface DefaultColors {
   default_dark_color: RGBA;
 }
 
-// eslint bug?
-// eslint-disable-next-line no-shadow
-export const enum CallbackID {
+/**
+ * One numbering space for both directions, so a misrouted message can never
+ * be mistaken for a valid one at the other end.
+ */
+export const enum MessageAction {
+  QUERY_TAB_ID,
   INSERT_CSS,
   REMOVE_CSS,
+  QUERY_BASE_STYLE,
+  GET_CONFIGURED_PRIVATE,
+  SET_CONFIGURED_PRIVATE,
+  GET_MY_TAB_CONFIGURATION,
+  GET_TAB_CONFIGURATION,
+  SET_CONFIGURED_TAB,
+  OPEN_OPTIONS_PAGE,
+  IS_COMMANDS_UPDATE_AVAILABLE,
+  QUERY_PARENT_METHOD_NUMBER,
+  GET_METHOD_NUMBER,
+}
+
+/** Messages the background script accepts over runtime.sendMessage. */
+export type Message =
+  | { action: MessageAction.QUERY_TAB_ID }
+  | { action: MessageAction.INSERT_CSS; code: string }
+  | { action: MessageAction.REMOVE_CSS; code: string }
+  | { action: MessageAction.QUERY_BASE_STYLE }
+  | { action: MessageAction.GET_CONFIGURED_PRIVATE }
+  | {
+      action: MessageAction.SET_CONFIGURED_PRIVATE;
+      key: string;
+      value: MethodIndex | null;
+    }
+  | { action: MessageAction.GET_MY_TAB_CONFIGURATION }
+  | { action: MessageAction.GET_TAB_CONFIGURATION; tab_id: number }
+  | {
+      action: MessageAction.SET_CONFIGURED_TAB;
+      key: number;
+      value: MethodIndex | null;
+    }
+  | { action: MessageAction.OPEN_OPTIONS_PAGE }
+  | { action: MessageAction.IS_COMMANDS_UPDATE_AVAILABLE }
+  | { action: MessageAction.QUERY_PARENT_METHOD_NUMBER };
+
+/** Messages a content script accepts over tabs.sendMessage. */
+export type ContentMessage = { action: MessageAction.GET_METHOD_NUMBER };
+
+/** What each message is answered with. */
+export interface MessageResponses {
+  [MessageAction.QUERY_TAB_ID]: number | undefined;
+  [MessageAction.INSERT_CSS]: void;
+  [MessageAction.REMOVE_CSS]: void;
+  [MessageAction.QUERY_BASE_STYLE]: string;
+  [MessageAction.GET_CONFIGURED_PRIVATE]: ConfiguredPages;
+  [MessageAction.SET_CONFIGURED_PRIVATE]: void;
+  [MessageAction.GET_MY_TAB_CONFIGURATION]: MethodIndex | false;
+  [MessageAction.GET_TAB_CONFIGURATION]: MethodIndex | false;
+  [MessageAction.SET_CONFIGURED_TAB]: void;
+  [MessageAction.OPEN_OPTIONS_PAGE]: void;
+  [MessageAction.IS_COMMANDS_UPDATE_AVAILABLE]: boolean;
+  [MessageAction.QUERY_PARENT_METHOD_NUMBER]: MethodIndex;
+  [MessageAction.GET_METHOD_NUMBER]: MethodIndex;
+}
+
+export type MessageResponse<M extends Message | ContentMessage> =
+  MessageResponses[M['action']];
+
+export function is_message(
+  message: unknown,
+): message is Message | ContentMessage {
+  return typeof message === 'object' && message !== null && 'action' in message;
 }
