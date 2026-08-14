@@ -28,7 +28,7 @@ repos:
         entry: npx eslint
         language: system
         pass_filenames: true
-        types_or: [ts, javascript]
+        types_or: [ts, javascript, svelte]
         args: []
         require_serial: false
   - repo: local

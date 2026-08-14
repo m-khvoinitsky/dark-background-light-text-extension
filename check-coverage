@@ -23,7 +23,7 @@ try {
     ['show', `${prev_coverage_ref}:${coverage_file}`],
     { encoding: 'utf8' },
   );
-} catch (e) {
+} catch {
   console.log('Previous coverage is not found');
   prev_coverage_text = '{}';
 }

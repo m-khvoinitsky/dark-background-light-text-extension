@@ -78,7 +78,6 @@ export abstract class StylesheetProcessorAbstract {
       const shadow_roots = this.shadow_roots;
       const attachShadowReal = Element.prototype.attachShadow;
 
-      // eslint-disable-next-line no-inner-declarations
       function attachShadow(this: Element, init: ShadowRootInit) {
         const root = attachShadowReal.call(this, init);
         shadow_roots.push(new WeakRef(root));
@@ -257,7 +256,7 @@ export abstract class StylesheetProcessorAbstract {
         ownerRule.parentStyleSheet ?? stylesheet.parentStyleSheet!,
       ); // #169
     }
-    // eslint-disable-next-line no-useless-return
+
     return;
   }
 
@@ -399,17 +398,15 @@ export abstract class StylesheetProcessorAbstract {
 
     if (!base_url) {
       if (sheet.href && !sheet.href.startsWith('data:')) {
-        // eslint-disable-next-line no-param-reassign
         base_url = new URL(sheet.href, document.documentURI).href;
       } else {
-        // eslint-disable-next-line no-param-reassign
         base_url = document.documentURI;
       }
     }
     try {
       if (sheet.cssRules === null) {
         // access to .cssRules will throw in Firefox
-        // eslint-disable-next-line no-throw-literal
+
         throw { name: 'SecurityError' }; // for chrome
       }
     } catch (e) {
@@ -452,7 +449,7 @@ export abstract class StylesheetProcessorAbstract {
     if (this.stop) {
       return;
     }
-    // eslint-disable-next-line default-case
+
     switch (CSSRule_v.type) {
       case 1: // CSSRule.STYLE_RULE
         this.process_CSSStyleRule(CSSRule_v as CSSStyleRule, base_url);

@@ -6,7 +6,6 @@ serve({
   port: 8080,
   // eslint-disable-next-line no-unused-vars
   mutateHeaders({ headers, request }) {
-    // eslint-disable-next-line no-param-reassign
     headers['Content-Security-Policy'] = "default-src 'self'";
     return headers;
   },

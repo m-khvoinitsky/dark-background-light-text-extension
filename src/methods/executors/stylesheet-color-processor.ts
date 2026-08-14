@@ -159,7 +159,7 @@ export class StylesheetColorProcessor
     `${var_name}${this.var_name_postfix}fg`;
   readonly rename_var_bg = (var_name: string) =>
     `${var_name}${this.var_name_postfix}bg`;
-  // eslint-disable-next-line max-len
+
   readonly use_webkit_text_stroke = false; // window.CSS.supports('-webkit-text-stroke', '1px red');
   constructor(window: Window, options: AddonOptions) {
     super(window, '[style*="color"], [style*="background"]');
@@ -404,7 +404,6 @@ export class StylesheetColorProcessor
   }
 
   process_bg_part(bg_part: string, selector: string, base_url: string): string {
-    // eslint-disable-next-line no-param-reassign
     bg_part = bg_part.trim();
     if (StylesheetColorProcessor.is_css_var(bg_part)) {
       return StylesheetColorProcessor.process_css_var_usage(
@@ -460,7 +459,6 @@ export class StylesheetColorProcessor
     is_foreground: boolean,
     no_ret_if_fail: boolean,
   ): string | undefined {
-    // eslint-disable-next-line no-param-reassign
     color = color.trim();
     const rgb_color_array = parseCSSColor(color);
     if (rgb_color_array) {

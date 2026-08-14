@@ -104,7 +104,7 @@ export function get_prefs(prefs: string): Promise<PrefsType>;
 export async function get_prefs(
   prefs?: string | string[],
 ): Promise<PrefsType | PrefsWithValues> {
-  let query: PrefsWithValues = {};
+  let query: PrefsWithValues;
   let is_single = false;
   if (Array.isArray(prefs)) {
     query = {};
@@ -141,7 +141,6 @@ export function on_prefs_change(
     for (const pref of Object.keys(changes)) {
       // if option has been removed, it means that it's value has been set to default
       if (!Object.prototype.hasOwnProperty.call(changes[pref], 'newValue')) {
-        // eslint-disable-next-line no-param-reassign
         changes[pref].newValue = prefs_keys_with_defaults[pref];
       }
     }

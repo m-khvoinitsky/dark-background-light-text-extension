@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 import type { Browser } from 'webextension-polyfill';
 import {
   get_merged_configured_common,
@@ -93,7 +92,7 @@ declare const browser: Browser;
   }
 
   const configured = await get_merged_configured();
-  // eslint-disable-next-line prefer-const
+
   let { preselect, list: urls } =
     await generate_urls_with_preselect_from_configured(url);
   const current_url_method = await browser.runtime.sendMessage({

@@ -134,7 +134,6 @@ window.do_it = async function do_it(changes: {
         current_method_executor = undefined;
       }
       if (new_method.executor) {
-        // eslint-disable-next-line new-cap
         current_method_executor = new new_method.executor(window, window.prefs);
         current_method_executor.load_into_window();
       }

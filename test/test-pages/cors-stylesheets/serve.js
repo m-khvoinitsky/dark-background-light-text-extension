@@ -9,7 +9,6 @@ ports.forEach((port) =>
     port,
     mutateHeaders({ headers, request }) {
       if (request.url.endsWith('.woff2')) {
-        // eslint-disable-next-line no-param-reassign
         headers['Access-Control-Allow-Origin'] = '*';
       }
       return headers;

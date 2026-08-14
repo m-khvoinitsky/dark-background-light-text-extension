@@ -3,7 +3,6 @@ const max_bg_L = [50, 25, 30, 25, 60, 45];
 const min_fg_L = [80, 40, 45, 40, 85, 75];
 
 export function get_acceptable_range(H: number): [number, number] {
-  // eslint-disable-next-line no-param-reassign
   H %= 360; // cycle it
   const n = Math.floor(H / 60);
   const dark_start = max_bg_L[n % 6];
