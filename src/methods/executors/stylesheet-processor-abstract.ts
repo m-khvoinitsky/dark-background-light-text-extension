@@ -451,26 +451,31 @@ export abstract class StylesheetProcessorAbstract {
       return;
     }
 
-    switch (CSSRule_v.type) {
-      case 1: // CSSRule.STYLE_RULE
-        this.process_CSSStyleRule(CSSRule_v as CSSStyleRule, base_url);
-        break;
-      case 3: {
-        // CSSRule.IMPORT_RULE
-        // this.process_CSSImportRule(CSSRule_v);
-        // null when the imported sheet failed to load or is still pending
-        const imported = (CSSRule_v as CSSImportRule).styleSheet;
-        if (imported) {
-          this.process_CSSStyleSheet(imported, base_url);
-        }
-        break;
+    // CSSRule.type is frozen: everything standardised after it was defined
+    // reports 0, which is every modern grouping at-rule — @layer, @container,
+    // @scope, @starting-style. Dispatching on what a rule *has* instead picks
+    // those up, and keeps working for whatever gets added next.
+    if (CSSRule_v.type === 7 /* CSSRule.KEYFRAMES_RULE */) {
+      // its children are keyframes rather than style rules; left alone as before
+      return;
+    }
+
+    const imported = (CSSRule_v as CSSImportRule).styleSheet;
+    if (imported !== undefined) {
+      // null when the imported sheet failed to load or is still pending
+      if (imported) {
+        this.process_CSSStyleSheet(imported, base_url);
       }
-      case 4: // CSSRule.MEDIA_RULE
-        this.process_CSSGroupingRule(CSSRule_v as CSSMediaRule, base_url);
-        break;
-      case 12: // CSSRule.SUPPORTS_RULE
-        this.process_CSSGroupingRule(CSSRule_v as CSSSupportsRule, base_url);
-        break;
+      return;
+    }
+
+    // a style rule carries declarations, and since css nesting also carries
+    // child rules, so both branches below can apply to the same rule
+    if (typeof (CSSRule_v as CSSStyleRule).selectorText === 'string') {
+      this.process_CSSStyleRule(CSSRule_v as CSSStyleRule, base_url);
+    }
+    if ((CSSRule_v as CSSGroupingRule).cssRules) {
+      this.process_CSSGroupingRule(CSSRule_v as CSSGroupingRule, base_url);
     }
   }
 
