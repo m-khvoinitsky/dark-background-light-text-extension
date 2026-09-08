@@ -42,6 +42,6 @@
   },
   "dependencies": {
     "await-lock": "^3.0.0",
-    "csscolorparser-ts": "^1.1.1"
+    "csscolorparser-ts": "^1.2.0"
   }
 }
