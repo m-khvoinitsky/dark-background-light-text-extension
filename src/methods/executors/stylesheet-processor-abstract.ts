@@ -201,8 +201,17 @@ export abstract class StylesheetProcessorAbstract {
       for (const sheet of shadow.styleSheets) {
         this.process_CSSStyleSheet(sheet);
       }
+      // Constructed stylesheets are not in styleSheets. Web component libraries
+      // put component styles here rather than in a <style>, so without this a
+      // component's own rules, :host included, are never seen.
+      for (const sheet of shadow.adoptedStyleSheets) {
+        this.process_CSSStyleSheet(sheet);
+      }
     }
     for (const sheet of this.window.document.styleSheets) {
+      this.process_CSSStyleSheet(sheet);
+    }
+    for (const sheet of this.window.document.adoptedStyleSheets) {
       this.process_CSSStyleSheet(sheet);
     }
     if (!this.all_initial_sheets_have_been_processed) {
