@@ -157,16 +157,39 @@
         color: rgb(1, 39, 106);
       }
 
-      /* ---- known gaps: the parser cannot resolve these and nothing unwraps
-              them yet, so they are expected to stay light ---- */
+      /* ---- functions the add-on unwraps itself; the parser cannot ---- */
       #light-dark {
         background-color: light-dark(rgb(217, 79, 31), rgb(80, 20, 5));
         color: light-dark(rgb(255, 235, 140), rgb(120, 90, 10));
+      }
+      /* the shape design systems actually emit: light-dark() whose arguments
+         are var() with fallbacks, so the commas are nested two deep */
+      #light-dark-vars {
+        background-color: light-dark(
+          var(--surface-lightest, rgb(217, 79, 31)),
+          var(--surface-darkest, rgb(80, 20, 5))
+        );
+        color: light-dark(
+          var(--text-lightest, rgb(255, 235, 140)),
+          var(--text-darkest, rgb(120, 90, 10))
+        );
       }
       #color-mix {
         background-color: color-mix(in oklch, rgb(217, 79, 31) 85%, blue);
         color: color-mix(in oklch, rgb(255, 235, 140) 85%, blue);
       }
+      #color-mix-hard {
+        /* hue interpolation keywords, a percentage, and a nested colour
+           containing commas, all of which must survive unwrapping */
+        background-color: color-mix(
+          in oklch longer hue,
+          rgb(217, 79, 31) 85%,
+          blue
+        );
+        color: color-mix(in hsl shorter hue, rgb(255, 235, 140) 85%, blue);
+      }
+
+      /* ---- known gaps ---- */
       #relative-color {
         background-color: rgb(from rgb(217, 79, 31) r g b);
         color: rgb(from rgb(255, 235, 140) r g b);
@@ -245,9 +268,21 @@
       natively, while the twin is the sRGB approximation the parser produces.
     </p>
 
-    <h2>Known gaps — expected to stay light</h2>
-    <div class="box" id="light-dark"><code>light-dark()</code></div>
+    <h2>Functions unwrapped by the add-on</h2>
+    <div class="box" id="light-dark">
+      <code>light-dark()</code> — both branches are recoloured, so it does not
+      matter which one the browser picks
+    </div>
+    <div class="box" id="light-dark-vars">
+      <code>light-dark(var(--x, …), var(--y, …))</code> — nested commas, the
+      shape design systems emit
+    </div>
     <div class="box" id="color-mix"><code>color-mix()</code></div>
+    <div class="box" id="color-mix-hard">
+      <code>color-mix(in oklch longer hue, rgb(…) 85%, blue)</code>
+    </div>
+
+    <h2>Known gaps — expected to stay light</h2>
     <div class="box" id="relative-color">
       <code>rgb(from …)</code> relative colour syntax
     </div>
