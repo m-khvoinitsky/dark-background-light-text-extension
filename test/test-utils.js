@@ -1,4 +1,4 @@
-/*var utils = require('./utils.js');
+/* var utils = require('./utils.js');
 
 exports['test count_char_in_string'] = function(assert) {
     return assert.ok(
@@ -28,7 +28,7 @@ exports['test RGB_TO_HSL speed'] = function(assert) {
     let time = end - start;
     console.log('Execution time: ' + time);
     return assert.ok(true, 'time measure');
-};*/
+}; */
 /*
 exports['test count_char_in_string speed'] = function(assert) {
     let start = (new Date()).getTime();

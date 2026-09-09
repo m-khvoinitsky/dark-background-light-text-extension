@@ -1,2 +1,2 @@
 last-coverage-summary.json -merge
-package-lock.json -merge
+package-lock.json -merge -diff

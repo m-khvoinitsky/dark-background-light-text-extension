@@ -1,5 +1,5 @@
 {
-  "extension": ["ts"],
-  "spec": "test/*.ts",
-  "require": "ts-node/register"
+  "extension": ["mts"],
+  "spec": "test/*.mts",
+  "node-option": ["import=tsx"]
 }

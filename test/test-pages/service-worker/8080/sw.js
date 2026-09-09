@@ -1,29 +1,33 @@
-var CACHE_NAME = 'test-cache';
-var urlsToCache = [
+const CACHE_NAME = 'test-cache';
+const urlsToCache = [
   // '/',
   // '/styles/main.css',
   // '/script/main.js'
 ];
 
-self.addEventListener('install', function(event) {
+self.addEventListener('install', (event) => {
   // Perform install steps
-  event.waitUntil((async () => {
-    let cache = await caches.open(CACHE_NAME);
-    console.log('Opened cache');
-    return await cache.addAll(urlsToCache);
-  })());
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      console.log('Opened cache');
+      return cache.addAll(urlsToCache);
+    })(),
+  );
 });
 
-self.addEventListener('fetch', function(event) {
-  event.respondWith((async () => {
-    let response = await caches.match(event.request);
-    if (response) {
-      console.log('cached response', response);
-      return response;
-    }
-    console.log('event', event);
-    let fetched = await fetch(event.request);
-    console.log('fetched response', fetched);
-    return fetched;
-  })());
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    (async () => {
+      const response = await caches.match(event.request);
+      if (response) {
+        console.log('cached response', response);
+        return response;
+      }
+      console.log('event', event);
+      const fetched = await fetch(event.request);
+      console.log('fetched response', fetched);
+      return fetched;
+    })(),
+  );
 });

@@ -3,18 +3,18 @@
 
 const { createServer } = require('http');
 const fs = require('fs').promises;
-const _extname = require('path').extname;
+const get_extname = require('path').extname;
 
 console.log(
-  'This server must be used only for testing with trusted code. Do not use it on production or anywhere except for localhost!'
+  'This server must be used only for testing with trusted code. Do not use it on production or anywhere except for localhost!',
 );
 
-exports.serve = function ({
+exports.serve = ({
   port = 8080,
   mutateHeaders,
   mutateFilePath,
   index = 'index.html',
-}) {
+}) => {
   const IPs = ['127.0.0.1', '::1'];
 
   const mimeTypes = {
@@ -36,7 +36,7 @@ exports.serve = function ({
   };
 
   IPs.forEach((bind_to) => {
-    createServer(async function (request, response) {
+    createServer(async (request, response) => {
       let filePath = request.url;
       if (index && filePath.endsWith('/')) {
         filePath += index;
@@ -50,9 +50,9 @@ exports.serve = function ({
       }
       console.log(`${request.method} ${filePath}`);
 
-      let extname = String(_extname(filePath)).toLowerCase();
+      const extname = String(get_extname(filePath)).toLowerCase();
 
-      let contentType = mimeTypes[extname] || 'application/octet-stream';
+      const contentType = mimeTypes[extname] || 'application/octet-stream';
 
       let body;
       let code;
@@ -82,7 +82,7 @@ exports.serve = function ({
     console.log(
       `Server running at http://${
         bind_to.indexOf(':') >= 0 ? `[${bind_to}]` : bind_to
-      }:${port}/`
+      }:${port}/`,
     );
   });
 };
