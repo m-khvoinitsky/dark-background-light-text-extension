@@ -1,0 +1,9 @@
+trailingComma: all
+singleQuote: true
+experimentalOperatorPosition: start
+plugins:
+  - prettier-plugin-svelte
+overrides:
+  - files: '*.svelte'
+    options:
+      parser: svelte

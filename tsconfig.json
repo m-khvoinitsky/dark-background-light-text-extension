@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
-    "importsNotUsedAsValues": "error",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
     "isolatedModules": false,
     "sourceMap": true,
     "strict": true,

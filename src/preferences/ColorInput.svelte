@@ -11,16 +11,161 @@
 
   const local_i = global_i++;
 
-  const css_keywords = ['aliceblue','antiquewhite','aqua','aquamarine','azure','beige','bisque','black','blanchedalmond','blue','blueviolet','brown','burlywood','cadetblue','chartreuse','chocolate','coral','cornflowerblue','cornsilk','crimson','cyan','darkblue','darkcyan','darkgoldenrod','darkgray','darkgreen','darkgrey','darkkhaki','darkmagenta','darkolivegreen','darkorange','darkorchid','darkred','darksalmon','darkseagreen','darkslateblue','darkslategray','darkslategrey','darkturquoise','darkviolet','deeppink','deepskyblue','dimgray','dimgrey','dodgerblue','firebrick','floralwhite','forestgreen','fuchsia','gainsboro','ghostwhite','gold','goldenrod','gray','green','greenyellow','grey','honeydew','hotpink','indianred','indigo','ivory','khaki','lavender','lavenderblush','lawngreen','lemonchiffon','lightblue','lightcoral','lightcyan','lightgoldenrodyellow','lightgray','lightgreen','lightgrey','lightpink','lightsalmon','lightseagreen','lightskyblue','lightslategray','lightslategrey','lightsteelblue','lightyellow','lime','limegreen','linen','magenta','maroon','mediumaquamarine','mediumblue','mediumorchid','mediumpurple','mediumseagreen','mediumslateblue','mediumspringgreen','mediumturquoise','mediumvioletred','midnightblue','mintcream','mistyrose','moccasin','navajowhite','navy','oldlace','olive','olivedrab','orange','orangered','orchid','palegoldenrod','palegreen','paleturquoise','palevioletred','papayawhip','peachpuff','peru','pink','plum','powderblue','purple','rebeccapurple','red','rosybrown','royalblue','saddlebrown','salmon','sandybrown','seagreen','seashell','sienna','silver','skyblue','slateblue','slategray','slategrey','snow','springgreen','steelblue','tan','teal','thistle','tomato','turquoise','violet','wheat','white','whitesmoke','yellow','yellowgreen'];
+  const css_keywords = [
+    'aliceblue',
+    'antiquewhite',
+    'aqua',
+    'aquamarine',
+    'azure',
+    'beige',
+    'bisque',
+    'black',
+    'blanchedalmond',
+    'blue',
+    'blueviolet',
+    'brown',
+    'burlywood',
+    'cadetblue',
+    'chartreuse',
+    'chocolate',
+    'coral',
+    'cornflowerblue',
+    'cornsilk',
+    'crimson',
+    'cyan',
+    'darkblue',
+    'darkcyan',
+    'darkgoldenrod',
+    'darkgray',
+    'darkgreen',
+    'darkgrey',
+    'darkkhaki',
+    'darkmagenta',
+    'darkolivegreen',
+    'darkorange',
+    'darkorchid',
+    'darkred',
+    'darksalmon',
+    'darkseagreen',
+    'darkslateblue',
+    'darkslategray',
+    'darkslategrey',
+    'darkturquoise',
+    'darkviolet',
+    'deeppink',
+    'deepskyblue',
+    'dimgray',
+    'dimgrey',
+    'dodgerblue',
+    'firebrick',
+    'floralwhite',
+    'forestgreen',
+    'fuchsia',
+    'gainsboro',
+    'ghostwhite',
+    'gold',
+    'goldenrod',
+    'gray',
+    'green',
+    'greenyellow',
+    'grey',
+    'honeydew',
+    'hotpink',
+    'indianred',
+    'indigo',
+    'ivory',
+    'khaki',
+    'lavender',
+    'lavenderblush',
+    'lawngreen',
+    'lemonchiffon',
+    'lightblue',
+    'lightcoral',
+    'lightcyan',
+    'lightgoldenrodyellow',
+    'lightgray',
+    'lightgreen',
+    'lightgrey',
+    'lightpink',
+    'lightsalmon',
+    'lightseagreen',
+    'lightskyblue',
+    'lightslategray',
+    'lightslategrey',
+    'lightsteelblue',
+    'lightyellow',
+    'lime',
+    'limegreen',
+    'linen',
+    'magenta',
+    'maroon',
+    'mediumaquamarine',
+    'mediumblue',
+    'mediumorchid',
+    'mediumpurple',
+    'mediumseagreen',
+    'mediumslateblue',
+    'mediumspringgreen',
+    'mediumturquoise',
+    'mediumvioletred',
+    'midnightblue',
+    'mintcream',
+    'mistyrose',
+    'moccasin',
+    'navajowhite',
+    'navy',
+    'oldlace',
+    'olive',
+    'olivedrab',
+    'orange',
+    'orangered',
+    'orchid',
+    'palegoldenrod',
+    'palegreen',
+    'paleturquoise',
+    'palevioletred',
+    'papayawhip',
+    'peachpuff',
+    'peru',
+    'pink',
+    'plum',
+    'powderblue',
+    'purple',
+    'rebeccapurple',
+    'red',
+    'rosybrown',
+    'royalblue',
+    'saddlebrown',
+    'salmon',
+    'sandybrown',
+    'seagreen',
+    'seashell',
+    'sienna',
+    'silver',
+    'skyblue',
+    'slateblue',
+    'slategray',
+    'slategrey',
+    'snow',
+    'springgreen',
+    'steelblue',
+    'tan',
+    'teal',
+    'thistle',
+    'tomato',
+    'turquoise',
+    'violet',
+    'wheat',
+    'white',
+    'whitesmoke',
+    'yellow',
+    'yellowgreen',
+  ];
 
   let class_: string | undefined;
   export { class_ as class };
   export let value: string;
-  let default_: string;
-  export { default_ as default };
-
-  let color: HTMLInputElement;
-  let text: HTMLInputElement;
+  export let default_value: string;
 
   let common_value = writable('');
 
@@ -39,17 +184,30 @@
   ].join(' ');
 
   function compare_RGBA(c1: RGBA | null, c2: RGBA | null): boolean {
-    return !!c1 && !!c2 && c1[0] == c2[0] && c1[1] == c2[1] && c1[2] == c2[2] && c1[3] == c2[3];
+    return (
+      !!c1
+      && !!c2
+      && c1[0] == c2[0]
+      && c1[1] == c2[1]
+      && c1[2] == c2[2]
+      && c1[3] == c2[3]
+    );
   }
 
-  onDestroy(common_value.subscribe(val => {
-    color_value = val;
-    if (text_value && val && !compare_RGBA(parseCSSColor(text_value), parseCSSColor(val))) {
-      text_value = val;
-    }
-  }))
+  onDestroy(
+    common_value.subscribe((val) => {
+      color_value = val;
+      if (
+        text_value
+        && val
+        && !compare_RGBA(parseCSSColor(text_value), parseCSSColor(val))
+      ) {
+        text_value = val;
+      }
+    }),
+  );
 
-  $: common_value.update(() => color_value)
+  $: common_value.update(() => color_value);
   $: {
     let parsed: RGBA | null = parseCSSColor(text_value);
     if (parsed) {
@@ -61,7 +219,9 @@
   }
 
   function to_hex_color(a: RGBA): string {
-    return `#${strip_alpha(a).map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+    return `#${strip_alpha(a)
+      .map((c) => c.toString(16).padStart(2, '0'))
+      .join('')}`;
   }
 
   const dispatch = createEventDispatcher();
@@ -72,7 +232,7 @@
       if (parsed) {
         new_value = to_hex_color(parsed);
       } else {
-        new_value = default_;
+        new_value = default_value;
         text_value = new_value;
         shake_it = true;
       }
@@ -83,16 +243,20 @@
   }
 </script>
 
-<div class="{class_}">
-  <input bind:this={color} bind:value={color_value} type="color" on:change="{() => emit(false)}">
-  <input bind:this={text} bind:value={text_value} type="text" on:change="{() => emit(true)}"
-         class="{text_class}" list="css-colors"
-         on:animationend="{() => (shake_it = false)}">
-  {#if local_i === 0 }
+<div class={class_}>
+  <input bind:value={color_value} type="color" on:change={() => emit(false)} />
+  <input
+    bind:value={text_value}
+    type="text"
+    on:change={() => emit(true)}
+    class={text_class}
+    list="css-colors"
+    on:animationend={() => (shake_it = false)}
+  />
+  {#if local_i === 0}
     <datalist id="css-colors">
       {#each css_keywords as kw}
-        <option value="{kw}">
-      {/each}
+        <option value={kw}></option>{/each}
     </datalist>
   {/if}
 </div>
@@ -111,9 +275,8 @@
     /* same as margin-top in .row in bootstrap grid */
     margin-right: 0.2em;
   }
-  input[type="text"] {
+  input[type='text'] {
     transition: border-color box-shadow 2s;
-
   }
   input:focus {
     outline: none;
