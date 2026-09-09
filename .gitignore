@@ -8,6 +8,7 @@ package-lock.json
 !/package-lock.json
 .log
 dist
+dist_marker
 *~
 .#*
 *#

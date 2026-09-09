@@ -3,7 +3,7 @@ import type { RenderOptions } from '../../common/types';
 export const name = 'invert';
 // eslint-disable-next-line no-empty-pattern
 export function render({}: RenderOptions) {
-    return `
+  return `
 @supports (backdrop-filter: invert(1)) {
   #mybpwaycfxccmnp-dblt-backdrop-filter {
     display: block !important;
@@ -25,13 +25,13 @@ export function render({}: RenderOptions) {
 
 @supports not (backdrop-filter: invert(1)) {
   html,
-${''/* TODO: "black on transparent" mark */}\
+${'' /* TODO: "black on transparent" mark */}\
   img:not(.mwe-math-fallback-image-inline):not([alt="inline_formula"]),
   video,
   div#viewer.pdfViewer div.page {
     filter: invert(1) hue-rotate(180deg) !important;
   }
-${''/* #28 */}\
+${'' /* #28 */}\
   :fullscreen video,
   video:fullscreen {
     filter: none !important;

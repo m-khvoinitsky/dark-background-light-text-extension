@@ -2,10 +2,10 @@ import type { RenderOptions } from '../../common/types';
 
 export const name = 'simple-css';
 export function render({
-    default_foreground_color,
-    default_background_color,
+  default_foreground_color,
+  default_background_color,
 }: RenderOptions) {
-    return `
+  return `
 * {
   color: ${default_foreground_color} !important;
 }
