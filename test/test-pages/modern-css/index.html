@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Modern CSS: cascade layers, nesting, colour models</title>
+    <style>
+      /* Colours here are deliberately saturated. lighten_or_darken_color()
+         replaces anything below 20% saturation with the configured defaults,
+         so a greyscale test cannot tell a correct parse from a wrong one:
+         every box would come out the same regardless. With vivid colours a
+         misparsed value shows up as the wrong hue. */
+
+      body {
+        font-family: sans-serif;
+        margin: 2em;
+        background-color: rgb(250, 245, 235);
+        color: rgb(40, 20, 5);
+      }
+      .box {
+        border: 1px solid rgb(120, 60, 20);
+        padding: 0.6em;
+        margin-bottom: 0.4em;
+      }
+      .pair {
+        display: flex;
+        gap: 0.4em;
+      }
+      .pair > .box {
+        flex: 1;
+        margin-bottom: 0;
+      }
+      h2 {
+        margin-top: 1.5em;
+      }
+      code {
+        font-family: monospace;
+      }
+      p.note {
+        max-width: 46em;
+      }
+
+      /* ---- structural tests: every box below uses this same colour pair, so
+              after processing they must all look identical to the baseline ---- */
+      #plain {
+        background-color: rgb(217, 79, 31);
+        color: rgb(255, 235, 140);
+      }
+
+      @layer base {
+        #layer-block {
+          background-color: rgb(217, 79, 31);
+          color: rgb(255, 235, 140);
+        }
+      }
+
+      @layer first, second;
+      @layer second {
+        #layer-statement {
+          background-color: rgb(217, 79, 31);
+          color: rgb(255, 235, 140);
+        }
+      }
+
+      @container (min-width: 0px) {
+        #container-rule {
+          background-color: rgb(217, 79, 31);
+          color: rgb(255, 235, 140);
+        }
+      }
+
+      @scope (#scope-root) {
+        #scope-rule {
+          background-color: rgb(217, 79, 31);
+          color: rgb(255, 235, 140);
+        }
+      }
+
+      @media screen {
+        #media-rule {
+          background-color: rgb(217, 79, 31);
+          color: rgb(255, 235, 140);
+        }
+      }
+      @supports (color: red) {
+        #supports-rule {
+          background-color: rgb(217, 79, 31);
+          color: rgb(255, 235, 140);
+        }
+      }
+
+      /* css nesting: the child rules live in the parent's cssRules */
+      #nesting-parent {
+        background-color: rgb(217, 79, 31);
+        color: rgb(255, 235, 140);
+
+        & .nested-child {
+          background-color: rgb(217, 79, 31);
+          color: rgb(255, 235, 140);
+        }
+
+        @media screen {
+          & .nested-in-media {
+            background-color: rgb(217, 79, 31);
+            color: rgb(255, 235, 140);
+          }
+        }
+      }
+
+      /* ---- colour models: each is paired with its exact sRGB twin, so the
+              two halves of a row must match after processing ---- */
+      #hwb {
+        background-color: hwb(205 8% 6%);
+        color: hwb(205 4% 72%);
+      }
+      #hwb-ref {
+        background-color: rgb(20, 148, 240);
+        color: rgb(10, 46, 71);
+      }
+      #lab {
+        background-color: lab(58% 12 -62);
+        color: lab(28% 8 -46);
+      }
+      #lab-ref {
+        background-color: rgb(94, 136, 249);
+        color: rgb(20, 65, 138);
+      }
+      #lch {
+        background-color: lch(58% 64 290);
+        color: lch(28% 48 290);
+      }
+      #lch-ref {
+        background-color: rgb(124, 129, 246);
+        color: rgb(52, 60, 137);
+      }
+      #oklab {
+        background-color: oklab(0.62 -0.02 -0.16);
+        color: oklab(0.34 -0.01 -0.12);
+      }
+      #oklab-ref {
+        background-color: rgb(80, 130, 230);
+        color: rgb(25, 49, 117);
+      }
+      #oklch {
+        background-color: oklch(0.62 0.17 250);
+        color: oklch(0.34 0.13 250);
+      }
+      #oklch-ref {
+        background-color: rgb(18, 137, 231);
+        color: rgb(0, 55, 119);
+      }
+      #color-fn {
+        background-color: color(display-p3 0.15 0.45 0.9);
+        color: color(display-p3 0.05 0.15 0.4);
+      }
+      #color-fn-ref {
+        background-color: rgb(0, 117, 238);
+        color: rgb(1, 39, 106);
+      }
+
+      /* ---- functions the add-on unwraps itself; the parser cannot ---- */
+      #light-dark {
+        background-color: light-dark(rgb(217, 79, 31), rgb(80, 20, 5));
+        color: light-dark(rgb(255, 235, 140), rgb(120, 90, 10));
+      }
+      /* the shape design systems actually emit: light-dark() whose arguments
+         are var() with fallbacks, so the commas are nested two deep */
+      #light-dark-vars {
+        background-color: light-dark(
+          var(--surface-lightest, rgb(217, 79, 31)),
+          var(--surface-darkest, rgb(80, 20, 5))
+        );
+        color: light-dark(
+          var(--text-lightest, rgb(255, 235, 140)),
+          var(--text-darkest, rgb(120, 90, 10))
+        );
+      }
+      #color-mix {
+        background-color: color-mix(in oklch, rgb(217, 79, 31) 85%, blue);
+        color: color-mix(in oklch, rgb(255, 235, 140) 85%, blue);
+      }
+      #color-mix-hard {
+        /* hue interpolation keywords, a percentage, and a nested colour
+           containing commas, all of which must survive unwrapping */
+        background-color: color-mix(
+          in oklch longer hue,
+          rgb(217, 79, 31) 85%,
+          blue
+        );
+        color: color-mix(in hsl shorter hue, rgb(255, 235, 140) 85%, blue);
+      }
+
+      /* ---- known gaps ---- */
+      #relative-color {
+        background-color: rgb(from rgb(217, 79, 31) r g b);
+        color: rgb(from rgb(255, 235, 140) r g b);
+      }
+      #contrast-color {
+        background-color: rgb(217, 79, 31);
+        color: contrast-color(rgb(217, 79, 31));
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Modern CSS support</h1>
+    <p class="note">
+      With the add-on enabled, every box in the first sections must end up
+      looking the same as the baseline. In the colour model section the two
+      halves of each row must match each other. A box that keeps its original
+      light background is not being processed at all; a box that ends up a
+      different colour from its twin is being parsed wrongly.
+    </p>
+
+    <div class="box" id="plain">
+      baseline — plain rule, plain <code>rgb()</code>
+    </div>
+
+    <h2>Grouping at-rules that report <code>CSSRule.type === 0</code></h2>
+    <div class="box" id="layer-block"><code>@layer base { … }</code></div>
+    <div class="box" id="layer-statement">
+      <code>@layer first, second;</code> then <code>@layer second { … }</code>
+    </div>
+    <div class="box" id="container-rule"><code>@container</code></div>
+    <div id="scope-root">
+      <div class="box" id="scope-rule"><code>@scope</code></div>
+    </div>
+
+    <h2>Controls — these worked before</h2>
+    <div class="box" id="media-rule"><code>@media</code></div>
+    <div class="box" id="supports-rule"><code>@supports</code></div>
+
+    <h2>CSS nesting</h2>
+    <div class="box" id="nesting-parent">
+      parent rule
+      <div class="box nested-child">nested child rule</div>
+      <div class="box nested-in-media">nested inside <code>@media</code></div>
+    </div>
+
+    <h2>CSS Color 4 models — each row is the syntax versus its sRGB twin</h2>
+    <div class="pair">
+      <div class="box" id="hwb"><code>hwb()</code></div>
+      <div class="box" id="hwb-ref">same colour as <code>rgb()</code></div>
+    </div>
+    <div class="pair">
+      <div class="box" id="lab"><code>lab()</code></div>
+      <div class="box" id="lab-ref">same colour as <code>rgb()</code></div>
+    </div>
+    <div class="pair">
+      <div class="box" id="lch"><code>lch()</code></div>
+      <div class="box" id="lch-ref">same colour as <code>rgb()</code></div>
+    </div>
+    <div class="pair">
+      <div class="box" id="oklab"><code>oklab()</code></div>
+      <div class="box" id="oklab-ref">same colour as <code>rgb()</code></div>
+    </div>
+    <div class="pair">
+      <div class="box" id="oklch">
+        <code>oklch()</code> — Tailwind v4 default
+      </div>
+      <div class="box" id="oklch-ref">same colour as <code>rgb()</code></div>
+    </div>
+    <div class="pair">
+      <div class="box" id="color-fn"><code>color(display-p3 …)</code></div>
+      <div class="box" id="color-fn-ref">nearest <code>rgb()</code></div>
+    </div>
+    <p class="note">
+      The <code>display-p3</code> row is the one place a small difference is
+      expected rather than a bug: on a wide gamut screen the browser renders it
+      natively, while the twin is the sRGB approximation the parser produces.
+    </p>
+
+    <h2>Functions unwrapped by the add-on</h2>
+    <div class="box" id="light-dark">
+      <code>light-dark()</code> — both branches are recoloured, so it does not
+      matter which one the browser picks
+    </div>
+    <div class="box" id="light-dark-vars">
+      <code>light-dark(var(--x, …), var(--y, …))</code> — nested commas, the
+      shape design systems emit
+    </div>
+    <div class="box" id="color-mix"><code>color-mix()</code></div>
+    <div class="box" id="color-mix-hard">
+      <code>color-mix(in oklch longer hue, rgb(…) 85%, blue)</code>
+    </div>
+
+    <h2>Known gaps — expected to stay light</h2>
+    <div class="box" id="relative-color">
+      <code>rgb(from …)</code> relative colour syntax
+    </div>
+    <div class="box" id="contrast-color"><code>contrast-color()</code></div>
+  </body>
+</html>

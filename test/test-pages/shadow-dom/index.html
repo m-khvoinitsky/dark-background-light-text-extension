@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Shadow DOM: inline styles, constructed stylesheets, :host</title>
+    <style>
+      /* Saturated colours on purpose: below 20% saturation the add-on swaps in
+         the configured defaults, which would hide a wrong result. */
+      body {
+        font-family: sans-serif;
+        margin: 2em;
+        background-color: rgb(250, 245, 235);
+        color: rgb(40, 20, 5);
+      }
+      .note {
+        max-width: 46em;
+      }
+      h2 {
+        margin-top: 1.5em;
+      }
+      code {
+        font-family: monospace;
+      }
+      #light-dom {
+        border: 1px solid rgb(120, 60, 20);
+        padding: 0.6em;
+        background-color: rgb(217, 79, 31);
+        color: rgb(255, 235, 140);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Shadow DOM</h1>
+    <p class="note">
+      Every box must end up looking like the light DOM baseline. A box that
+      keeps its original colours is in a stylesheet the processor never visits.
+    </p>
+
+    <h2>Baseline (light DOM)</h2>
+    <div id="light-dom">plain rule in the document stylesheet</div>
+
+    <h2>Open shadow root, <code>&lt;style&gt;</code> inside</h2>
+    <shadow-style-tag></shadow-style-tag>
+
+    <h2>
+      Open shadow root, <code>adoptedStyleSheets</code> — what component
+      libraries actually use
+    </h2>
+    <shadow-adopted></shadow-adopted>
+
+    <h2>Closed shadow root, <code>adoptedStyleSheets</code></h2>
+    <shadow-closed></shadow-closed>
+
+    <h2>Nested shadow roots, inner one adopting</h2>
+    <shadow-outer></shadow-outer>
+
+    <h2>
+      Document-level <code>adoptedStyleSheets</code> (no shadow root involved)
+    </h2>
+    <div id="doc-adopted">
+      styled from <code>document.adoptedStyleSheets</code>
+    </div>
+
+    <script>
+      const BOX = `
+        display: block;
+        border: 1px solid rgb(120, 60, 20);
+        padding: 0.6em;
+        background-color: rgb(217, 79, 31);
+        color: rgb(255, 235, 140);
+      `;
+
+      function sheet_with(css) {
+        const s = new CSSStyleSheet();
+        s.replaceSync(css);
+        return s;
+      }
+
+      // shadow root whose styles live in a <style> element
+      customElements.define(
+        'shadow-style-tag',
+        class extends HTMLElement {
+          constructor() {
+            super();
+            const root = this.attachShadow({ mode: 'open' });
+            root.innerHTML =
+              `<style>:host { ${BOX} }</style>`
+              + '<span>:host rule from a &lt;style&gt; tag</span>';
+          }
+        },
+      );
+
+      // shadow root whose styles are a constructed stylesheet
+      customElements.define(
+        'shadow-adopted',
+        class extends HTMLElement {
+          constructor() {
+            super();
+            const root = this.attachShadow({ mode: 'open' });
+            root.adoptedStyleSheets = [sheet_with(`:host { ${BOX} }`)];
+            root.innerHTML = '<span>:host rule from adoptedStyleSheets</span>';
+          }
+        },
+      );
+
+      // same, but the root is closed: the add-on only sees it because it hooks
+      // attachShadow, not because it can walk to it from the element
+      customElements.define(
+        'shadow-closed',
+        class extends HTMLElement {
+          constructor() {
+            super();
+            const root = this.attachShadow({ mode: 'closed' });
+            root.adoptedStyleSheets = [sheet_with(`:host { ${BOX} }`)];
+            root.innerHTML = '<span>:host rule in a closed root</span>';
+          }
+        },
+      );
+
+      // a shadow root inside another shadow root
+      customElements.define(
+        'shadow-inner',
+        class extends HTMLElement {
+          constructor() {
+            super();
+            const root = this.attachShadow({ mode: 'open' });
+            root.adoptedStyleSheets = [sheet_with(`:host { ${BOX} }`)];
+            root.innerHTML = '<span>:host rule in a nested root</span>';
+          }
+        },
+      );
+      customElements.define(
+        'shadow-outer',
+        class extends HTMLElement {
+          constructor() {
+            super();
+            const root = this.attachShadow({ mode: 'open' });
+            root.innerHTML = '<shadow-inner></shadow-inner>';
+          }
+        },
+      );
+
+      // and the document itself can adopt constructed stylesheets
+      document.adoptedStyleSheets = [
+        ...document.adoptedStyleSheets,
+        sheet_with(`#doc-adopted { ${BOX} }`),
+      ];
+    </script>
+  </body>
+</html>
