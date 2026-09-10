@@ -1,8 +1,13 @@
 {
   "scripts": {
-    "build": "rollup -c --failAfterWarnings",
-    "dev": "rm -f ./dist_marker; concurrently --kill-others --teardown 'rm -f ./dist_marker' 'rollup -c --watch --watch.onEnd \"touch ./dist_marker\"' 'while ! test -f ./dist_marker; do sleep 1; done; cd ./dist; web-ext run'",
+    "build": "node tools/build.mjs",
+    "dev": "node tools/dev.mjs",
+    "dev:deved": "npm run dev -- --firefox=deved",
+    "dev:android": "npm run dev -- --target=firefox-android",
     "test": "c8 --reporter='../../coverage-relative-json-summary' --reporter=html --reporter=text mocha"
+  },
+  "engines": {
+    "node": ">=20.15"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -16,11 +21,12 @@
     "@typescript-eslint/parser": "^8.67.0",
     "assert": "^2.1.0",
     "c8": "^12.0.0",
-    "concurrently": "^10.0.4",
     "eslint": "^10.8.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-svelte": "^3.23.0",
     "globals": "^17.11.0",
+    "ignore": "^7.0.9",
+    "jszip": "3.10.1",
     "mocha": "^11.8.0",
     "npm-check-updates": "^23.0.2",
     "prettier": "^3.9.6",
