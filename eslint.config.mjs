@@ -7,7 +7,14 @@ import prettier from 'eslint-config-prettier';
 
 export default [
   {
-    ignores: ['dist/', 'coverage/', '.nyc_output/', 'build.xpi'],
+    ignores: [
+      'dist/',
+      'build-dev/',
+      'build-release-*/',
+      'coverage/',
+      '.nyc_output/',
+      '*.xpi',
+    ],
   },
   js.configs.recommended,
   ...svelte.configs['flat/base'],
@@ -159,7 +166,8 @@ export default [
     },
   },
   {
-    files: ['test/**'],
+    // command line helpers, where printing to stdout is the whole point
+    files: ['test/**', 'tools/**'],
     rules: {
       'no-console': ['off'],
     },

@@ -7,8 +7,11 @@ web-ext-artifacts
 package-lock.json
 !/package-lock.json
 .log
-dist
-dist_marker
+# build output. these must stay ignored: the build id is a hash of every file
+# git would not ignore, so an unignored output directory would change the id of
+# the next build, forever
+build-dev
+build-release-*
 *~
 .#*
 *#

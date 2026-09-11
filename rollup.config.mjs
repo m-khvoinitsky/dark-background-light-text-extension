@@ -1,13 +1,15 @@
 import typescript from '@rollup/plugin-typescript';
 import node_resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import { cp, mkdir } from 'node:fs/promises';
+import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import clear from 'rollup-plugin-clear';
 import terser from '@rollup/plugin-terser';
 
 import svelte from 'rollup-plugin-svelte';
 import css from 'rollup-plugin-css-only';
 import autoPreprocess from 'svelte-preprocess';
+
+import { amo_manifest_json } from './tools/manifest.mjs';
 
 function onwarn(warning, warn) {
   // svelte's runtime is built out of deliberate cycles; there is nothing to
@@ -26,7 +28,12 @@ function copy_static(dest_dir) {
     name: 'copy-static',
     async writeBundle() {
       await mkdir(dest_dir, { recursive: true });
-      await cp('manifest.json', `${dest_dir}/manifest.json`);
+      // shipped in AMO's own serialisation, so that a local build and the
+      // signed .xpi compare equal
+      await writeFile(
+        `${dest_dir}/manifest.json`,
+        amo_manifest_json(await readFile('manifest.json', 'utf8')),
+      );
       await cp('icons', `${dest_dir}/icons`, { recursive: true });
       await cp('ui', `${dest_dir}/ui`, { recursive: true });
     },
@@ -37,7 +44,7 @@ export default (args) => {
   let output_opts;
   const common_plugins = [
     typescript({
-      sourceMap: args.watch === true,
+      sourceMap: args.configDev === true,
     }),
     // without the browser condition svelte's exports map resolves to its
     // server build, whose mount() throws lifecycle_function_unavailable
@@ -47,8 +54,8 @@ export default (args) => {
     }),
     commonjs(),
   ];
-  const dest_dir = process.env.ADDON_DIST_DIR ?? 'dist';
-  if (args.watch === true) {
+  const dest_dir = process.env.ADDON_DIST_DIR ?? 'build-dev';
+  if (args.configDev === true) {
     output_opts = {
       plugins: [],
       format: 'iife',
@@ -98,7 +105,7 @@ export default (args) => {
           preprocess: autoPreprocess({ sourceMap: true }),
           compilerOptions: {
             // enable run-time checks when not in production
-            dev: args.watch === true,
+            dev: args.configDev === true,
           },
         }),
         css({ output: 'ui.css' }),
